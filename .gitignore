@@ -1,0 +1,8 @@
+/build
+/bin
+/download
+/forge
+/.settings
+/.project
+/.classpath
+/pom.xml

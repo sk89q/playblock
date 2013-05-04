@@ -1,0 +1,19 @@
+[
+{
+  "modid" : "com.skcraft.PlayBlock",
+  "name" : "PlayBlock",
+  "version" : "1.1.0",
+  "url" : "http://www.sk89q.com",
+  "credits" : "SKCraft Team",
+  "authors": [
+    "sk89q",
+    "Joe12o",
+    "yofreke"
+  ],
+  "description": "Video player and other display mechanics for Minecraft.",
+  "logoFile" : "logo.png",
+  "parent" : "",
+  "screenshots": [
+  ]
+}
+]
