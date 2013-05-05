@@ -28,6 +28,7 @@ public class MediaManager {
 
     private MediaPlayerFactory factory;
     private MediaRenderer activeRenderer;
+    private float volume = 1;
 
     static {
         // We have to find the VLC libraries
@@ -157,6 +158,7 @@ public class MediaManager {
         player.setPlaySubItems(true);
         player.setRepeat(true);
         player.addMediaPlayerEventListener(new PlayerEventListener());
+        player.setVolume((int) (volume * 100));
         instance.setVLCJPlayer(player);
         return instance;
     }
@@ -204,9 +206,20 @@ public class MediaManager {
      * @param volume the volume
      */
     public void setVolume(float volume) {
+        this.volume = volume;
+        
         if (activeRenderer != null) {
             activeRenderer.getVLCJPlayer().setVolume((int) (volume * 100));
         }
+    }
+    
+    /**
+     * Return the volume of the player.
+     * 
+     * @return the volume
+     */
+    public float getVolume() {
+        return volume;
     }
 
 }

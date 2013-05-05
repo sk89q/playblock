@@ -6,6 +6,7 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.input.Keyboard;
 
+import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
@@ -38,6 +39,11 @@ public class ClientRuntime extends SharedRuntime {
     @Override
     public void load(FMLInitializationEvent event) {
         super.load(event);
+
+        // Bind the key
+        KeyBinding[] key = { new KeyBinding(LKey.PLAYBLOCK_OPTIONS.toString(), Keyboard.KEY_F4) };
+        boolean[] repeating = { false };
+        KeyBindingRegistry.registerKeyBinding(new GlobalKeyHandler(key, repeating));
 
         ClientRegistry.bindTileEntitySpecialRenderer(
                 ProjectorTileEntity.class, new ProjectorRenderer(manager));

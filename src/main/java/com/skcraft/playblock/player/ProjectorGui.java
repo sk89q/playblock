@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.PlayBlock;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -54,7 +55,7 @@ public class ProjectorGui extends GuiScreen {
         int top = (height - ySize) / 2;
 
         this.controlList.add(applyButton = 
-                new GuiButton(0, left + 160, top + 125, 80, 20, "Update"));
+                new GuiButton(0, left + 160, top + 125, 80, 20, LKey.DONE.toString()));
 
         this.controlList.add(clearUriButton = 
                 new GuiButton(1, left + 220, top + 14, 17, 20, "X"));
@@ -141,13 +142,13 @@ public class ProjectorGui extends GuiScreen {
         triggerRangeField.drawTextBox();
         fadeRangeField.drawTextBox();
 
-        fontRenderer.drawString("URL:", left + 10, top + 20, 0xff999999);
-        fontRenderer.drawString("Size:", left + 10, top + 40, 0xff999999);
+        fontRenderer.drawString(LKey.URL.toString(), left + 10, top + 20, 0xff999999);
+        fontRenderer.drawString(LKey.SCREEN_SIZE.toString(), left + 10, top + 40, 0xff999999);
         fontRenderer.drawString("x", left + 117, top + 40, 0xff999999);
-        fontRenderer.drawString("Turn on:", left + 10, top + 60, 0xff999999);
-        fontRenderer.drawString("block(s) away", left + 117, top + 60, 0xff999999);
-        fontRenderer.drawString("Turn off:", left + 10, top + 80, 0xff999999);
-        fontRenderer.drawString("block(s) away", left + 117, top + 80, 0xff999999);
+        fontRenderer.drawString(LKey.TURN_ON.toString(), left + 10, top + 60, 0xff999999);
+        fontRenderer.drawString(LKey.BLOCKS_AWAY.toString(), left + 117, top + 60, 0xff999999);
+        fontRenderer.drawString(LKey.TURN_OFF.toString(), left + 10, top + 80, 0xff999999);
+        fontRenderer.drawString(LKey.BLOCKS_AWAY.toString(), left + 117, top + 80, 0xff999999);
         fontRenderer.drawString("TEST VERSION - skcraft.com", left + 10, top + 132, 0xffffffff);
 
         super.drawScreen(mouseX, mouseY, par3);

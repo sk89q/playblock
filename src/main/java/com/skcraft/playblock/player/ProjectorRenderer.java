@@ -79,10 +79,6 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
             MediaRenderer renderer = projector.getRenderer();
 
             if (renderer != null) {
-                // A hack to have the main MC volume apply to the player
-                mediaManager
-                        .setVolume(Minecraft.getMinecraft().gameSettings.soundVolume);
-
                 renderer.drawMedia(0, 0, width, height);
                 MediaStatus status = renderer.getStatus();
 
