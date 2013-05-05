@@ -7,6 +7,7 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import com.skcraft.playblock.util.DrawUtils;
+import com.skcraft.playblock.util.EnvUtils;
 
 /**
  * Renders the screen for the projector blocks.
@@ -16,7 +17,7 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
     /**
      * Determines the scale of the text on the screen.
      */
-    private static final float TEXT_SCALE = 0.05f;
+    private static final float TEXT_SCALE = 0.045f;
     
     private final MediaManager mediaManager;
 
@@ -74,7 +75,10 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
     private void drawScreen(ProjectorTileEntity projector, float width, float height) {
         if (!mediaManager.isAvailable()) {
             DrawUtils.drawRect(0, 0, width, height, 0xff000000);
-            drawMessage("See skcraft.com/vlc!", width, height, 0xffff0000);
+            drawMessage(width, height, 0xffff0000,
+                    "Can't find "
+                            + (EnvUtils.isJvm64bit() ? "64-bit" : "32-bit")
+                            + " VLC", "Read http://skcraft.com/vlc");
         } else {
             MediaRenderer renderer = projector.getRenderer();
 
@@ -83,9 +87,13 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
                 MediaStatus status = renderer.getStatus();
 
                 if (status == MediaStatus.BUFFERING) {
-                    drawMessage("Buffering...", width, height);
+                    String message = String.format("Buffering %.1f%%...",
+                            renderer.getBufferingPercent());
+                    drawMessage(message, width, height);
                 } else if (status == MediaStatus.ERROR) {
-                    drawMessage("Error occurred!", width, height, 0xffff0000);
+                    drawMessage(width, height, 0xffff0000,
+                            "An error occurred playing ",
+                            "the media file. Bad URL?");
                 } else if (status == MediaStatus.PAUSED) {
                     drawMessage("Media paused.", width, height);
                 } else if (status == MediaStatus.STOPPED) {
@@ -131,6 +139,49 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
         GL11.glTranslatef(0, 0, -0.01f);
         GL11.glScalef(TEXT_SCALE, TEXT_SCALE, 1f);
         getFontRenderer().drawString(text, 0, 0, 0xffffffff, false);
+    }
+
+    /**
+     * Draw a message in the middle of the screen that's easy to read but may obscure
+     * any image behind the text.
+     * 
+     * @param width the width of the screen
+     * @param height the height of the screen
+     * @param bgColor the background color of the text
+     * @param lines the lines to draw
+     */
+    private void drawMessage(float width, float height, int bgColor, String ... lines) {
+        float[] textWidths = new float[lines.length];
+        float largestTextWidth = 0;
+        float textHeight = getFontRenderer().FONT_HEIGHT * TEXT_SCALE;
+        float lineSpacing = 2 * TEXT_SCALE;
+        float totalHeight = (lines.length
+                * (getFontRenderer().FONT_HEIGHT + lineSpacing) - lineSpacing)
+                * TEXT_SCALE;
+
+        for (int i = 0;  i < lines.length; i++) {
+            textWidths[i] = getFontRenderer().getStringWidth(lines[i]) * TEXT_SCALE;
+            if (textWidths[i] > largestTextWidth) {
+                largestTextWidth = textWidths[i];
+            }
+        }
+
+        float x = (float) ((width - largestTextWidth) / 2.0);
+        float y = (float) ((height - totalHeight) / 2.0);
+
+        GL11.glTranslatef(0.1f + x, 0.1f + y, -0.01f);
+        GL11.glTranslatef(0, 0, -0.01f);
+        for (int i = 0; i < lines.length; i++) {
+            DrawUtils.drawRect(0, 0, textWidths[i], textHeight, bgColor);
+            GL11.glPushMatrix();
+            {
+                GL11.glTranslatef(0, 0, -0.01f);
+                GL11.glScalef(TEXT_SCALE, TEXT_SCALE, 1f);
+                getFontRenderer().drawString(lines[i], 0, 0, 0xffffffff, false);
+            }
+            GL11.glPopMatrix();
+            GL11.glTranslatef(0, lineSpacing + textHeight, 0);
+        }
     }
 
 }

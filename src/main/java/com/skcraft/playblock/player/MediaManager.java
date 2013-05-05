@@ -157,7 +157,7 @@ public class MediaManager {
                 height, width * 4, instance);
         player.setPlaySubItems(true);
         player.setRepeat(true);
-        player.addMediaPlayerEventListener(new PlayerEventListener());
+        player.addMediaPlayerEventListener(new PlayerEventListener(instance));
         player.setVolume((int) (volume * 100));
         instance.setVLCJPlayer(player);
         return instance;

@@ -13,6 +13,17 @@ import cpw.mods.fml.common.FMLLog;
  * Logs semi-useful debugging messages to console.
  */
 public class PlayerEventListener extends MediaPlayerEventAdapter {
+    
+    private final MediaRenderer renderer;
+    
+    public PlayerEventListener(MediaRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    @Override
+    public void buffering(MediaPlayer mediaPlayer, float percent) {
+        renderer.setBufferingPercent(percent);
+    }
 
     @Override
     public void error(MediaPlayer mediaPlayer) {

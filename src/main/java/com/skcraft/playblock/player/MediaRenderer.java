@@ -22,6 +22,7 @@ public final class MediaRenderer implements RenderCallback {
     private final int textureIndex;
     private DirectMediaPlayer player;
     private ByteBuffer buffer = null;
+    private float bufferingPercent;
 
     /**
      * Create a new media renderer with the given width and height.
@@ -139,6 +140,25 @@ public final class MediaRenderer implements RenderCallback {
         }
 
         return MediaStatus.STOPPED;
+    }
+
+    /**
+     * Get the buffering status.
+     * 
+     * @return the buffering percentage
+     */
+    public float getBufferingPercent() {
+        return bufferingPercent;
+    }
+    
+    /**
+     * Used because there doesn't seem to be a way to get the buffering progress.
+     * 
+     * @see PlayerEventListener the caller
+     * @param bufferingPercent percent
+     */
+    void setBufferingPercent(float bufferingPercent) {
+        this.bufferingPercent = bufferingPercent;
     }
 
     /**
