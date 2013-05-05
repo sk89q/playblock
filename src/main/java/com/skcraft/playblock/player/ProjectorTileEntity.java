@@ -254,10 +254,6 @@ public class ProjectorTileEntity extends TileEntity {
         int videoWidth = (int) Math.min(MAX_VIDEO_SIZE, width * 64);
         int videoHeight = (int) Math.min(MAX_VIDEO_SIZE, height * 64);
         renderer = mediaManager.acquireRenderer(videoWidth, videoHeight);
-
-        if (renderer != null && MediaResolver.canPlayUri(uri)) {
-            renderer.playMedia(uri);
-        }
     }
     
     /**
@@ -268,10 +264,6 @@ public class ProjectorTileEntity extends TileEntity {
      */
     @SideOnly(Side.CLIENT)
     private void tryPlayingMedia() {
-        if (!hasPlayableUri()) {
-            return; // Nope :(
-        }
-            
         if (!hasRenderer()) {
             setupRenderer();
         } else if (rendererWidth != getWidth() || rendererHeight != getHeight()) {
@@ -279,13 +271,15 @@ public class ProjectorTileEntity extends TileEntity {
             release();
             setupRenderer();
         }
-        
-        // Store these values in case the renderer needs to change
-        rendererWidth = getWidth();
-        rendererHeight = getHeight();
-        if (lastUri == null || !lastUri.equals(uri)) { // Only change the media if we need to
-            lastUri = uri;
-            renderer.playMedia(uri);
+
+        if (hasPlayableUri()) {
+            // Store these values in case the renderer needs to change
+            rendererWidth = getWidth();
+            rendererHeight = getHeight();
+            if (lastUri == null || !lastUri.equals(uri)) { // Only change the media if we need to
+                lastUri = uri;
+                renderer.playMedia(uri);
+            }
         }
     }
 
