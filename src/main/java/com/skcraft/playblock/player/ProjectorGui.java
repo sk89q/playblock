@@ -44,23 +44,23 @@ public class ProjectorGui extends GuiScreen {
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
 
-        this.controlList.add(buttonSet = new GuiButton(0, left + 215,
-                top + 16, 25, 20, "Set"));
+        this.controlList.add(buttonSet = 
+                new GuiButton(0, left + 160, top + 125, 80, 20, "Update"));
 
-        uriField = new GuiTextField(this.fontRenderer, left + 10, top + 20,
-                200, this.fontRenderer.FONT_HEIGHT + 5);
+        uriField = new GuiTextField(this.fontRenderer, left + 60, top + 17,
+                170, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(uriField, 100, uri);
 
-        heightField = new GuiTextField(this.fontRenderer, left + 87, top + 60,
-                50, this.fontRenderer.FONT_HEIGHT + 2);
+        heightField = new GuiTextField(this.fontRenderer, left + 130, top + 37,
+                50, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(heightField, 10, Float.toString(projectorHeight));
 
-        widthField = new GuiTextField(this.fontRenderer, left + 87, top + 40,
-                50, this.fontRenderer.FONT_HEIGHT + 2);
+        widthField = new GuiTextField(this.fontRenderer, left + 60, top + 37,
+                50, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(widthField, 10, Float.toString(projectorWidth));
 
-        distanceField = new GuiTextField(this.fontRenderer, left + 100,
-                top + 80, 50, this.fontRenderer.FONT_HEIGHT + 2);
+        distanceField = new GuiTextField(this.fontRenderer, left + 60,
+                top + 57, 50, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(distanceField, 10, Float.toString(triggerDistance));
     }
 
@@ -90,6 +90,9 @@ public class ProjectorGui extends GuiScreen {
             tile.setWidth(projectorWidth);
             tile.setTriggerDistance(triggerDistance);
             PacketDispatcher.sendPacketToServer(tile.getUpdatePacket());
+
+            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.setIngameFocus();
         }
     }
 
@@ -98,7 +101,7 @@ public class ProjectorGui extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
-        int texture = mc.renderEngine.getTexture("/gui/demo_bg.png");
+        int texture = mc.renderEngine.getTexture("/playblock/gui/projector_bg.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(texture);
         int left = (width - xSize) / 2;
@@ -109,12 +112,12 @@ public class ProjectorGui extends GuiScreen {
         widthField.drawTextBox();
         distanceField.drawTextBox();
 
-        fontRenderer.drawString("Link:", left + 10, top + 8, 4210752);
-        fontRenderer.drawString("Screen Width:", left + 10, top + 40, 4210752);
-        fontRenderer
-                .drawString("Screen Height:", left + 10, top + 60, 4210752);
-        fontRenderer.drawString("Trigger Distance:", left + 10, top + 80,
-                4210752);
+        fontRenderer.drawString("URL:", left + 10, top + 20, 0xff999999);
+        fontRenderer.drawString("Size:", left + 10, top + 40, 0xff999999);
+        fontRenderer.drawString("x", left + 117, top + 40, 0xff999999);
+        fontRenderer.drawString("Activate:", left + 10, top + 60, 0xff999999);
+        fontRenderer.drawString("blocks away", left + 117, top + 60, 0xff999999);
+        fontRenderer.drawString("PlayBlock Projector", left + 10, top + 132, 0xffffffff);
 
         super.drawScreen(mouseX, mouseY, par3);
     }
