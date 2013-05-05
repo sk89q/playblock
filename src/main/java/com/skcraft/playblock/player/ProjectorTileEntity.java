@@ -301,11 +301,13 @@ public class ProjectorTileEntity extends TileEntity {
         }
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void onChunkUnload() {
         release();
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public void invalidate() {
         super.invalidate();
