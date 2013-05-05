@@ -283,7 +283,7 @@ public class ProjectorTileEntity extends TileEntity {
         // Store these values in case the renderer needs to change
         rendererWidth = getWidth();
         rendererHeight = getHeight();
-        if (lastUri != null && !lastUri.equals(uri)) { // Only change the media if we need to
+        if (lastUri == null || !lastUri.equals(uri)) { // Only change the media if we need to
             lastUri = uri;
             renderer.playMedia(uri);
         }
