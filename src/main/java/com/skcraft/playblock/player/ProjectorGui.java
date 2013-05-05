@@ -21,17 +21,20 @@ public class ProjectorGui extends GuiScreen {
     private static final int xSize = 247;
     private static final int ySize = 165;
     private ProjectorTileEntity tile;
-    private GuiTextField uriField, heightField, widthField, distanceField;
+    private GuiTextField uriField, heightField, widthField, triggerRangeField,
+            fadeRangeField;
     private GuiButton buttonSet;
-    float projectorWidth, projectorHeight, triggerDistance;
-    String uri;
+    
+    private float projectorWidth, projectorHeight, triggerRange, fadeRange;
+    private String uri;
 
     public ProjectorGui(ProjectorTileEntity tileEntity) {
         tile = tileEntity;
+        uri = tileEntity.getUri();
         projectorWidth = tileEntity.getWidth();
         projectorHeight = tileEntity.getHeight();
-        triggerDistance = tileEntity.getTriggerDistance();
-        uri = tileEntity.getUri();
+        triggerRange = tileEntity.getTriggerRange();
+        fadeRange = tileEntity.getFadeRange();
     }
 
     /**
@@ -59,11 +62,22 @@ public class ProjectorGui extends GuiScreen {
                 50, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(widthField, 10, Float.toString(projectorWidth));
 
-        distanceField = new GuiTextField(this.fontRenderer, left + 60,
+        triggerRangeField = new GuiTextField(this.fontRenderer, left + 60,
                 top + 57, 50, this.fontRenderer.FONT_HEIGHT + 5);
-        initTextField(distanceField, 10, Float.toString(triggerDistance));
+        initTextField(triggerRangeField, 10, Float.toString(triggerRange));
+
+        fadeRangeField = new GuiTextField(this.fontRenderer, left + 60,
+                top + 77, 50, this.fontRenderer.FONT_HEIGHT + 5);
+        initTextField(fadeRangeField, 10, Float.toString(fadeRange));
     }
 
+    /**
+     * Prepare a text field for entry.
+     * 
+     * @param field the field
+     * @param length the maximum length of the string
+     * @param text the initial text
+     */
     private void initTextField(GuiTextField field, int length, String text) {
         field.setVisible(true);
         field.setMaxStringLength(length);
@@ -73,10 +87,6 @@ public class ProjectorGui extends GuiScreen {
         field.setText(text);
     }
 
-    /**
-     * Called when the screen is unloaded. Used to disable keyboard repeat
-     * events
-     */
     @Override
     public void onGuiClosed() {
         Keyboard.enableRepeatEvents(false);
@@ -88,7 +98,10 @@ public class ProjectorGui extends GuiScreen {
             tile.setUri(uri);
             tile.setHeight(projectorHeight);
             tile.setWidth(projectorWidth);
-            tile.setTriggerDistance(triggerDistance);
+            tile.setTriggerRange(triggerRange);
+            tile.setFadeRange(fadeRange);
+            
+            // Now tell the server about the changes
             PacketDispatcher.sendPacketToServer(tile.getUpdatePacket());
 
             this.mc.displayGuiScreen((GuiScreen) null);
@@ -110,13 +123,16 @@ public class ProjectorGui extends GuiScreen {
         uriField.drawTextBox();
         heightField.drawTextBox();
         widthField.drawTextBox();
-        distanceField.drawTextBox();
+        triggerRangeField.drawTextBox();
+        fadeRangeField.drawTextBox();
 
         fontRenderer.drawString("URL:", left + 10, top + 20, 0xff999999);
         fontRenderer.drawString("Size:", left + 10, top + 40, 0xff999999);
         fontRenderer.drawString("x", left + 117, top + 40, 0xff999999);
-        fontRenderer.drawString("Activate:", left + 10, top + 60, 0xff999999);
-        fontRenderer.drawString("blocks away", left + 117, top + 60, 0xff999999);
+        fontRenderer.drawString("Turn on:", left + 10, top + 60, 0xff999999);
+        fontRenderer.drawString("block(s) away", left + 117, top + 60, 0xff999999);
+        fontRenderer.drawString("Turn off:", left + 10, top + 80, 0xff999999);
+        fontRenderer.drawString("block(s) away", left + 117, top + 80, 0xff999999);
         fontRenderer.drawString("PlayBlock Projector", left + 10, top + 132, 0xffffffff);
 
         super.drawScreen(mouseX, mouseY, par3);
@@ -128,7 +144,8 @@ public class ProjectorGui extends GuiScreen {
         uriField.mouseClicked(x, y, buttonClicked);
         heightField.mouseClicked(x, y, buttonClicked);
         widthField.mouseClicked(x, y, buttonClicked);
-        distanceField.mouseClicked(x, y, buttonClicked);
+        triggerRangeField.mouseClicked(x, y, buttonClicked);
+        fadeRangeField.mouseClicked(x, y, buttonClicked);
     }
 
     @Override
@@ -150,11 +167,17 @@ public class ProjectorGui extends GuiScreen {
                 if (widthField.getText().length() != 0) {
                     projectorWidth = Float.parseFloat(widthField.getText());
                 }
-            } else if (distanceField.isFocused()) {
-                distanceField.textboxKeyTyped(key, par2);
-                if (distanceField.getText().length() != 0) {
-                    triggerDistance = Float
-                            .parseFloat(distanceField.getText());
+            } else if (triggerRangeField.isFocused()) {
+                triggerRangeField.textboxKeyTyped(key, par2);
+                if (triggerRangeField.getText().length() != 0) {
+                    triggerRange = Float
+                            .parseFloat(triggerRangeField.getText());
+                }
+            } else if (fadeRangeField.isFocused()) {
+                fadeRangeField.textboxKeyTyped(key, par2);
+                if (fadeRangeField.getText().length() != 0) {
+                    fadeRange = Float
+                            .parseFloat(fadeRangeField.getText());
                 }
             }
         }

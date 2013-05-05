@@ -30,15 +30,16 @@ public class ProjectorTileEntity extends TileEntity {
     
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
-    private static final int MAX_TRIGGER_DISTANCE = 64 * 64;
+    private static final int MAX_RANGE = 64;
+    private static final int MIN_BUFFER_RANGE = 5;
     private static final int MAX_SCREEN_SIZE = 64;
-    private static final int OFF_DISTANCE = 10 * 10;
-    private static final int MAX_VIDEO_DIMENSION = 850;
+    private static final int MAX_VIDEO_SIZE = 850;
 
     private String uri = "";
     private float width = 1;
     private float height = 1;
-    private float triggerDistance = 0;
+    private float triggerRange = 0;
+    private float fadeRange = MIN_BUFFER_RANGE;
 
     private MediaManager mediaManager;
     private MediaRenderer renderer;
@@ -64,33 +65,6 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
-     * Set the width of the screen.
-     * 
-     * @param width the width
-     */
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
-    /**
-     * Get the width of the screen.
-     * 
-     * @return the height
-     */
-    public float getHeight() {
-        return height;
-    }
-
-    /**
-     * Set the height of the screen.
-     * 
-     * @param height the height
-     */
-    public void setHeight(float height) {
-        this.height = height;
-    }
-
-    /**
      * Get the URI of the stream.
      * 
      * @return the URI
@@ -109,7 +83,34 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
-     * Get the renderer asssignd to this tile entity.
+     * Set the width of the screen.
+     * 
+     * @param width the width
+     */
+    public void setWidth(float width) {
+        this.width = MathUtils.clamp(width, 1, MAX_SCREEN_SIZE);
+    }
+
+    /**
+     * Get the width of the screen.
+     * 
+     * @return the height
+     */
+    public float getHeight() {
+        return height;
+    }
+
+    /**
+     * Set the height of the screen.
+     * 
+     * @param height the height
+     */
+    public void setHeight(float height) {
+        this.height = MathUtils.clamp(height, 1, MAX_SCREEN_SIZE);
+    }
+
+    /**
+     * Get the renderer assigned to this tile entity.
      * 
      * @return the renderer, or possibly null
      */
@@ -118,29 +119,87 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
-     * Gets the squared trigger distance.
+     * Gets the range (in blocks) at which the player will activate and start playing.
      * 
-     * @return the squared trigger distance, which is actually the value squared
+     * @see #getTriggerRangeSq() get the squared version, which is faster
+     * @return the range in blocks
      */
-    public float getTriggerDistance() {
-        return triggerDistance;
+    public float getTriggerRange() {
+        return (float) Math.round(Math.sqrt(triggerRange) * 100 / 100);
     }
 
     /**
-     * Sets the squared trigger distance.
+     * Gets the range (in blocks) at which the player will activate and start playing.
      * 
-     * @param distance the trigger distance, which is actually the value squared
+     * @return the range in blocks, squared
      */
-    public void setTriggerDistance(float distance) {
-        this.triggerDistance = distance;
+    public float getTriggerRangeSq() {
+        return triggerRange;
+    }
+
+    /**
+     * Sets the range (in blocks) at which the player will activate and start playing.
+     * 
+     * @param range the range in blocks
+     */
+    public void setTriggerRange(float range) {
+        float v = MathUtils.clamp(range, 1, MAX_RANGE);
+        triggerRange = v * v; // Store values squared
+        ensureProperBuffer();
+    }
+
+    /**
+     * Gets the range (in blocks) at which the player will stop playing if it is
+     * currently playing.
+     * 
+     * @see #getFadeRangeSq() get the squared version, which is faster
+     * @return the range
+     */
+    public float getFadeRange() {
+        return (float) Math.round(Math.sqrt(fadeRange) * 100 / 100);
+    }
+
+    /**
+     * Gets the range (in blocks) at which the player will stop playing if it is
+     * currently playing.
+     * 
+     * @return the range in blocks, squared
+     */
+    public float getFadeRangeSq() {
+        return fadeRange;
+    }
+
+    /**
+     * Sets the range (in blocks) at which the player will stop playing if it is
+     * currently playing.
+     * 
+     * @param range range in blocks, squared
+     */
+    public void setFadeRange(float range) {
+        float v = MathUtils.clamp(range, 1, MAX_RANGE + MIN_BUFFER_RANGE);
+        fadeRange = v * v; // Store values squared
+        ensureProperBuffer();
+    }
+    
+    /**
+     * This changes the fade distance appropriately to ensure that there is at least
+     * a {@value #MIN_BUFFER_RANGE} block distance difference between the trigger
+     * distance and the fade distance.
+     */
+    private void ensureProperBuffer() {
+        float min = getTriggerRange() + MIN_BUFFER_RANGE;
+        if (getFadeRange() < min) {
+            // Do not call setFadeRange()!
+            fadeRange = min * min; // Store values squared
+        }
     }
 
     /**
      * Acquire a renderer and start playing the video if possible.
      */
     private void setupRenderer() {
-        int videoWidth = (int) Math.min(MAX_VIDEO_DIMENSION, width * 64);
-        int videoHeight = (int) Math.min(MAX_VIDEO_DIMENSION, height * 64);
+        int videoWidth = (int) Math.min(MAX_VIDEO_SIZE, width * 64);
+        int videoHeight = (int) Math.min(MAX_VIDEO_SIZE, height * 64);
         renderer = mediaManager.acquireRenderer(videoWidth, videoHeight);
 
         if (renderer != null && MediaResolver.isValidUri(uri)) {
@@ -178,17 +237,20 @@ public class ProjectorTileEntity extends TileEntity {
     public void updateEntity() {
         // Have to check to see whether this needs to activate
         if (this.worldObj.isRemote) {
+            // Currently playing
             if (renderer != null) {
                 double distance = Minecraft.getMinecraft().thePlayer
                         .getDistanceSq(xCoord, yCoord, zCoord);
-                if (distance >= triggerDistance + OFF_DISTANCE) {
+                if (distance >= getFadeRangeSq()) {
                     release();
                 }
+            
+            // Currently not playing
             } else if (mediaManager.isAvailable()
                     && mediaManager.hasNoRenderer()) {
                 double distance = Minecraft.getMinecraft().thePlayer
                         .getDistanceSq(xCoord, yCoord, zCoord);
-                if (distance <= triggerDistance) {
+                if (distance <= getTriggerRangeSq()) {
                     setupRenderer();
                 }
             }
@@ -208,10 +270,11 @@ public class ProjectorTileEntity extends TileEntity {
             data.writeInt(xCoord);
             data.writeInt(yCoord);
             data.writeInt(zCoord);
-            data.writeUTF(uri);
-            data.writeFloat(width);
-            data.writeFloat(height);
-            data.writeFloat(triggerDistance);
+            data.writeUTF(getUri());
+            data.writeFloat(getWidth());
+            data.writeFloat(getHeight());
+            data.writeFloat(getTriggerRange());
+            data.writeFloat(getFadeRange());
         } catch (IOException e) {
             PlayBlock.log(Level.WARNING, "Failed to send update packet to the server");
         }
@@ -221,17 +284,24 @@ public class ProjectorTileEntity extends TileEntity {
         return packet;
     }
 
+    /**
+     * Read the incoming data of an update packet destinated for this tile entity.
+     * 
+     * @param stream the data stream
+     */
     public void handleUpdatePacket(DataInputStream stream) {
         try {
-            uri = stream.readUTF();
-            width = stream.readFloat();
-            height = stream.readFloat();
-            triggerDistance = stream.readFloat();
+            // These values are validated
+            setUri(stream.readUTF());
+            setWidth(stream.readFloat());
+            setHeight(stream.readFloat());
+            setTriggerRange(stream.readFloat());
+            setFadeRange(stream.readFloat());
         } catch (Throwable t) {
             PlayBlock.log(Level.WARNING, "Failed to handle update packet sent from the client");
         }
 
-        // Now lets send the updates to players around the area
+        // Now let's send the updates to players around the area
         PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
                 worldObj.provider.dimensionId, getDescriptionPacket());
     }
@@ -264,10 +334,11 @@ public class ProjectorTileEntity extends TileEntity {
      * @param tag the tag
      */
     private void writeToClientNBT(NBTTagCompound tag) {
-        tag.setString("uri", uri);
-        tag.setFloat("width", width);
-        tag.setFloat("height", height);
-        tag.setFloat("distance", triggerDistance);
+        tag.setString("uri", getUri());
+        tag.setFloat("width", getWidth());
+        tag.setFloat("height", getHeight());
+        tag.setFloat("triggerRange", getTriggerRange());
+        tag.setFloat("fadeRange", getFadeRange());
     }
 
     @Override
@@ -282,11 +353,11 @@ public class ProjectorTileEntity extends TileEntity {
      * @param tag the tag
      */
     private void readFromCientNBT(NBTTagCompound tag) {
-        this.uri = tag.getString("uri");
-        this.width = MathUtils.clamp(tag.getFloat("width"), 1, MAX_SCREEN_SIZE);
-        this.height = MathUtils.clamp(tag.getFloat("height"), 1, MAX_SCREEN_SIZE);
-        this.triggerDistance = MathUtils.clamp(tag.getFloat("distance"), 1,
-                MAX_TRIGGER_DISTANCE);
+        setUri(tag.getString("uri"));
+        setWidth(tag.getFloat("width"));
+        setHeight(tag.getFloat("height"));
+        setTriggerRange(tag.getFloat("triggerRange"));
+        setFadeRange(tag.getFloat("fadeRange"));
 
         if (renderer != null && MediaResolver.isValidUri(uri)) {
             renderer.playMedia(uri);
