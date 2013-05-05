@@ -38,9 +38,15 @@ public final class EnvUtils {
 
     public static File getBundledLibsDir() {
         try {
-            CodeSource codeSource = PlayBlock.class.getProtectionDomain()
-                    .getCodeSource();
-            File jarFile = new File(codeSource.getLocation().toURI().getPath());
+            CodeSource codeSource = PlayBlock.class.getProtectionDomain().getCodeSource();
+            if (codeSource == null) {
+                return new File("playblock");
+            }
+            String path = codeSource.getLocation().toURI().getPath();
+            if (path == null) {
+                return new File("playblock");
+            }
+            File jarFile = new File(path);
             return new File(jarFile.getParentFile(), "playblock");
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
