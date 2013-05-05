@@ -15,7 +15,7 @@ public class MediaResolver {
 
     // VLC 2.0.x does not actually support RTMP
     private static final Pattern allowedUri = Pattern
-            .compile("^(https?|ftps?|rtp|mmsh?|rtsp(u|t)?|rtmpe?|tcp|udp)://.*$",
+            .compile("^(https?|ftps?|rtp|mmsh?|rtsp(u|t)?|rtmpe?|tcp|udp)://.+$",
                     Pattern.CASE_INSENSITIVE);
 
     /**

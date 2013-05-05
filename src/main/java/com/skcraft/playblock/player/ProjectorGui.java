@@ -7,6 +7,8 @@ import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.skcraft.playblock.PlayBlock;
+
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -18,12 +20,16 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ProjectorGui extends GuiScreen {
 
     public static final int ID = 0;
+    private static final int defaultTextColor = 14737632; // Hardcoded, from the text box;
     private static final int xSize = 247;
     private static final int ySize = 165;
+    
     private ProjectorTileEntity tile;
     private GuiTextField uriField, heightField, widthField, triggerRangeField,
             fadeRangeField;
-    private GuiButton buttonSet;
+    private GuiButton applyButton;
+    private GuiButton clearUriButton;
+    
     
     private float projectorWidth, projectorHeight, triggerRange, fadeRange;
     private String uri;
@@ -47,11 +53,14 @@ public class ProjectorGui extends GuiScreen {
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
 
-        this.controlList.add(buttonSet = 
+        this.controlList.add(applyButton = 
                 new GuiButton(0, left + 160, top + 125, 80, 20, "Update"));
 
+        this.controlList.add(clearUriButton = 
+                new GuiButton(1, left + 220, top + 14, 17, 20, "X"));
+
         uriField = new GuiTextField(this.fontRenderer, left + 60, top + 17,
-                170, this.fontRenderer.FONT_HEIGHT + 5);
+                157, this.fontRenderer.FONT_HEIGHT + 5);
         initTextField(uriField, 100, uri);
 
         heightField = new GuiTextField(this.fontRenderer, left + 130, top + 37,
@@ -94,7 +103,7 @@ public class ProjectorGui extends GuiScreen {
 
     @Override
     public void actionPerformed(GuiButton button) {
-        if (button.id == 0) {
+        if (button.id == applyButton.id) {
             // Make a new tile entity so we don't change ours quite yet
             // The server may reject our changes
             ProjectorTileEntity newTile = new ProjectorTileEntity(tile);
@@ -109,6 +118,9 @@ public class ProjectorGui extends GuiScreen {
 
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();
+        } else if (button.id == clearUriButton.id) {
+            uriField.setText("");
+            uriField.setFocused(true);
         }
     }
 
@@ -136,7 +148,7 @@ public class ProjectorGui extends GuiScreen {
         fontRenderer.drawString("block(s) away", left + 117, top + 60, 0xff999999);
         fontRenderer.drawString("Turn off:", left + 10, top + 80, 0xff999999);
         fontRenderer.drawString("block(s) away", left + 117, top + 80, 0xff999999);
-        fontRenderer.drawString("PlayBlock Projector", left + 10, top + 132, 0xffffffff);
+        fontRenderer.drawString("TEST VERSION - skcraft.com", left + 10, top + 132, 0xffffffff);
 
         super.drawScreen(mouseX, mouseY, par3);
     }
@@ -154,10 +166,18 @@ public class ProjectorGui extends GuiScreen {
     @Override
     protected void keyTyped(char key, int par2) {
         super.keyTyped(key, par2);
+        
         if (uriField.isFocused()) {
             uriField.textboxKeyTyped(key, par2);
             uri = uriField.getText();
+            
+            if (MediaResolver.canPlayUri(MediaResolver.cleanUri(uri))) {
+                uriField.setTextColor(defaultTextColor);
+            } else {
+                uriField.setTextColor(0xffff0000);
+            }
         }
+        
         if (Character.isDigit(key) || par2 == 14 || par2 == 52 || par2 == 199
                 || par2 == 203 || par2 == 205 || par2 == 207 || par2 == 211) {
             if (heightField.isFocused()) {
