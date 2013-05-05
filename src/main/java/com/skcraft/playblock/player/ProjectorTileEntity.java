@@ -17,6 +17,7 @@ import net.minecraft.util.AxisAlignedBB;
 
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.util.MathUtils;
+import com.skcraft.playblock.util.Validate;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -79,7 +80,8 @@ public class ProjectorTileEntity extends TileEntity {
      * @param uri the URI
      */
     public void setUri(String uri) {
-        this.uri = uri;
+        Validate.notNull(uri);
+        this.uri = MediaResolver.cleanUri(uri);
     }
 
     /**
