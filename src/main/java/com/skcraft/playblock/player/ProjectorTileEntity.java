@@ -31,6 +31,7 @@ public class ProjectorTileEntity extends TileEntity {
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
     private static final int MAX_TRIGGER_DISTANCE = 64 * 64;
+    private static final int MAX_SCREEN_SIZE = 64;
     private static final int OFF_DISTANCE = 10 * 10;
     private static final int MAX_VIDEO_DIMENSION = 850;
 
@@ -282,8 +283,8 @@ public class ProjectorTileEntity extends TileEntity {
      */
     private void readFromCientNBT(NBTTagCompound tag) {
         this.uri = tag.getString("uri");
-        this.width = MathUtils.clamp(tag.getFloat("width"), 1, 16);
-        this.height = MathUtils.clamp(tag.getFloat("height"), 1, 16);
+        this.width = MathUtils.clamp(tag.getFloat("width"), 1, MAX_SCREEN_SIZE);
+        this.height = MathUtils.clamp(tag.getFloat("height"), 1, MAX_SCREEN_SIZE);
         this.triggerDistance = MathUtils.clamp(tag.getFloat("distance"), 1,
                 MAX_TRIGGER_DISTANCE);
 
