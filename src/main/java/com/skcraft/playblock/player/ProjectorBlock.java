@@ -14,6 +14,9 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+/**
+ * The projector block.
+ */
 public class ProjectorBlock extends Block {
 
     public static final String INTERNAL_NAME = "playblock.ProjectorBlock";
@@ -34,19 +37,23 @@ public class ProjectorBlock extends Block {
     }
 
     @Override
-    @SideOnly(Side.CLIENT)
     public boolean onBlockActivated(World world, int x, int y, int z,
             EntityPlayer player, int side, float vx, float vy, float cz) {
-        Side side1 = FMLCommonHandler.instance().getEffectiveSide();
-
-        if (side1 == Side.CLIENT) {
-            TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
-            if (tileEntity == null || player.isSneaking()) {
-                return false;
-            }
-            PlayBlock.getRuntime().showProjectorGui(player,
-                    (ProjectorTileEntity) tileEntity);
+        TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
+        if (tileEntity == null || !(tileEntity instanceof ProjectorTileEntity)
+                || player.isSneaking()) {
+            return false;
         }
+        
+        ProjectorTileEntity projector = (ProjectorTileEntity) tileEntity;
+            
+        // Show the GUI if it's the client
+        if (world.isRemote) {
+            PlayBlock.getRuntime().showProjectorGui(player, projector);
+        } else {
+            projector.getAccessList().allow(player);
+        }
+        
         return true;
     }
 

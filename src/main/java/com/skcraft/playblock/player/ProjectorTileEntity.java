@@ -1,5 +1,6 @@
 package com.skcraft.playblock.player;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,6 +8,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -16,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
 import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.MathUtils;
 import com.skcraft.playblock.util.Validate;
 
@@ -44,8 +48,9 @@ public class ProjectorTileEntity extends TileEntity {
     
     private boolean hasPlayableUri = false;
 
+    private final AccessList accessList = new AccessList();
     private MediaManager mediaManager;
-    private MediaRenderer renderer;
+    @SideOnly(Side.CLIENT) private MediaRenderer renderer;
     private String lastUri;
     private float rendererWidth;
     private float rendererHeight;
@@ -59,6 +64,25 @@ public class ProjectorTileEntity extends TileEntity {
         if (side == Side.CLIENT) {
             mediaManager = PlayBlock.getClientRuntime().getMediaManager();
         }
+    }
+
+    /**
+     * Construct a new instance of the projector tile entity from an existing
+     * tile entity, copying the X, Y, and Z coordinates.
+     */
+    ProjectorTileEntity(ProjectorTileEntity old) {
+        xCoord = old.xCoord;
+        yCoord = old.yCoord;
+        zCoord = old.zCoord;
+    }
+
+    /**
+     * Get the access list.
+     * 
+     * @return the access list
+     */
+    public AccessList getAccessList() {
+        return accessList;
     }
 
     /**
@@ -131,6 +155,7 @@ public class ProjectorTileEntity extends TileEntity {
      * 
      * @return the renderer, or possibly null
      */
+    @SideOnly(Side.CLIENT)
     public MediaRenderer getRenderer() {
         return renderer;
     }
@@ -216,6 +241,7 @@ public class ProjectorTileEntity extends TileEntity {
      * 
      * @return true if there is a renderer
      */
+    @SideOnly(Side.CLIENT)
     private boolean hasRenderer() {
         return renderer != null;
     }
@@ -223,6 +249,7 @@ public class ProjectorTileEntity extends TileEntity {
     /**
      * Acquire a renderer and start playing the video if possible.
      */
+    @SideOnly(Side.CLIENT)
     private void setupRenderer() {
         int videoWidth = (int) Math.min(MAX_VIDEO_SIZE, width * 64);
         int videoHeight = (int) Math.min(MAX_VIDEO_SIZE, height * 64);
@@ -239,6 +266,7 @@ public class ProjectorTileEntity extends TileEntity {
      * <p>A renderer will be acquired, or a new one will be setup if the width
      * and height have changed.</p>
      */
+    @SideOnly(Side.CLIENT)
     private void tryPlayingMedia() {
         if (!hasPlayableUri()) {
             return; // Nope :(
@@ -264,6 +292,7 @@ public class ProjectorTileEntity extends TileEntity {
     /**
      * Detach the renderer from this instance and also stop the video.
      */
+    @SideOnly(Side.CLIENT)
     private void release() {
         if (renderer != null) {
             mediaManager.release(renderer);
@@ -289,6 +318,7 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public void updateEntity() {
         // Have to check to see whether this needs to activate
         if (this.worldObj.isRemote) {
@@ -345,25 +375,32 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
-     * Read the incoming data of an update packet destinated for this tile entity.
+     * Read the incoming data of an update packet destined for this tile entity.
      * 
+     * @param player the player 
      * @param stream the data stream
      */
-    public void handleUpdatePacket(DataInputStream stream) {
-        try {
-            // These values are validated
-            setUri(stream.readUTF());
-            setWidth(stream.readFloat());
-            setHeight(stream.readFloat());
-            setTriggerRange(stream.readFloat());
-            setFadeRange(stream.readFloat());
-        } catch (Throwable t) {
-            PlayBlock.log(Level.WARNING, "Failed to handle update packet sent from the client");
+    public void acceptClientUpdate(EntityPlayer player, DataInputStream stream) {
+        if (getAccessList().checkAndForget(player)) {
+            try {
+                // These values are validated
+                setUri(stream.readUTF());
+                setWidth(stream.readFloat());
+                setHeight(stream.readFloat());
+                setTriggerRange(stream.readFloat());
+                setFadeRange(stream.readFloat());
+            } catch (Throwable t) {
+                PlayBlock.log(Level.WARNING, "Failed to handle update packet sent from " +
+                		"the client");
+            }
+    
+            // Now let's send the updates to players around the area
+            PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
+                    worldObj.provider.dimensionId, getDescriptionPacket());
+        } else {
+            player.sendChatToPlayer("Sorry, you don't have permission " +
+            		"to modify that projector.");
         }
-
-        // Now let's send the updates to players around the area
-        PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
-                worldObj.provider.dimensionId, getDescriptionPacket());
     }
 
     @Override

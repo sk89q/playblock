@@ -95,14 +95,17 @@ public class ProjectorGui extends GuiScreen {
     @Override
     public void actionPerformed(GuiButton button) {
         if (button.id == 0) {
-            tile.setUri(uri);
-            tile.setHeight(projectorHeight);
-            tile.setWidth(projectorWidth);
-            tile.setTriggerRange(triggerRange);
-            tile.setFadeRange(fadeRange);
-            
+            // Make a new tile entity so we don't change ours quite yet
+            // The server may reject our changes
+            ProjectorTileEntity newTile = new ProjectorTileEntity(tile);
+            newTile.setUri(uri);
+            newTile.setHeight(projectorHeight);
+            newTile.setWidth(projectorWidth);
+            newTile.setTriggerRange(triggerRange);
+            newTile.setFadeRange(fadeRange);
+
             // Now tell the server about the changes
-            PacketDispatcher.sendPacketToServer(tile.getUpdatePacket());
+            PacketDispatcher.sendPacketToServer(newTile.getUpdatePacket());
 
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();

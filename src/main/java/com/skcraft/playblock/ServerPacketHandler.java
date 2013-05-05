@@ -41,11 +41,12 @@ public class ServerPacketHandler implements IPacketHandler {
         }
         
         if (player instanceof EntityPlayerMP) {
-            World world = ((EntityPlayerMP) player).worldObj;
+            EntityPlayerMP entityPlayer = ((EntityPlayerMP) player);
+            World world = entityPlayer.worldObj;
             TileEntity tile = world.getBlockTileEntity(x, y, z);
     
             if (tile instanceof ProjectorTileEntity) {
-                ((ProjectorTileEntity) tile).handleUpdatePacket(stream);
+                ((ProjectorTileEntity) tile).acceptClientUpdate(entityPlayer, stream);
             }
         } else {
             PlayBlock.log(Level.WARNING, "Expected EntityPlayerMP but got "
