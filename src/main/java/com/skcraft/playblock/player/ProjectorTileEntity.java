@@ -41,9 +41,14 @@ public class ProjectorTileEntity extends TileEntity {
     private float height = 1;
     private float triggerRange = 0;
     private float fadeRange = MIN_BUFFER_RANGE;
+    
+    private boolean hasPlayableUri = false;
 
     private MediaManager mediaManager;
     private MediaRenderer renderer;
+    private String lastUri;
+    private float rendererWidth;
+    private float rendererHeight;
 
     /**
      * Construct a new instance of the projector tile entity.
@@ -82,6 +87,16 @@ public class ProjectorTileEntity extends TileEntity {
     public void setUri(String uri) {
         Validate.notNull(uri);
         this.uri = MediaResolver.cleanUri(uri);
+        hasPlayableUri = MediaResolver.canPlayUri(uri);
+    }
+
+    /**
+     * Return whether the URI is playable.
+     * 
+     * @return true if playable
+     */
+    public boolean hasPlayableUri() {
+        return hasPlayableUri;
     }
 
     /**
@@ -195,6 +210,15 @@ public class ProjectorTileEntity extends TileEntity {
             fadeRange = min * min; // Store values squared
         }
     }
+    
+    /**
+     * Return whether a renderer has been assigned to this projector.
+     * 
+     * @return true if there is a renderer
+     */
+    private boolean hasRenderer() {
+        return renderer != null;
+    }
 
     /**
      * Acquire a renderer and start playing the video if possible.
@@ -204,7 +228,35 @@ public class ProjectorTileEntity extends TileEntity {
         int videoHeight = (int) Math.min(MAX_VIDEO_SIZE, height * 64);
         renderer = mediaManager.acquireRenderer(videoWidth, videoHeight);
 
-        if (renderer != null && MediaResolver.isValidUri(uri)) {
+        if (renderer != null && MediaResolver.canPlayUri(uri)) {
+            renderer.playMedia(uri);
+        }
+    }
+    
+    /**
+     * Tries to play the media on this projector.
+     * 
+     * <p>A renderer will be acquired, or a new one will be setup if the width
+     * and height have changed.</p>
+     */
+    private void tryPlayingMedia() {
+        if (!hasPlayableUri()) {
+            return; // Nope :(
+        }
+            
+        if (!hasRenderer()) {
+            setupRenderer();
+        } else if (rendererWidth != getWidth() || rendererHeight != getHeight()) {
+            // Width or height change? Re-make the renderer
+            release();
+            setupRenderer();
+        }
+        
+        // Store these values in case the renderer needs to change
+        rendererWidth = getWidth();
+        rendererHeight = getHeight();
+        if (lastUri != null && !lastUri.equals(uri)) { // Only change the media if we need to
+            lastUri = uri;
             renderer.playMedia(uri);
         }
     }
@@ -216,6 +268,7 @@ public class ProjectorTileEntity extends TileEntity {
         if (renderer != null) {
             mediaManager.release(renderer);
             renderer = null;
+            lastUri = null;
         }
     }
 
@@ -240,20 +293,25 @@ public class ProjectorTileEntity extends TileEntity {
         // Have to check to see whether this needs to activate
         if (this.worldObj.isRemote) {
             // Currently playing
-            if (renderer != null) {
+            if (hasRenderer()) {
                 double distance = Minecraft.getMinecraft().thePlayer
                         .getDistanceSq(xCoord, yCoord, zCoord);
+                
+                // Passed the fade distance?
                 if (distance >= getFadeRangeSq()) {
                     release();
                 }
             
             // Currently not playing
-            } else if (mediaManager.isAvailable()
-                    && mediaManager.hasNoRenderer()) {
-                double distance = Minecraft.getMinecraft().thePlayer
-                        .getDistanceSq(xCoord, yCoord, zCoord);
-                if (distance <= getTriggerRangeSq()) {
-                    setupRenderer();
+            } else {
+                if (mediaManager.isAvailable() && mediaManager.hasNoRenderer()) {
+                    double distance = Minecraft.getMinecraft().thePlayer
+                            .getDistanceSq(xCoord, yCoord, zCoord);
+                    
+                    // Start the media
+                    if (distance <= getTriggerRangeSq()) {
+                        tryPlayingMedia();
+                    }
                 }
             }
         }
@@ -361,8 +419,8 @@ public class ProjectorTileEntity extends TileEntity {
         setTriggerRange(tag.getFloat("triggerRange"));
         setFadeRange(tag.getFloat("fadeRange"));
 
-        if (renderer != null && MediaResolver.isValidUri(uri)) {
-            renderer.playMedia(uri);
+        if (hasRenderer()) {
+            tryPlayingMedia();
         }
     }
 
