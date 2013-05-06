@@ -19,6 +19,8 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 /**
  * Client-side initialization.
@@ -47,6 +49,8 @@ public class ClientRuntime extends SharedRuntime {
 
         ClientRegistry.bindTileEntitySpecialRenderer(
                 ProjectorTileEntity.class, new ProjectorRenderer(manager));
+        
+        TickRegistry.registerTickHandler(new ClientTickHandler(), Side.CLIENT);
     }
 
     @Override
