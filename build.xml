@@ -17,11 +17,9 @@
     <property name="mcp.reobf.dir" value="${mcp.dir}/reobf"/>
 
     <condition property="missing-dependencies">
-        <or>
-		    <not>
-		    	<available file="${mcp.source.dir}"/>
-		    </not>
-        </or>
+		<not>
+		    <available file="${mcp.source.dir}"/>
+		</not>
 	</condition>
     
     <!-- Clean build directory -->
@@ -45,7 +43,6 @@
 		<exec dir="forge" executable="sh" osfamily="unix">
 			<arg value="install.sh"/>
 		</exec>
-        <move file="${download.dir}/${mcpc.name}" tofile="${mcp.dir}/lib/${mcpc.name}"/>
         <delete dir="${download.dir}"/>
     </target>
     
@@ -90,8 +87,6 @@
     <target name="package" depends="compile">
         <jar destfile="${build.dir}/PlayBlock-${project.version}.jar" basedir="${classes.dir}">
             <fileset dir="${resources.dir}"/>
-            <manifest>
-            </manifest>
         </jar>
     </target>
     
