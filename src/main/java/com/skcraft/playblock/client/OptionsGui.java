@@ -79,6 +79,8 @@ public class OptionsGui extends GuiScreen {
         if (button.id == closeButton.id) {
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();
+            PlayBlock.getClientRuntime().getClientOptions().setFloat("volume",
+                    volumeSlider.getValue() * 2);
         } else if (button.id == openUrlButton.id) {
             try {
                 Desktop.getDesktop().browse(new URI("http://skcraft.com"));
@@ -86,7 +88,8 @@ public class OptionsGui extends GuiScreen {
                 this.mc.thePlayer.sendChatMessage(
                         "For more information about PlayBlock, see http://skcraft.com");
             }
-
+            PlayBlock.getClientRuntime().getClientOptions().setFloat("volume",
+                    volumeSlider.getValue() * 2);
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();
         }

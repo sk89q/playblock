@@ -43,6 +43,15 @@ public abstract class GuiSlider extends GuiButton {
      * @param value the value
      */
     public abstract void onValue(float value);
+    
+    /**
+     * Gets the current value.
+     * 
+     * @return the value
+     */
+    public float getValue() {
+        return value;
+    }
 
     @Override
     protected int getHoverState(boolean par1) {

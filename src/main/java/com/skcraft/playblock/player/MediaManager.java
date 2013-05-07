@@ -78,6 +78,8 @@ public class MediaManager {
         } catch (Throwable t) {
             PlayBlock.log(Level.WARNING, "Failed to find VLC!", t);
         }
+        volume = PlayBlock.getClientRuntime().getClientOptions()
+                .getFloat("volume", 1);
     }
 
     /**

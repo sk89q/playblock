@@ -26,9 +26,10 @@ import cpw.mods.fml.relauncher.Side;
  * Client-side initialization.
  */
 public class ClientRuntime extends SharedRuntime {
-
-    private final MediaManager manager = new MediaManager();
-
+    
+    private ClientOptions options;
+    private MediaManager manager;
+    
     /**
      * Get the media manager.
      * 
@@ -37,10 +38,21 @@ public class ClientRuntime extends SharedRuntime {
     public MediaManager getMediaManager() {
         return manager;
     }
-
+    
+    /**
+     * Gets the client options.
+     * 
+     * @return the client options.
+     */
+    public ClientOptions getClientOptions() {
+        return options;
+    }
+    
     @Override
     public void load(FMLInitializationEvent event) {
         super.load(event);
+        options = new ClientOptions();
+        manager = new MediaManager();
 
         // Bind the key
         KeyBinding[] key = { new KeyBinding(LKey.PLAYBLOCK_OPTIONS.toString(), Keyboard.KEY_F4) };
