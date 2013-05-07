@@ -105,8 +105,6 @@ public class OptionsGui extends GuiScreen {
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);
-
-        fontRenderer.drawString("Volume:", left + 10, top + 50, 0xff999999);
         
         int textWidth = fontRenderer.getStringWidth(LKey.PLAYBLOCK_OPTIONS.toString());
         fontRenderer.drawString(LKey.PLAYBLOCK_OPTIONS.toString(), 
