@@ -36,11 +36,7 @@ public class SharedRuntime {
      * @param event the event
      */
     public void load(FMLInitializationEvent event) {
-        projectorBlock = new ProjectorBlock(3400, 0, Material.iron)
-                .setHardness(0.5F).setStepSound(Block.soundGlassFootstep)
-                .setLightValue(1.0F)
-                .setBlockName(ProjectorBlock.INTERNAL_NAME)
-                .setCreativeTab(CreativeTabs.tabMisc);
+        projectorBlock = new ProjectorBlock(3400, Material.iron);
 
         GameRegistry.registerBlock(projectorBlock, ProjectorBlock.INTERNAL_NAME);
         GameRegistry.registerTileEntity(ProjectorTileEntity.class,

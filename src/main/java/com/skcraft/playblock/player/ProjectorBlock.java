@@ -2,9 +2,13 @@ package com.skcraft.playblock.player;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -20,20 +24,26 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ProjectorBlock extends Block {
 
     public static final String INTERNAL_NAME = "playblock.ProjectorBlock";
+    Icon icon;
 
-    public ProjectorBlock(int id, int texture, Material material) {
-        super(id, texture, material);
+    public ProjectorBlock(int id, Material material) {
+        super(id, material);
+        setHardness(0.5F);
+        setStepSound(Block.soundGlassFootstep);
+        setLightValue(1.0F);
+        setUnlocalizedName(ProjectorBlock.INTERNAL_NAME);
+        setCreativeTab(CreativeTabs.tabMisc);
     }
 
     @Override
-    public void onBlockPlacedBy(World par1World, int par2, int par3, int par4,
-            EntityLiving par5EntityLiving) {
-        super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving);
+    public void onBlockPlacedBy(World world, int x, int y, int z,
+            EntityLiving entityLiving, ItemStack itemStack) {
+        super.onBlockPlacedBy(world, x, y, z, entityLiving, itemStack);
 
         int p = MathHelper
                 .floor_double(Math
-                        .abs(((180 + par5EntityLiving.rotationYaw) % 360) / 360) * 4 + 0.5);
-        par1World.setBlockMetadataWithNotify(par2, par3, par4, p % 4);
+                        .abs(((180 + entityLiving.rotationYaw) % 360) / 360) * 4 + 0.5);
+        world.setBlockMetadataWithNotify(x, y, z, p % 4, 2);
     }
 
     @Override
@@ -44,16 +54,16 @@ public class ProjectorBlock extends Block {
                 || player.isSneaking()) {
             return false;
         }
-        
+
         ProjectorTileEntity projector = (ProjectorTileEntity) tileEntity;
-            
+
         // Show the GUI if it's the client
         if (world.isRemote) {
             PlayBlock.getRuntime().showProjectorGui(player, projector);
         } else {
             projector.getAccessList().allow(player);
         }
-        
+
         return true;
     }
 
@@ -70,6 +80,12 @@ public class ProjectorBlock extends Block {
     @Override
     public TileEntity createTileEntity(World world, int metadata) {
         return new ProjectorTileEntity();
+    }
+
+    @Override
+    public void registerIcons(IconRegister par1IconRegister) {
+        //TODO Add an actual texture...
+        icon = par1IconRegister.registerIcon("texture_name_here");
     }
 
 }

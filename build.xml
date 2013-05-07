@@ -1,7 +1,7 @@
 <project name="PlayBlock" default="main">
     <property name="project.version" value="1.1.0"/>
-    <property name="forge.version" value="6.6.2.534"/>
-    <property name="mc.version" value="1.4.7"/>
+    <property name="forge.version" value="7.8.0.686"/>
+    <property name="mc.version" value="1.5.2"/>
     
     <property name="download.dir" value="download"/>
     <property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip"/>

@@ -48,7 +48,7 @@ public class OptionsGui extends GuiScreen {
      */
     @Override
     public void initGui() {
-        this.controlList.clear();
+        this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         
         int controlIndex = 0;
@@ -57,15 +57,15 @@ public class OptionsGui extends GuiScreen {
         
         int twoButtonWidth = (xSize - 24) / 2;
 
-        this.controlList.add(closeButton = new GuiButton(controlIndex++,
+        this.buttonList.add(closeButton = new GuiButton(controlIndex++,
                 left + 10 + twoButtonWidth + 7, top + 170, twoButtonWidth, 20,
                 LKey.DONE.toString()));
 
-        this.controlList.add(openUrlButton = new GuiButton(controlIndex++,
+        this.buttonList.add(openUrlButton = new GuiButton(controlIndex++,
                 left + 10, top + 170, twoButtonWidth, 20,
                 LKey.WEBSITE.toString()));
 
-        this.controlList.add(volumeSlider = new VolumeSlider(controlIndex++,
+        this.buttonList.add(volumeSlider = new VolumeSlider(controlIndex++,
                 left + 10, top + 50, xSize - 20, 10, mediaManager));
     }
 
@@ -100,9 +100,8 @@ public class OptionsGui extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
-        int texture = mc.renderEngine.getTexture("/playblock/gui/options_bg.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(texture);
+        mc.renderEngine.bindTexture("/playblock/gui/options_bg.png");
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);
