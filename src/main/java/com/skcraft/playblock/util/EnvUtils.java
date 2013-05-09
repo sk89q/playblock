@@ -36,23 +36,14 @@ public final class EnvUtils {
         return b.toString();
     }
 
-    public static File getBundledLibsDir() {
-        try {
-            CodeSource codeSource = PlayBlock.class.getProtectionDomain().getCodeSource();
-            if (codeSource == null) {
-                return new File("playblock");
-            }
-            String path = codeSource.getLocation().toURI().getPath();
-            if (path == null) {
-                return new File("playblock");
-            }
-            File jarFile = new File(path);
-            return new File(jarFile.getParentFile(), "playblock");
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
+    /**
+     * Gets whether the JVM is 64-bit.
+     * 
+     * <p>It's worthy to note that because it's 64-bit doesn't mean that it's
+     * x86-64 / AMD64 / Intel64. Likewise for 32-bit.</p>
+     * 
+     * @return true if it's 64-bit
+     */
     public static boolean isJvm64bit() {
         return System.getProperty("sun.arch.data.model").equals("64");
     }

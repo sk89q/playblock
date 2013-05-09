@@ -1,6 +1,5 @@
 package com.skcraft.playblock.player;
 
-import static com.skcraft.playblock.util.EnvUtils.getBundledLibsDir;
 import static com.skcraft.playblock.util.EnvUtils.getProgramFiles;
 import static com.skcraft.playblock.util.EnvUtils.getProgramFiles32;
 import static com.skcraft.playblock.util.EnvUtils.isJvm64bit;
@@ -17,6 +16,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 
 import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.util.PlayBlockPaths;
 import com.sun.jna.NativeLibrary;
 
 import cpw.mods.fml.common.FMLLog;
@@ -31,40 +31,8 @@ public class MediaManager {
     private float volume = 1;
 
     static {
-        // We have to find the VLC libraries
-        List<File> searchPaths = new ArrayList<File>();
 
-        if (isWindows()) {
-            // Intel/AMD x86/x86_64
-
-            if (isJvm64bit()) {
-                searchPaths.add(join(getBundledLibsDir(), "libvlc", "win-x86_64"));
-                searchPaths.add(join(getProgramFiles(), "VideoLAN", "VLC"));
-            } else {
-                searchPaths
-                        .add(join(getBundledLibsDir(), "libvlc", "win-x86"));
-
-                // Must be a newer Windows system with 32-bit/64-bit dichotomy
-                if (getProgramFiles32() != null
-                        && getProgramFiles32().exists()) {
-                    searchPaths.add(join(getProgramFiles32(), "VideoLAN", "VLC"));
-                } else {
-                    searchPaths
-                            .add(join(getProgramFiles(), "VideoLAN", "VLC"));
-                }
-            }
-        } else if (isMac()) {
-            // Intel/AMD x86/x86_64
-
-            if (isJvm64bit()) {
-                searchPaths.add(join(getBundledLibsDir(), "libvlc", "mac-x86_64"));
-            } else {
-                searchPaths
-                        .add(join(getBundledLibsDir(), "libvlc", "mac-x86"));
-            }
-        }
-
-        for (File file : searchPaths) {
+        for (File file : PlayBlockPaths.getSearchPaths()) {
             NativeLibrary.addSearchPath("libvlc", file.getAbsolutePath());
         }
     }
