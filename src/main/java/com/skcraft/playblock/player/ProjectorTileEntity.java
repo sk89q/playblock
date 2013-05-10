@@ -48,7 +48,7 @@ public class ProjectorTileEntity extends TileEntity {
 
     private final AccessList accessList = new AccessList();
     private MediaManager mediaManager;
-    @SideOnly(Side.CLIENT) private MediaRenderer renderer;
+    private MediaRenderer renderer;
     private boolean withinRange = false;
     private long playStartTime = 0;
     private String lastUri;
@@ -241,7 +241,6 @@ public class ProjectorTileEntity extends TileEntity {
      * 
      * @return true if there is a renderer
      */
-    @SideOnly(Side.CLIENT)
     private boolean hasRenderer() {
         return renderer != null;
     }

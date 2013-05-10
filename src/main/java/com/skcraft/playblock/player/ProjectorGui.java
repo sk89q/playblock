@@ -184,25 +184,31 @@ public class ProjectorGui extends GuiScreen {
             if (heightField.isFocused()) {
                 heightField.textboxKeyTyped(key, par2);
                 if (heightField.getText().length() != 0) {
-                    projectorHeight = Float.parseFloat(heightField.getText());
+                    try {
+                        projectorHeight = Float.parseFloat(heightField.getText());
+                    } catch (NumberFormatException e) {}
                 }
             } else if (widthField.isFocused()) {
                 widthField.textboxKeyTyped(key, par2);
                 if (widthField.getText().length() != 0) {
-                    projectorWidth = Float.parseFloat(widthField.getText());
-                }
+                    try {
+                        projectorWidth = Float.parseFloat(widthField.getText());
+                    } catch (NumberFormatException e) {}
+                    }
             } else if (triggerRangeField.isFocused()) {
                 triggerRangeField.textboxKeyTyped(key, par2);
                 if (triggerRangeField.getText().length() != 0) {
-                    triggerRange = Float
-                            .parseFloat(triggerRangeField.getText());
-                }
+                    try {
+                        triggerRange = Float.parseFloat(triggerRangeField.getText());
+                    } catch (NumberFormatException e) {}
+                    }
             } else if (fadeRangeField.isFocused()) {
                 fadeRangeField.textboxKeyTyped(key, par2);
                 if (fadeRangeField.getText().length() != 0) {
-                    fadeRange = Float
-                            .parseFloat(fadeRangeField.getText());
-                }
+                    try {
+                        fadeRange = Float.parseFloat(fadeRangeField.getText());
+                    } catch (NumberFormatException e) {}
+                    }
             }
         }
     }
