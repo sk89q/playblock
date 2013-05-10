@@ -8,7 +8,7 @@ import com.skcraft.playblock.util.PlayBlockPaths;
 public class Uninstall extends DirectoryDelete {
 
     public Uninstall() {
-        super(PlayBlockPaths.getLibrariesDir());
+        super(PlayBlockPaths.getPlayBlockLibsDir());
     }
 
 }

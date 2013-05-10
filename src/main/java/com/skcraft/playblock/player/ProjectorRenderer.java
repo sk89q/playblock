@@ -1,6 +1,5 @@
 package com.skcraft.playblock.player;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 
@@ -8,6 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.skcraft.playblock.util.DrawUtils;
 import com.skcraft.playblock.util.EnvUtils;
+import com.skcraft.playblock.util.EnvUtils.Arch;
 
 /**
  * Renders the screen for the projector blocks.
@@ -77,7 +77,7 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
             DrawUtils.drawRect(0, 0, width, height, 0xff000000);
             drawMessage(width, height, 0xffff0000,
                     "Can't find "
-                            + (EnvUtils.isJvm64bit() ? "64-bit" : "32-bit")
+                            + (EnvUtils.getJvmArch() == Arch.X86_64 ? "64-bit" : "32-bit")
                             + " VLC", "Read http://skcraft.com/vlc");
         } else {
             MediaRenderer renderer = projector.getRenderer();

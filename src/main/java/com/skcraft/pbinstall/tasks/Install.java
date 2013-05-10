@@ -1,23 +1,14 @@
 package com.skcraft.pbinstall.tasks;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import javax.swing.SwingWorker;
 
 import com.sk89q.task.Task;
 import com.sk89q.task.TaskException;
 import com.skcraft.playblock.util.EnvUtils;
+import com.skcraft.playblock.util.EnvUtils.Arch;
 import com.skcraft.playblock.util.PlayBlockPaths;
 
 /**
@@ -30,33 +21,40 @@ public class Install extends Task {
     private static final String URL_MAC64 = "http://update.sk89q.com/playblock/supportlibs-macosx64.zip";
     private static final String URL_MAC32 = "http://update.sk89q.com/playblock/supportlibs-macosx32.zip";
     
-    private final boolean for64Bit;
+    private final Arch arch;
     
-    public Install(boolean for64Bit) {
-        this.for64Bit = for64Bit;
+    public Install(Arch arch) {
+        this.arch = arch;
     }
 
     @Override
     protected void execute() throws Exception {
         String url;
         
-        if (EnvUtils.isWindows()) {
-            if (for64Bit) {
+        switch (EnvUtils.getPlatform()) {
+        case WINDOWS:
+            if (arch == Arch.X86_64) {
                 url = URL_WIN64;
             } else {
                 url = URL_WIN32;
             }
-        } else if (EnvUtils.isMac()) {
-            if (for64Bit) {
+            break;
+            
+        case MAC_OS_X:
+            if (arch == Arch.X86_64) {
                 url = URL_MAC64;
             } else {
                 url = URL_MAC32;
             }
-        } else if (EnvUtils.isUnix()) {
-            throw new TaskException("<html>Sorry, please install the appropriate " +
-            		"version (32-bit or 64-bit) of VLC for your system using " +
-            		"your package manager (apt-get, yum, etc.)");
-        } else {
+            break;
+            
+        case LINUX:
+            throw new TaskException(
+                    "<html>Sorry, please install the appropriate "
+                            + "version (32-bit or 64-bit) of VLC for your system using "
+                            + "your package manager (apt-get, yum, etc.)");
+            
+        default:
             throw new TaskException("Sorry, your platform is not supported.");
         }
         
@@ -79,7 +77,7 @@ public class Install extends Task {
     }
 
     private File getTargetDir() {
-        return PlayBlockPaths.getNativeLibrariesDir(for64Bit);
+        return PlayBlockPaths.getPlayBlockArchLibsDir(arch);
     }
 
 }

@@ -1,11 +1,6 @@
 package com.skcraft.playblock.player;
 
-import static com.skcraft.playblock.util.EnvUtils.getProgramFiles;
-import static com.skcraft.playblock.util.EnvUtils.getProgramFiles32;
-import static com.skcraft.playblock.util.EnvUtils.isJvm64bit;
-import static com.skcraft.playblock.util.EnvUtils.isMac;
-import static com.skcraft.playblock.util.EnvUtils.isWindows;
-import static com.skcraft.playblock.util.EnvUtils.join;
+import static com.skcraft.playblock.util.EnvUtils.getPlatform;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -16,10 +11,9 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 
 import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.util.EnvUtils.Platform;
 import com.skcraft.playblock.util.PlayBlockPaths;
 import com.sun.jna.NativeLibrary;
-
-import cpw.mods.fml.common.FMLLog;
 
 /**
  * Manages media player instances.
@@ -71,7 +65,7 @@ public class MediaManager {
         options.add("--no-video-title-show");
 
         // Mac OS X support
-        if (isMac()) {
+        if (getPlatform() == Platform.MAC_OS_X) {
             options.add("--vout=macosx");
         }
 

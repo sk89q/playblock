@@ -11,16 +11,40 @@ import com.skcraft.playblock.PlayBlock;
  */
 public final class EnvUtils {
 
-    private static final String systemName = System.getProperty("os.name")
-            .toLowerCase();
+    /**
+     * List of operating systems.
+     */
+    public enum Platform {
+        WINDOWS, MAC_OS_X, LINUX, SOLARIS, UNKNOWN;
+    }
+    
+    /**
+     * List of CPU architectures.
+     */
+    public enum Arch {
+        X86, X86_64, UNKNOWN;
+    }
 
     private EnvUtils() {
     }
 
+    /**
+     * Join several path parts into one {@link File}.
+     * 
+     * @param base the base file
+     * @param parts the path segments
+     * @return the final path
+     */
     public static File join(File base, String... parts) {
         return new File(base, join(parts));
     }
 
+    /**
+     * Join several path parts into one {@link File}.
+     * 
+     * @param parts the path segments
+     * @return the final path
+     */
     public static String join(String... parts) {
         StringBuilder b = new StringBuilder();
         boolean first = true;
@@ -37,17 +61,10 @@ public final class EnvUtils {
     }
 
     /**
-     * Gets whether the JVM is 64-bit.
+     * Get the path to Windows' Program Files directory.
      * 
-     * <p>It's worthy to note that because it's 64-bit doesn't mean that it's
-     * x86-64 / AMD64 / Intel64. Likewise for 32-bit.</p>
-     * 
-     * @return true if it's 64-bit
+     * @return the path or null
      */
-    public static boolean isJvm64bit() {
-        return System.getProperty("sun.arch.data.model").equals("64");
-    }
-
     public static File getProgramFiles() {
         String path = System.getenv("ProgramFiles");
         if (path == null) {
@@ -56,6 +73,12 @@ public final class EnvUtils {
         return new File(path);
     }
 
+    /**
+     * Get the path to Windows' Program Files directory for 32-bit programs on a 64-bit
+     * system.
+     * 
+     * @return the path or null
+     */
     public static File getProgramFiles32() {
         String path = System.getenv("ProgramFiles(x86)");
         if (path == null) {
@@ -64,21 +87,37 @@ public final class EnvUtils {
         return new File(path);
     }
 
-    public static boolean isWindows() {
-        return (systemName.indexOf("win") >= 0);
+    /**
+     * Get the platform.
+     * 
+     * @return the platform
+     */
+    public static Platform getPlatform() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win"))
+            return Platform.WINDOWS;
+        if (osName.contains("mac"))
+            return Platform.MAC_OS_X;
+        if (osName.contains("solaris") || osName.contains("sunos"))
+            return Platform.SOLARIS;
+        if (osName.contains("linux"))
+            return Platform.LINUX;
+        if (osName.contains("unix"))
+            return Platform.LINUX;
+        
+        return Platform.UNKNOWN;
     }
 
-    public static boolean isMac() {
-        return (systemName.indexOf("mac") >= 0);
-    }
-
-    public static boolean isUnix() {
-        return (systemName.indexOf("nix") >= 0
-                || systemName.indexOf("nux") >= 0 || systemName.indexOf("aix") > 0);
-    }
-
-    public static boolean isSolaris() {
-        return (systemName.indexOf("sunos") >= 0);
+    /**
+     * Gets the architecture of the JVM.
+     * 
+     * <p>Right now, this method assumes everything is x86 or x86-64.</p>
+     * 
+     * @return the architecture
+     */
+    public static Arch getJvmArch() {
+        return System.getProperty("sun.arch.data.model").equals("64") ?
+                Arch.X86_64 : Arch.X86;
     }
 
 }

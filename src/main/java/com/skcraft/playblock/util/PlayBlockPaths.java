@@ -2,20 +2,14 @@ package com.skcraft.playblock.util;
 
 import static com.skcraft.playblock.util.EnvUtils.getProgramFiles;
 import static com.skcraft.playblock.util.EnvUtils.getProgramFiles32;
-import static com.skcraft.playblock.util.EnvUtils.isJvm64bit;
-import static com.skcraft.playblock.util.EnvUtils.isMac;
-import static com.skcraft.playblock.util.EnvUtils.isWindows;
 import static com.skcraft.playblock.util.EnvUtils.join;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import net.minecraft.client.EnumOSHelper;
-import net.minecraft.client.Minecraft;
+import com.skcraft.playblock.util.EnvUtils.Arch;
 
 /**
  * Helps manage the various paths required for PlayBlock.
@@ -26,6 +20,45 @@ public final class PlayBlockPaths {
 
     private PlayBlockPaths() {
     }
+
+    /**
+     * Get the path to where Minecraft is stored.
+     * 
+     * <p>This should not be the "true" path where Minecraft is stored for the current
+     * (if applicable) instance, but rather the global one that is used for
+     * a vanilla installation.</p>
+     * 
+     * @return the path to Minecraft
+     */
+    public static File getMinecraftDir() {
+        String homeDir = System.getProperty("user.home", ".");
+        String appDir = "minecraft";
+        File workingDir;
+
+        switch (EnvUtils.getPlatform()) {
+        case LINUX:
+        case SOLARIS:
+            workingDir = new File(homeDir, "." + appDir + "/");
+            break;
+            
+        case WINDOWS:
+            String applicationData = System.getenv("APPDATA");
+            if (applicationData != null)
+                workingDir = new File(applicationData, "." + appDir + "/");
+            else
+                workingDir = new File(homeDir, "." + appDir + "/");
+            break;
+            
+        case MAC_OS_X:
+            workingDir = new File(homeDir, "Library/Application Support/" + appDir);
+            break;
+            
+        default:
+            workingDir = new File(homeDir, appDir + "/");
+        }
+        
+        return workingDir;
+    }
     
     /**
      * Get the directory where the support files will reside on the system for
@@ -33,33 +66,10 @@ public final class PlayBlockPaths {
      * 
      * @return the directory
      */
-    public static File getApplicationDataDir() {
-        File homeDir = new File(System.getProperty("user.home", "."));
-        
-        if (isWindows()) {
-            String appData = System.getenv("APPDATA");
-
-            if (appData != null) {
-                return new File(appData, APP_DIR_NAME);
-            } else {
-                return new File(homeDir, APP_DIR_NAME);
-            }
-        } else if (isMac()) {
-            return new File(homeDir, "Library/Application Support/" + APP_DIR_NAME);
-        } else {
-            return new File(homeDir, "." + APP_DIR_NAME.toLowerCase());
-        }
-    }
-    
-    /**
-     * Gets the unmodified (often uppercase) version of a string if the current
-     * platform is Windows or Mac OS X, otherwise make the string lowercase.
-     * 
-     * @param name the name
-     * @return the new name
-     */
-    private static String getPlatformCasing(String name) {
-        return (isWindows() || isMac()) ? name : name.toLowerCase();
+    public static File getPlayBlockDir() {
+        // We use Minecraft's directory to make sure this has a high probability
+        // of working without any special privileges
+        return new File(getMinecraftDir(), "playblock");
     }
     
     /**
@@ -68,19 +78,19 @@ public final class PlayBlockPaths {
      * 
      * @return the libraries directory
      */
-    public static File getLibrariesDir() {
-        return new File(getApplicationDataDir(), getPlatformCasing("Support"));
+    public static File getPlayBlockLibsDir() {
+        return new File(getPlayBlockDir(), "lib");
     }
     
     /**
      * Get the path to the support libraries directory that contains the native
      * library files.
      * 
-     * @param is64Bit true if the directory for the 64-bit architecture is required
+     * @param arch the architecture
      * @return the libraries directory
      */
-    public static File getNativeLibrariesDir(boolean is64Bit) {
-        return new File(getLibrariesDir(), (is64Bit ? "x64" : "x32"));
+    public static File getPlayBlockArchLibsDir(Arch arch) {
+        return new File(getPlayBlockLibsDir(), arch.name().toLowerCase());
     }
     
     /**
@@ -89,8 +99,8 @@ public final class PlayBlockPaths {
      * 
      * @return the libraries directory
      */
-    public static File getNativeLibrariesDir() {
-        return getNativeLibrariesDir(EnvUtils.isJvm64bit());
+    public static File getPlayBlockArchLibsDir() {
+        return getPlayBlockArchLibsDir(EnvUtils.getJvmArch());
     }
     
     /**
@@ -102,9 +112,10 @@ public final class PlayBlockPaths {
         Set<File> searchPaths = new HashSet<File>();
         
         // Use the path to the central directory for this platform
-        searchPaths.add(getNativeLibrariesDir());
+        searchPaths.add(getPlayBlockArchLibsDir());
 
-        if (isWindows()) {
+        switch (EnvUtils.getPlatform()) {
+        case WINDOWS:
             File getProgramFiles = getProgramFiles();
             File programFiles32 = getProgramFiles32();
 
@@ -129,16 +140,24 @@ public final class PlayBlockPaths {
                 }
             } catch (Throwable t) {
             }
-        } else if (isMac()) {
+            
+            break;
+            
+        case MAC_OS_X:
             // This may or may not work
             searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS"));
             searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS/lib"));
             
             // It actually uses the lib directory
-            searchPaths.add(new File(getNativeLibrariesDir(), "lib"));
-        } else {
+            searchPaths.add(new File(getPlayBlockArchLibsDir(), "lib"));
+            break;
+            
+        case LINUX:
+        case SOLARIS:
+        case UNKNOWN:
             searchPaths.add(new File("/lib"));
             searchPaths.add(new File("/usr/local/lib"));
+            break;
         }
         
         return searchPaths;

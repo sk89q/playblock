@@ -1,9 +1,6 @@
 package com.skcraft.pbinstall;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -11,15 +8,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.IOError;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,7 +31,7 @@ import com.sk89q.task.Task;
 import com.sk89q.task.TaskException;
 import com.skcraft.pbinstall.tasks.Install;
 import com.skcraft.pbinstall.tasks.Uninstall;
-import com.skcraft.playblock.util.PlayBlockPaths;
+import com.skcraft.playblock.util.EnvUtils.Arch;
 
 public class PlayBlockSetup extends JFrame implements ProgressListener {
     
@@ -112,7 +106,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                execute(new Install(false));
+                execute(new Install(Arch.X86));
             }
         });
         
@@ -121,7 +115,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent event) {
-                execute(new Install(true));
+                execute(new Install(Arch.X86_64));
             }
         });
         
