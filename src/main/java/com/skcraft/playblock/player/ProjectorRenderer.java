@@ -87,9 +87,7 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
                 MediaStatus status = renderer.getStatus();
 
                 if (status == MediaStatus.BUFFERING) {
-                    String message = String.format("Buffering %.1f%%...",
-                            renderer.getBufferingPercent());
-                    drawMessage(message, width, height);
+                    drawMessage("Buffering...", width, height);
                 } else if (status == MediaStatus.ERROR) {
                     drawMessage(width, height, 0xffff0000,
                             "An error occurred playing ",

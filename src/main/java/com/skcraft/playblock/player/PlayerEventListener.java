@@ -20,11 +20,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
     }
 
     @Override
-    public void buffering(MediaPlayer mediaPlayer, float percent) {
-        renderer.setBufferingPercent(percent);
-    }
-
-    @Override
     public void error(MediaPlayer mediaPlayer) {
         PlayBlock.log(Level.INFO, "Media has encountered an error!");
     }
