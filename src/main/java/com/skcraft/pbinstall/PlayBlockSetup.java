@@ -31,6 +31,7 @@ import com.sk89q.task.Task;
 import com.sk89q.task.TaskException;
 import com.skcraft.pbinstall.tasks.Install;
 import com.skcraft.pbinstall.tasks.Uninstall;
+import com.skcraft.playblock.util.EnvUtils;
 import com.skcraft.playblock.util.EnvUtils.Arch;
 
 public class PlayBlockSetup extends JFrame implements ProgressListener {
@@ -41,6 +42,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
     private JLabel statusLabel;
     
     private Task currentTask;
+    private boolean noQuit = false;
     
     public PlayBlockSetup() {
         setTitle("PlayBlock Installer");
@@ -65,10 +67,18 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
                 if (currentTask != null) {
                     tryCancelling();
                 } else {
-                    System.exit(0);
+                    quit();
                 }
             }
         });
+    }
+    
+    private void quit() {
+        if (noQuit) {
+            dispose();
+        } else {
+            System.exit(0);
+        }
     }
     
     private void addComponents() {
@@ -204,7 +214,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
                 dispose();
             }
         } else {
-            System.exit(0);
+            quit();
         }
     }
     
@@ -246,7 +256,11 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
                     "Complete", JOptionPane.INFORMATION_MESSAGE);
         }
         
-        System.exit(0);
+        quit();
+    }
+
+    @Override
+    public void aborted() {
     }
 
     @Override
@@ -259,7 +273,23 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
                     "An error has occurred", JOptionPane.ERROR_MESSAGE);
         }
         
-        System.exit(0);
+        quit();
+    }
+
+    public static PlayBlockSetup startEmbedded(ProgressListener listener) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+        }
+        
+        PlayBlockSetup frame = new PlayBlockSetup();
+        frame.noQuit = true;
+        frame.setAutoRequestFocus(false);
+        frame.setVisible(true);
+        Task task = new Install(EnvUtils.getJvmArch());
+        task.addProgressListener(listener);
+        frame.execute(task);
+        return frame;
     }
 
     public static void main(String[] args) {

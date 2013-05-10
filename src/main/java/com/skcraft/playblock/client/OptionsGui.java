@@ -1,13 +1,10 @@
 package com.skcraft.playblock.client;
 
 import java.awt.Desktop;
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -15,11 +12,8 @@ import org.lwjgl.opengl.GL11;
 import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.player.MediaManager;
-import com.skcraft.playblock.player.MediaResolver;
-import com.skcraft.playblock.player.ProjectorTileEntity;
 import com.skcraft.playblock.util.GuiSlider;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -38,6 +32,7 @@ public class OptionsGui extends GuiScreen {
     private GuiSlider volumeSlider;
     private GuiButton openUrlButton;
     private GuiButton closeButton;
+    private GuiButton installButton;
 
     public OptionsGui(MediaManager mediaManager) {
         this.mediaManager = mediaManager;
@@ -56,6 +51,12 @@ public class OptionsGui extends GuiScreen {
         int top = (height - ySize) / 2;
         
         int twoButtonWidth = (xSize - 24) / 2;
+
+        if (!mediaManager.isSupported()) {
+            this.controlList.add(installButton = new GuiButton(controlIndex++,
+                    left + 10, top + 145, xSize - 18, 20,
+                    LKey.INSTALL.toString()));
+        }
 
         this.controlList.add(closeButton = new GuiButton(controlIndex++,
                 left + 10 + twoButtonWidth + 7, top + 170, twoButtonWidth, 20,
@@ -76,11 +77,18 @@ public class OptionsGui extends GuiScreen {
 
     @Override
     public void actionPerformed(GuiButton button) {
-        if (button.id == closeButton.id) {
+        if (installButton != null && button.id == installButton.id) {
+            mediaManager.getInstaller().start();
+            
+            this.mc.displayGuiScreen((GuiScreen) null);
+            this.mc.setIngameFocus();
+            
+        } else if (button.id == closeButton.id) {
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();
             PlayBlock.getClientRuntime().getClientOptions().setFloat("volume",
                     volumeSlider.getValue() * 2);
+            
         } else if (button.id == openUrlButton.id) {
             try {
                 Desktop.getDesktop().browse(new URI("http://skcraft.com"));

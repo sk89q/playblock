@@ -44,6 +44,16 @@ public class SwingProgressListener implements ProgressListener {
     }
 
     @Override
+    public void aborted() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                listener.aborted();
+            }
+        });
+    }
+
+    @Override
     public void error(final Throwable exception) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

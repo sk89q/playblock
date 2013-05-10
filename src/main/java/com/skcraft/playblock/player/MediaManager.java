@@ -12,6 +12,8 @@ import java.util.logging.Level;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
 import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.util.EnvUtils;
+import com.skcraft.playblock.util.EnvUtils.Arch;
 import com.skcraft.playblock.util.EnvUtils.Platform;
 import com.skcraft.playblock.util.PlayBlockPaths;
 import com.sun.jna.NativeLibrary;
@@ -21,11 +23,17 @@ import com.sun.jna.NativeLibrary;
  */
 public class MediaManager {
 
+    private static final String[] INSTALL_MESSAGE = {
+        "To view this video,",
+        "install " + (EnvUtils.getJvmArch() == Arch.X86_64 ? "64-bit" : "32-bit") + " VLC",
+        "by pressing F4.", };
+
     private final ExecutorService executor;
     private TextureCache textureCache = new TextureCache();
     private MediaPlayerFactory factory;
     private MediaRenderer activeRenderer;
     private float volume = 1;
+    private EmbeddedInstaller installer;
     
     // Simple texture cache
 
@@ -60,8 +68,35 @@ public class MediaManager {
      * 
      * @return true if it is available
      */
-    public boolean isAvailable() {
+    public boolean isSupported() {
         return factory != null;
+    }
+    
+    /**
+     * Get the in-game installer.
+     * 
+     * @return the installer
+     */
+    public EmbeddedInstaller getInstaller() {
+        if (installer == null) {
+            installer = new EmbeddedInstaller();
+        }
+        
+        return installer;
+    }
+    
+    /**
+     * Get the message shown on the screen for unsupported usres.
+     * 
+     * @return a list of lines
+     */
+    String[] getUnsupportedMessage() {
+        switch (getInstaller().getState()) {
+        case NOT_INSTALLING:
+            return INSTALL_MESSAGE;
+        default:
+            return new String[] { getInstaller().getStatusMessage() };
+        }
     }
 
     /**
@@ -123,7 +158,7 @@ public class MediaManager {
      * @return a new media renderer
      */
     protected MediaRenderer newRenderer(final int width, final int height) {
-        if (!isAvailable()) {
+        if (!isSupported()) {
             throw new RuntimeException("VLC library is not available!");
         }
 
@@ -142,7 +177,7 @@ public class MediaManager {
      * @param instance the renderer
      */
     public void release(final MediaRenderer instance) {
-        if (!isAvailable()) {
+        if (!isSupported()) {
             throw new RuntimeException("VLC library is not available!");
         }
         

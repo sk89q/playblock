@@ -16,6 +16,9 @@ import com.skcraft.playblock.util.EnvUtils.Arch;
  */
 public final class PlayBlockPaths {
     
+    private static final boolean IGNORE_SYSTEM_LIBS = 
+            System.getProperty("playBlock.ignoreSystemLibs", "false")
+            .equalsIgnoreCase("true");
     private static final String APP_DIR_NAME = "PlayBlock";
 
     private PlayBlockPaths() {
@@ -116,37 +119,41 @@ public final class PlayBlockPaths {
 
         switch (EnvUtils.getPlatform()) {
         case WINDOWS:
-            File getProgramFiles = getProgramFiles();
-            File programFiles32 = getProgramFiles32();
-
-            if (getProgramFiles != null) {
-                searchPaths.add(join(getProgramFiles, "VideoLAN", "VLC"));
-            }
-            
-            if (programFiles32 != null) {
-                searchPaths.add(join(programFiles32, "VideoLAN", "VLC"));
-            }
-            
-            // Try registry
-            String installDir = null;
-            try {
-                installDir = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,
-                       "Software\\VideoLAN\\VLC", "InstallDir");
-                if (installDir != null) {
-                    File file = new File(installDir);
-                    if (file.exists()) {
-                        searchPaths.add(file);
-                    }
+            if (!IGNORE_SYSTEM_LIBS) {
+                File getProgramFiles = getProgramFiles();
+                File programFiles32 = getProgramFiles32();
+    
+                if (getProgramFiles != null) {
+                    searchPaths.add(join(getProgramFiles, "VideoLAN", "VLC"));
                 }
-            } catch (Throwable t) {
+                
+                if (programFiles32 != null) {
+                    searchPaths.add(join(programFiles32, "VideoLAN", "VLC"));
+                }
+                
+                // Try registry
+                String installDir = null;
+                try {
+                    installDir = WinRegistry.readString(WinRegistry.HKEY_LOCAL_MACHINE,
+                           "Software\\VideoLAN\\VLC", "InstallDir");
+                    if (installDir != null) {
+                        File file = new File(installDir);
+                        if (file.exists()) {
+                            searchPaths.add(file);
+                        }
+                    }
+                } catch (Throwable t) {
+                }
             }
             
             break;
             
         case MAC_OS_X:
-            // This may or may not work
-            searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS"));
-            searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS/lib"));
+            if (!IGNORE_SYSTEM_LIBS) {
+                // This may or may not work
+                searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS"));
+                searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS/lib"));
+            }
             
             // It actually uses the lib directory
             searchPaths.add(new File(getPlayBlockArchLibsDir(), "lib"));
@@ -155,8 +162,10 @@ public final class PlayBlockPaths {
         case LINUX:
         case SOLARIS:
         case UNKNOWN:
-            searchPaths.add(new File("/lib"));
-            searchPaths.add(new File("/usr/local/lib"));
+            if (!IGNORE_SYSTEM_LIBS) {
+                searchPaths.add(new File("/lib"));
+                searchPaths.add(new File("/usr/local/lib"));
+            }
             break;
         }
         

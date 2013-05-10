@@ -1,13 +1,8 @@
 package com.sk89q.task;
 
-import java.beans.PropertyChangeListener;
-import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 /**
@@ -81,6 +76,15 @@ public abstract class Task implements Runnable {
     }
     
     /**
+     * Called when the task has been aborted.
+     */
+    private void fireAborted() {
+        for (ProgressListener listener : listeners) {
+            listener.aborted();
+        }
+    }
+    
+    /**
      * Attach a listener to a given task in order to redirect events to this task.
      * 
      * @param task the sub-task
@@ -109,6 +113,10 @@ public abstract class Task implements Runnable {
             
             @Override
             public void complete() {
+            }
+
+            @Override
+            public void aborted() {
             }
         };
         
@@ -149,6 +157,7 @@ public abstract class Task implements Runnable {
             fireComplete();
         } catch (InterruptedException t) {
             handleCancel();
+            fireAborted();
         } catch (Throwable t) {
             fireError(t);
         }

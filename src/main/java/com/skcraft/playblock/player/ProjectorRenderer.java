@@ -6,8 +6,6 @@ import net.minecraft.tileentity.TileEntity;
 import org.lwjgl.opengl.GL11;
 
 import com.skcraft.playblock.util.DrawUtils;
-import com.skcraft.playblock.util.EnvUtils;
-import com.skcraft.playblock.util.EnvUtils.Arch;
 import com.skcraft.playblock.util.MathUtils;
 
 /**
@@ -24,10 +22,6 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
     private static final float SPINNER_SCALE = 0.1f;
     private static final float SPINNER_ANGLE = 30f;
     private static final float STATUS_LOGO_SCALE = 0.5f;
-    private static final String[] INSTALL_MESSAGE = {
-            "To view this video,",
-            "install " + (EnvUtils.getJvmArch() == Arch.X86_64 ? "64-bit" : "32-bit") + " VLC",
-            "by pressing F4.", };
     
     private final MediaManager mediaManager;
 
@@ -83,8 +77,12 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
      * @param height the height
      */
     private void drawScreen(ProjectorTileEntity projector, float width, float height) {
-        if (!mediaManager.isAvailable()) {
-            drawPlayBlockStatus(width, height);
+        if (!mediaManager.isSupported()) {
+            if (projector.isWithinRange()) {
+                drawPlayBlockStatus(width, height);
+            } else {
+                DrawUtils.drawRect(0, 0, width, height, 0xff000000);
+            }
         } else {
             MediaRenderer renderer = projector.getRenderer();
 
@@ -142,7 +140,7 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
 
             DrawUtils.drawTexture(x, y, logoWidth, logoHeight);
             drawTextBox(x, logoHeight + y * 2, width - x, height - logoHeight - y * 2,
-                    false, 0xff333333, INSTALL_MESSAGE);
+                    false, 0xff333333, mediaManager.getUnsupportedMessage());
             
             GL11.glDisable(GL11.GL_BLEND);
         }

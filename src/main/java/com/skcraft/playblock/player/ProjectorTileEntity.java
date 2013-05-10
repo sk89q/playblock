@@ -49,6 +49,7 @@ public class ProjectorTileEntity extends TileEntity {
     private final AccessList accessList = new AccessList();
     private MediaManager mediaManager;
     @SideOnly(Side.CLIENT) private MediaRenderer renderer;
+    private boolean withinRange = false;
     private long playStartTime = 0;
     private String lastUri;
     private float rendererWidth;
@@ -246,6 +247,15 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
+     * Return whether the client is within range of viewing this screen.
+     * 
+     * @return true if within range
+     */
+    public boolean isWithinRange() {
+        return withinRange;
+    }
+
+    /**
      * Get the start time (in milliseconds) when play started.
      * 
      * @return the play start time
@@ -328,24 +338,29 @@ public class ProjectorTileEntity extends TileEntity {
         // Have to check to see whether this needs to activate
         if (this.worldObj.isRemote) {
             // Currently playing
-            if (hasRenderer()) {
+            if (withinRange) {
                 double distance = Minecraft.getMinecraft().thePlayer
                         .getDistanceSq(xCoord, yCoord, zCoord);
                 
                 // Passed the fade distance?
                 if (distance >= getFadeRangeSq()) {
+                    withinRange = false;
                     release();
                 }
             
             // Currently not playing
             } else {
-                if (mediaManager.isAvailable() && mediaManager.hasNoRenderer()) {
+                if (mediaManager.hasNoRenderer()) {
                     double distance = Minecraft.getMinecraft().thePlayer
                             .getDistanceSq(xCoord, yCoord, zCoord);
                     
                     // Start the media
                     if (distance <= getTriggerRangeSq()) {
-                        tryPlayingMedia();
+                        if (mediaManager.isSupported()) {
+                            tryPlayingMedia();
+                        }
+                        
+                        withinRange = true;
                     }
                 }
             }

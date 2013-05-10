@@ -15,6 +15,7 @@ public enum LKey {
     BLOCKS_AWAY("playblock.options.blocksAway", "blocks away"),
     WEBSITE("playblock.options.website", "Website..."),
     VOLUME("playblock.options.volume", "Volume"),
+    INSTALL("playblock.gui.installLibraries", "Install..."),
     DONE("playblock.gui.done", "Done");
     
     private final String key;

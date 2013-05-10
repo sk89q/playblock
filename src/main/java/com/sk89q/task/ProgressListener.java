@@ -30,5 +30,10 @@ public interface ProgressListener {
      * @param exception the exception
      */
     void error(Throwable exception);
+    
+    /**
+     * Called when the task has been aborted.
+     */
+    void aborted();
 
 }
