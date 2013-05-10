@@ -87,6 +87,9 @@
     <target name="package" depends="compile">
         <jar destfile="${build.dir}/PlayBlock-${project.version}.jar" basedir="${classes.dir}">
             <fileset dir="${resources.dir}"/>
+    		<manifest>
+    			<attribute name="Main-Class" value="com.skcraft.pbinstall.PlayBlockSetup"/>
+    		</manifest>
         </jar>
     </target>
     
