@@ -1,5 +1,5 @@
 <project name="PlayBlock" default="main">
-    <property name="project.version" value="1.1.0"/>
+    <property name="project.version" value="1.2.0"/>
     <property name="forge.version" value="6.6.2.534"/>
     <property name="mc.version" value="1.4.7"/>
     
