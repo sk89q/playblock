@@ -8,7 +8,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import com.skcraft.playblock.LKey;
-import com.skcraft.playblock.PlayBlock;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
@@ -122,6 +121,7 @@ public class ProjectorGui extends GuiScreen {
         } else if (button.id == clearUriButton.id) {
             uriField.setText("");
             uriField.setFocused(true);
+            uri = uriField.getText();
         }
     }
 
