@@ -55,4 +55,38 @@ public final class DrawUtils {
         GL11.glDisable(GL11.GL_BLEND);
     }
 
+    /**
+     * Draw a texture at a given location.
+     * 
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param width the width
+     * @param height the height
+     */
+    public static void drawTexture(float x, float y,  float width, float height) {
+        GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+        GL11.glTexCoord2f(0, 0);
+        GL11.glVertex3f(x, y, 0.0F);
+        GL11.glTexCoord2f(0, 1);
+        GL11.glVertex3f(x, y + height, 0.0F);
+        GL11.glTexCoord2f(1, 0);
+        GL11.glVertex3f(x + width, y, 0.0F);
+        GL11.glTexCoord2f(1, 1);
+        GL11.glVertex3f(x + width, y + height, 0.0F);
+        GL11.glEnd();
+    }
+
+    /**
+     * Draw a texture at a given location.
+     * 
+     * @param x the X coordinate
+     * @param y the Y coordinate
+     * @param width the width
+     * @param height the height
+     */
+    public static void drawCenteredTexture(float x, float y, 
+            float width, float height) {
+        drawTexture((float) (x - width / 2.0), (float) (y - height / 2.0), width, height);
+    }
+
 }

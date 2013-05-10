@@ -1,6 +1,5 @@
 package com.skcraft.playblock.player;
 
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,7 +8,6 @@ import java.util.logging.Level;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -45,12 +43,13 @@ public class ProjectorTileEntity extends TileEntity {
     private float height = 1;
     private float triggerRange = 0;
     private float fadeRange = MIN_BUFFER_RANGE;
-    
+
     private boolean hasPlayableUri = false;
 
     private final AccessList accessList = new AccessList();
     private MediaManager mediaManager;
     @SideOnly(Side.CLIENT) private MediaRenderer renderer;
+    private long playStartTime = 0;
     private String lastUri;
     private float rendererWidth;
     private float rendererHeight;
@@ -167,7 +166,7 @@ public class ProjectorTileEntity extends TileEntity {
      * @return the range in blocks
      */
     public float getTriggerRange() {
-        return (float) Math.round(Math.sqrt(triggerRange) * 100 / 100);
+        return Math.round(Math.sqrt(triggerRange) * 100 / 100);
     }
 
     /**
@@ -198,7 +197,7 @@ public class ProjectorTileEntity extends TileEntity {
      * @return the range
      */
     public float getFadeRange() {
-        return (float) Math.round(Math.sqrt(fadeRange) * 100 / 100);
+        return Math.round(Math.sqrt(fadeRange) * 100 / 100);
     }
 
     /**
@@ -247,6 +246,15 @@ public class ProjectorTileEntity extends TileEntity {
     }
 
     /**
+     * Get the start time (in milliseconds) when play started.
+     * 
+     * @return the play start time
+     */
+    public long getPlayStartTime() {
+        return playStartTime;
+    }
+
+    /**
      * Acquire a renderer and start playing the video if possible.
      */
     @SideOnly(Side.CLIENT)
@@ -279,6 +287,7 @@ public class ProjectorTileEntity extends TileEntity {
             if (lastUri == null || !lastUri.equals(uri)) { // Only change the media if we need to
                 lastUri = uri;
                 renderer.playMedia(uri);
+                playStartTime = System.currentTimeMillis();
             }
         }
     }

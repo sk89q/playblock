@@ -137,6 +137,7 @@ public final class MediaRenderer implements RenderCallback {
             @Override
             public void run() {
                 player.playMedia(uri); // player should NOT be null
+                buffer = null;
             }
         });
     }
