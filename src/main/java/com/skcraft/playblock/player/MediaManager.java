@@ -5,10 +5,11 @@ import static com.skcraft.playblock.util.EnvUtils.getPlatform;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.util.EnvUtils.Platform;
@@ -20,12 +21,17 @@ import com.sun.jna.NativeLibrary;
  */
 public class MediaManager {
 
+    private final ExecutorService executor;
+    private TextureCache textureCache = new TextureCache();
     private MediaPlayerFactory factory;
     private MediaRenderer activeRenderer;
     private float volume = 1;
+    
+    // Simple texture cache
 
     static {
-
+        // In order to find VLC, we need to build a list of search paths,
+        // which is not easy as it seems!
         for (File file : PlayBlockPaths.getSearchPaths()) {
             NativeLibrary.addSearchPath("libvlc", file.getAbsolutePath());
         }
@@ -35,11 +41,16 @@ public class MediaManager {
      * Construct a new media manager.
      */
     public MediaManager() {
+        // In order to prevent freezing when changing media, the player will be
+        // called from this dedicated thread
+        executor = Executors.newFixedThreadPool(1);
+        
         try {
             factory = new MediaPlayerFactory(getFactoryOptions());
         } catch (Throwable t) {
             PlayBlock.log(Level.WARNING, "Failed to find VLC!", t);
         }
+        
         volume = PlayBlock.getClientRuntime().getClientOptions()
                 .getFloat("volume", 1);
     }
@@ -111,19 +122,17 @@ public class MediaManager {
      * @param height the height of the player
      * @return a new media renderer
      */
-    protected MediaRenderer newRenderer(int width, int height) {
+    protected MediaRenderer newRenderer(final int width, final int height) {
         if (!isAvailable()) {
             throw new RuntimeException("VLC library is not available!");
         }
 
-        MediaRenderer instance = new MediaRenderer(width, height);
-        DirectMediaPlayer player = factory.newDirectMediaPlayer("RGBA", width,
-                height, width * 4, instance);
-        player.setPlaySubItems(true);
-        player.setRepeat(true);
-        player.addMediaPlayerEventListener(new PlayerEventListener(instance));
-        player.setVolume((int) (volume * 100));
-        instance.setVLCJPlayer(player);
+        int textureIndex = textureCache.createTexture(width, height);
+        
+        // Create and initialize the renderer
+        MediaRenderer instance = new MediaRenderer(this, width, height, textureIndex);
+        instance.initialize(factory, getVolume());
+        
         return instance;
     }
 
@@ -132,15 +141,40 @@ public class MediaManager {
      * 
      * @param instance the renderer
      */
-    public void release(MediaRenderer instance) {
+    public void release(final MediaRenderer instance) {
         if (!isAvailable()) {
             throw new RuntimeException("VLC library is not available!");
         }
+        
+        if (instance.isReleased()) {
+            return; // Don't re-release
+        }
+        
+        // For thread safety reasons, mark the release flag
+        instance.markForRelease();
 
+        // Start releasing -- this does not block
         instance.release();
+        
+        // Release the texture for the screen
+        int textureIndex = instance.getTextureIndex();
+        if (textureIndex > 0) {
+            textureCache.deleteTexture(textureIndex);
+        }
+        
+        // Clear the active renderer
         if (instance == activeRenderer) {
             activeRenderer = null;
         }
+    }
+    
+    /**
+     * Execute a given {@link Runnable} in the dedicated thread for interacting with VLC.
+     * 
+     * @param runnable the object to run
+     */
+    void executeThreadSafe(Runnable runnable) {
+        executor.execute(runnable);
     }
 
     /**
@@ -173,7 +207,7 @@ public class MediaManager {
         this.volume = volume;
         
         if (activeRenderer != null) {
-            activeRenderer.getVLCJPlayer().setVolume((int) (volume * 100));
+            activeRenderer.setVolume(volume);
         }
     }
     

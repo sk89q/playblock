@@ -3,13 +3,13 @@ package com.skcraft.playblock.player;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
-import uk.co.caprica.vlcj.binding.internal.libvlc_state_t;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 
+import com.skcraft.playblock.util.DrawUtils;
 import com.sun.jna.Memory;
 
 /**
@@ -17,9 +17,12 @@ import com.sun.jna.Memory;
  */
 public final class MediaRenderer implements RenderCallback {
 
+    private final MediaManager mediaManager;
     private final int width;
     private final int height;
     private final int textureIndex;
+    private boolean released = false;
+    private RendererState state = RendererState.INITIALIZING;
     private DirectMediaPlayer player;
     private ByteBuffer buffer = null;
 
@@ -28,20 +31,78 @@ public final class MediaRenderer implements RenderCallback {
      * 
      * @param width the width
      * @param height the height
+     * @param textureIndex the text of the index
      */
-    MediaRenderer(int width, int height) {
+    MediaRenderer(MediaManager mediaManager, int width, int height, int textureIndex) {
+        this.mediaManager = mediaManager;
         this.width = width;
         this.height = height;
-        this.textureIndex = createTexture(width, height);
+        this.textureIndex = textureIndex;
     }
 
     /**
-     * Set the VLCJ player used.
+     * Initialize the instance and create a new player.
      * 
-     * @param player the player
+     * @param factory the factory for creating a new player
+     * @param volume the initial volume
      */
-    void setVLCJPlayer(DirectMediaPlayer player) {
-        this.player = player;
+    void initialize(final MediaPlayerFactory factory, final float volume) {
+        final MediaRenderer instance = this;
+        
+        // Release the VLC player instance in the dedicated thread
+        mediaManager.executeThreadSafe(new Runnable() {
+            @Override
+            public void run() {
+                // Create the VLC media player instance
+                DirectMediaPlayer player = factory.newDirectMediaPlayer(
+                        "RGBA", width, height, width * 4, instance);
+                player.setPlaySubItems(true);
+                player.setRepeat(true);
+                player.addMediaPlayerEventListener(new PlayerEventListener(instance));
+                player.setVolume((int) (volume * 100));
+                
+                instance.player = player;
+            }
+        });
+    }
+
+    /**
+     * Stop and release the player, then lose references.
+     */
+    void release() {
+        final MediaRenderer instance = this;
+        
+        // Release the VLC player instance in the dedicated thread
+        mediaManager.executeThreadSafe(new Runnable() {
+            @Override
+            public void run() {
+                player.setVolume(0); // The calls below may block for a bit
+                player.stop();
+                player.release();
+
+                player = null; // Lose reference
+            }
+        });
+    }
+    
+    /**
+     * Return true if this renderer is being released or it has been released.
+     * 
+     * @return true if the renderer has been released
+     */
+    public boolean isReleased() {
+        return released;
+    }
+
+    /**
+     * Mark this instance for release so that any object using this renderer 
+     * (and also {@link MediaManager}) knows that it has been released already.
+     * 
+     * @see MediaManager#release(MediaRenderer) the method where things are actually
+     *      unloaded
+     */
+    void markForRelease() {
+        released = true;
     }
 
     /**
@@ -54,49 +115,12 @@ public final class MediaRenderer implements RenderCallback {
     }
 
     /**
-     * Release resources and unload the player.
-     */
-    void release() {
-        if (textureIndex >= 0) {
-            try {
-                GL11.glDeleteTextures(textureIndex);
-            } catch (NullPointerException e) {
-                // @TODO: Fix this NPE that is caused during total game shutdown
-            }
-        }
-        
-        player.stop();
-        player.release();
-        player = null;
-    }
-
-    /**
-     * Create the internal texture used to draw the video.
+     * Get the texture index for this instance.
      * 
-     * @param width the width of the video
-     * @param height the height of the video
      * @return the texture index
      */
-    private int createTexture(int width, int height) {
-        GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
-
-        int index = GL11.glGenTextures();
-
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, index);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
-                GL11.GL_LINEAR);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
-                GL11.GL_LINEAR);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S,
-                GL12.GL_CLAMP_TO_EDGE);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T,
-                GL12.GL_CLAMP_TO_EDGE);
-        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, width, height,
-                0, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, (ByteBuffer) null);
-
-        return index;
+    int getTextureIndex() {
+        return textureIndex;
     }
 
     /**
@@ -104,41 +128,56 @@ public final class MediaRenderer implements RenderCallback {
      * 
      * @param uri the path to play
      */
-    public void playMedia(String uri) {
-        player.playMedia(uri);
+    public void playMedia(final String uri) {
+        if (isReleased()) {
+            throw new RuntimeException("Cannot play media on released player");
+        }
+        
+        mediaManager.executeThreadSafe(new Runnable() {
+            @Override
+            public void run() {
+                player.playMedia(uri); // player should NOT be null
+            }
+        });
     }
 
     /**
-     * Get the status of the current media.
+     * Set the volume of the player.
      * 
-     * @return the status
+     * @param volume
      */
-    public MediaStatus getStatus() {
-        libvlc_state_t state = player.getMediaState();
-        if (state == null) {
-            return MediaStatus.ERROR;
+    public void setVolume(float volume) {
+        if (isReleased()) {
+            return;
         }
+        
+        player.setVolume((int) (volume * 100));
+    }
 
-        switch (state) {
-        case libvlc_Buffering:
-            return MediaStatus.BUFFERING;
-        case libvlc_Ended:
-            return MediaStatus.STOPPED;
-        case libvlc_Error:
-            return MediaStatus.ERROR;
-        case libvlc_NothingSpecial:
-            return MediaStatus.STOPPED;
-        case libvlc_Opening:
-            return MediaStatus.BUFFERING;
-        case libvlc_Paused:
-            return MediaStatus.PAUSED;
-        case libvlc_Playing:
-            return MediaStatus.PLAYING;
-        case libvlc_Stopped:
-            return MediaStatus.STOPPED;
+    /**
+     * Get the state of this renderer (and the currently playing media)
+     * 
+     * @return the state
+     */
+    public RendererState getState() {
+        if (isReleased()) {
+            return RendererState.RELEASED;
         }
-
-        return MediaStatus.STOPPED;
+        
+        return state;
+    }
+    
+    /**
+     * Set the state of this renderer.
+     * 
+     * <p>This is used by only {@link PlayerEventListener} so that state information
+     * can be updated on this renderer. Do not call this method from anywhere else.</p>
+     * 
+     * @see PlayerEventListener calls this method
+     * @param state the new state
+     */
+    void setState(RendererState state) {
+        this.state = state;
     }
 
     /**
@@ -152,30 +191,38 @@ public final class MediaRenderer implements RenderCallback {
      * @param height the height of the screen
      */
     public void drawMedia(int x, int y, float width, float height) {
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureIndex);
+        if (buffer != null && !isReleased()) {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureIndex);
 
-        if (buffer != null) {
+            GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
+            GL11.glTexCoord2f(0, 0);
+            GL11.glVertex3f(x, y, 0.0F);
+            GL11.glTexCoord2f(0, 1);
+            GL11.glVertex3f(x, y + height, 0.0F);
+            GL11.glTexCoord2f(1, 0);
+            GL11.glVertex3f(x + width, y, 0.0F);
+            GL11.glTexCoord2f(1, 1);
+            GL11.glVertex3f(x + width, y + height, 0.0F);
+            GL11.glEnd();
+            
             GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, this.width,
                     this.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+        } else {
+            // Because we don't zero out the texture data for the texture that we
+            // had created for this player, it may contain existing texture data
+            // that may have been used for who knows what before (UI drawing,
+            // another game, another video), and it's best we not draw that!
+            DrawUtils.drawRect(x, y, x + width, y + height, 0xff000000);
         }
-
-        GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
-        GL11.glTexCoord2f(0, 0);
-        GL11.glVertex3f(x, y, 0.0F);
-        GL11.glTexCoord2f(0, 1);
-        GL11.glVertex3f(x, y + height, 0.0F);
-        GL11.glTexCoord2f(1, 0);
-        GL11.glVertex3f(x + width, y, 0.0F);
-        GL11.glTexCoord2f(1, 1);
-        GL11.glVertex3f(x + width, y + height, 0.0F);
-        GL11.glEnd();
-
-        // DrawUtils.drawRect(x, y, x + width, y + height, 0xff000000);
     }
 
     @Override
     public void display(DirectMediaPlayer mediaPlayer, Memory[] nativeBuffers,
             BufferFormat bufferFormat) {
+        if (released) {
+            return;
+        }
+        
         buffer = nativeBuffers[0].getByteBuffer(0, width * height * 4);
     }
 

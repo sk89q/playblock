@@ -84,17 +84,19 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
 
             if (renderer != null) {
                 renderer.drawMedia(0, 0, width, height);
-                MediaStatus status = renderer.getStatus();
+                RendererState status = renderer.getState();
 
-                if (status == MediaStatus.BUFFERING) {
+                if (status == RendererState.INITIALIZING) {
+                    drawMessage("Initializing...", width, height);
+                } else if (status == RendererState.BUFFERING) {
                     drawMessage("Buffering...", width, height);
-                } else if (status == MediaStatus.ERROR) {
+                } else if (status == RendererState.ERROR) {
                     drawMessage(width, height, 0xffff0000,
                             "An error occurred playing ",
                             "the media file. Bad URL?");
-                } else if (status == MediaStatus.PAUSED) {
+                } else if (status == RendererState.PAUSED) {
                     drawMessage("Media paused.", width, height);
-                } else if (status == MediaStatus.STOPPED) {
+                } else if (status == RendererState.STOPPED) {
                     drawMessage("Stopped.", width, height);
                 }
             } else {
