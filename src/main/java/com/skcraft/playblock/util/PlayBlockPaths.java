@@ -133,6 +133,9 @@ public final class PlayBlockPaths {
             // This may or may not work
             searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS"));
             searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS/lib"));
+            
+            // It actually uses the lib directory
+            searchPaths.add(new File(getNativeLibrariesDir(), "lib"));
         } else {
             searchPaths.add(new File("/lib"));
             searchPaths.add(new File("/usr/local/lib"));
