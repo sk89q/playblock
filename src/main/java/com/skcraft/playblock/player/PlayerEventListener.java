@@ -1,5 +1,6 @@
 package com.skcraft.playblock.player;
 
+import java.util.List;
 import java.util.logging.Level;
 
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -13,9 +14,9 @@ import com.skcraft.playblock.PlayBlock;
  * Logs semi-useful debugging messages to console.
  */
 public class PlayerEventListener extends MediaPlayerEventAdapter {
-    
+
     private final MediaRenderer renderer;
-    
+
     public PlayerEventListener(MediaRenderer renderer) {
         this.renderer = renderer;
     }
@@ -28,7 +29,15 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
 
     @Override
     public void finished(MediaPlayer mediaPlayer) {
-        renderer.setState(RendererState.STOPPED);
+        //Used for YouTube videos.
+        List<String> subItems = mediaPlayer.subItems();
+        if(subItems != null && !subItems.isEmpty()) {
+            String subItemURI = subItems.get(0);
+            mediaPlayer.playMedia(subItemURI);
+        }
+        else {
+            renderer.setState(RendererState.STOPPED);
+        }
     }
 
     @Override
@@ -61,10 +70,10 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
     public void mediaChanged(MediaPlayer mediaPlayer, libvlc_media_t media, String mrl) {
         PlayBlock.logf(Level.INFO, "Now playing %s...", mrl);
     }
-    
+
     private RendererState getPrimaryState() {
         libvlc_state_t state = renderer.getVLCJPlayer().getMediaState();
-        
+
         if (state == null) {
             return RendererState.ERROR;
         }
