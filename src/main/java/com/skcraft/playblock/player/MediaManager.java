@@ -34,7 +34,7 @@ public class MediaManager {
     private MediaRenderer activeRenderer;
     private float volume = 1;
     private EmbeddedInstaller installer;
-    private long currentTime;
+    private long currentTime = 0;
     
     // Simple texture cache
 

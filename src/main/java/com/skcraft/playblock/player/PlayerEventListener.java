@@ -37,6 +37,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
         }
         else {
             renderer.setState(RendererState.STOPPED);
+            PlayBlock.getClientRuntime().getMediaManager().setCurrentTime(0);
         }
     }
 
