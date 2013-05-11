@@ -34,6 +34,7 @@ public class MediaManager {
     private MediaRenderer activeRenderer;
     private float volume = 1;
     private EmbeddedInstaller installer;
+    private long currentTime;
     
     // Simple texture cache
 
@@ -253,6 +254,24 @@ public class MediaManager {
      */
     public float getVolume() {
         return volume;
+    }
+    
+    /**
+     * Returns the current time of the video.
+     * 
+     * @return the time
+     */
+    public long getCurrentTime() {
+        return currentTime;
+    }
+    
+    /**
+     * Sets the current time of the video.
+     * 
+     * @param time the time
+     */
+    public void setCurrentTime(long time) {
+        currentTime = time;
     }
 
 }

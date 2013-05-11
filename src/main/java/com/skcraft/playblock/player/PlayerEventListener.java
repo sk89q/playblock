@@ -53,6 +53,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
     @Override
     public void playing(MediaPlayer mediaPlayer) {
         renderer.setState(RendererState.PLAYING);
+        mediaPlayer.setTime(PlayBlock.getClientRuntime().getMediaManager().getCurrentTime());
     }
 
     @Override
