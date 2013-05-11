@@ -21,6 +21,16 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 public class SharedRuntime {
 
     private Block projectorBlock;
+    SharedConfiguration config;
+    
+    /**
+     * Gets the configuration.
+     * 
+     * @return the configuration
+     */
+    public SharedConfiguration getConfig() {
+        return config;
+    }
 
     /**
      * Called on FML pre-initialization.
@@ -28,6 +38,7 @@ public class SharedRuntime {
      * @param event the event
      */
     public void preInit(FMLPreInitializationEvent event) {
+        config = new SharedConfiguration("PlayBlock.cfg");
     }
 
     /**
@@ -36,7 +47,7 @@ public class SharedRuntime {
      * @param event the event
      */
     public void load(FMLInitializationEvent event) {
-        projectorBlock = new ProjectorBlock(3400, 0, Material.iron)
+        projectorBlock = new ProjectorBlock(getConfig().getInt("playblock.id", 3400), 0, Material.iron)
                 .setHardness(0.5F).setStepSound(Block.soundGlassFootstep)
                 .setLightValue(1.0F)
                 .setBlockName(ProjectorBlock.INTERNAL_NAME)
@@ -46,6 +57,7 @@ public class SharedRuntime {
         GameRegistry.registerTileEntity(ProjectorTileEntity.class,
                 ProjectorTileEntity.INTERNAL_NAME);
         LanguageRegistry.addName(projectorBlock, "PlayBlock Projector");
+        getConfig().save();
     }
 
     /**

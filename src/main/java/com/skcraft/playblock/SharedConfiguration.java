@@ -1,4 +1,4 @@
-package com.skcraft.playblock.client;
+package com.skcraft.playblock;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,31 +12,26 @@ import com.skcraft.playblock.PlayBlock;
 
 import cpw.mods.fml.common.Loader;
 
-public class ClientOptions {
+public class SharedConfiguration {
 
     private File options;
     private Properties props;
 
-    public ClientOptions() {
+    public SharedConfiguration(String fileName) {
         File configDir = Loader.instance().getConfigDir();
         props = new Properties();
         try {
-            options = new File(configDir, "PlayBlockSettings.txt");
-            if(options.createNewFile()) {
-                props.setProperty("volume", String.valueOf(1));
-            }
+            options = new File(configDir, fileName);
             props.load(new FileInputStream(options));
-            save();
         }
         catch(FileNotFoundException e) {
-            PlayBlock.log(Level.WARNING, "Failed to find the client options " +
-            		"file");
+            PlayBlock.log(Level.WARNING, "Failed to find " + options.getName());
         }
         catch(IOException e) {
-            PlayBlock.log(Level.WARNING, "Failed to load client settings");
+            PlayBlock.log(Level.WARNING, "Failed to load " + options.getName());
         }
     }
-    
+
     /**
      * Save the properties to a file.
      */
@@ -45,13 +40,37 @@ public class ClientOptions {
             props.store(new FileOutputStream(options), null);
         }
         catch(FileNotFoundException e) {
-            PlayBlock.log(Level.WARNING, "Failed to find client options file");
+            PlayBlock.log(Level.WARNING, "Failed to find " + options.getName());
         }
         catch(IOException e) {
-            PlayBlock.log(Level.WARNING, "Failed to save client settings");
+            PlayBlock.log(Level.WARNING, "Failed to save " + options.getName());
         }
     }
     
+    /**
+     * Gets an integer.
+     * 
+     * @param key
+     * @param def
+     * @return the value
+     */
+    public int getInt(String key, int def) {
+        String value = props.getProperty(key);
+        if(value != null) {
+            try {
+                return Integer.parseInt(value);
+            }
+            catch(NumberFormatException e) {
+                props.setProperty(key, String.valueOf(def));
+                return def;
+            }
+        }
+        else {
+            props.setProperty(key, String.valueOf(def));
+            return def;
+        }
+    }
+
     /**
      * Gets a float value.
      * 
@@ -75,7 +94,7 @@ public class ClientOptions {
             return def;
         }
     }
-    
+
     /**
      * Sets a float value and saves it to the properties file.
      * 
