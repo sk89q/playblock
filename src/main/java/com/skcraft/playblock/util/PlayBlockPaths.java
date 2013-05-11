@@ -16,9 +16,6 @@ import com.skcraft.playblock.util.EnvUtils.Arch;
  */
 public final class PlayBlockPaths {
     
-    private static final boolean IGNORE_SYSTEM_LIBS = 
-            System.getProperty("playBlock.ignoreSystemLibs", "false")
-            .equalsIgnoreCase("true");
     private static final String APP_DIR_NAME = "PlayBlock";
 
     private PlayBlockPaths() {
@@ -107,6 +104,17 @@ public final class PlayBlockPaths {
     }
     
     /**
+     * Returns whether the given path contains an installation of our libraries.
+     * 
+     * @param dir the directory
+     * @return true if it contains the install
+     */
+    public static boolean containsInstall(File dir) {
+        // Fudge it because we don't store an identifying file (yet)
+        return new File(dir, "lib").exists() || new File(dir, "plugins").exists();
+    }
+    
+    /**
      * Get a list of search paths for native libraries.
      * 
      * @return a list of paths
@@ -114,12 +122,21 @@ public final class PlayBlockPaths {
     public static Collection<File> getSearchPaths() {
         Set<File> searchPaths = new HashSet<File>();
         
-        // Use the path to the central directory for this platform
-        searchPaths.add(getPlayBlockArchLibsDir());
+        String useSystemLibs = System.getProperty("playBlock.useSystemLibs", "true");
+        
+        // Prefer using the version of VLC that we have installed because we know
+        // that it works, and ignore system libraries because they might override our
+        // installation and not even work
+        File ourInstallDir = getPlayBlockArchLibsDir();
+        searchPaths.add(ourInstallDir);
+        searchPaths.add(new File(ourInstallDir, "lib"));
 
-        switch (EnvUtils.getPlatform()) {
-        case WINDOWS:
-            if (!IGNORE_SYSTEM_LIBS) {
+        if ((!containsInstall(ourInstallDir) && 
+                !useSystemLibs.equalsIgnoreCase("false")) ||
+                useSystemLibs.equalsIgnoreCase("force")) {
+            
+            switch (EnvUtils.getPlatform()) {
+            case WINDOWS:
                 File getProgramFiles = getProgramFiles();
                 File programFiles32 = getProgramFiles32();
     
@@ -144,29 +161,23 @@ public final class PlayBlockPaths {
                     }
                 } catch (Throwable t) {
                 }
-            }
-            
-            break;
-            
-        case MAC_OS_X:
-            if (!IGNORE_SYSTEM_LIBS) {
+                
+                break;
+                
+            case MAC_OS_X:
                 // This may or may not work
                 searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS"));
                 searchPaths.add(new File("/Applications/VLC.app/Contents/MacOS/lib"));
-            }
-            
-            // It actually uses the lib directory
-            searchPaths.add(new File(getPlayBlockArchLibsDir(), "lib"));
-            break;
-            
-        case LINUX:
-        case SOLARIS:
-        case UNKNOWN:
-            if (!IGNORE_SYSTEM_LIBS) {
+                
+                break;
+                
+            case LINUX:
+            case SOLARIS:
+            case UNKNOWN:
                 searchPaths.add(new File("/lib"));
                 searchPaths.add(new File("/usr/local/lib"));
+                break;
             }
-            break;
         }
         
         return searchPaths;
