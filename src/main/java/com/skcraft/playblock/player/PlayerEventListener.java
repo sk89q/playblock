@@ -45,7 +45,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
             mediaPlayer.playMedia(subItemURI);
         } else {
             renderer.setState(RendererState.STOPPED);
-            PlayBlock.getClientRuntime().getMediaManager().setCurrentTime(0);
         }
     }
 
