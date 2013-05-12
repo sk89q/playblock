@@ -23,6 +23,7 @@ public final class MediaRenderer implements RenderCallback {
     private final int textureIndex;
     private boolean released = false;
     private RendererState state = RendererState.INITIALIZING;
+    private PlayerEventListener listener;
     private DirectMediaPlayer player;
     private ByteBuffer buffer = null;
 
@@ -58,7 +59,8 @@ public final class MediaRenderer implements RenderCallback {
                         "RGBA", width, height, width * 4, instance);
                 player.setPlaySubItems(true);
                 player.setRepeat(true);
-                player.addMediaPlayerEventListener(new PlayerEventListener(instance));
+                player.addMediaPlayerEventListener(
+                        listener = new PlayerEventListener(instance));
                 player.setVolume((int) (volume * 100));
                 
                 instance.player = player;
@@ -127,19 +129,34 @@ public final class MediaRenderer implements RenderCallback {
      * Play a media file or URL.
      * 
      * @param uri the path to play
+     * @param position milliseconds to skip in the video
+     * @param repeat true to repeat the video
      */
-    public void playMedia(final String uri) {
+    public void playMedia(final String uri, final long position, final boolean repeat) {
         if (isReleased()) {
             throw new RuntimeException("Cannot play media on released player");
         }
         
+        final long startTime = System.currentTimeMillis() - position;
+        
         mediaManager.executeThreadSafe(new Runnable() {
             @Override
             public void run() {
+                listener.setSeekPosition(position);
                 player.playMedia(uri); // player should NOT be null
+                player.setRepeat(repeat);
                 buffer = null;
             }
         });
+    }
+
+    /**
+     * Play a media file or URL, defaulting to repeat.
+     * 
+     * @param uri the path to play
+     */
+    public void playMedia(final String uri) {
+        playMedia(uri, -1, true);
     }
 
     /**

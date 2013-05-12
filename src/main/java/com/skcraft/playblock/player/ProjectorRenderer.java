@@ -90,16 +90,16 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
                 renderer.drawMedia(0, 0, width, height);
                 RendererState status = renderer.getState();
                 
-                if (!projector.hasPlayableUri()) {
+                if (!projector.isPlayable()) {
                     drawTextBox(0, 0, width, height, true, 0xffff0000,
                             "No video set!");
                 } else if (status == RendererState.INITIALIZING) {
-                    double t = System.currentTimeMillis() - projector.getPlayStartTime();
+                    double t = System.currentTimeMillis() - projector.getDisplayStartTime();
                     if (drawLogo(t, width, height)) {
                         drawSpinner(t, width, height);
                     }
                 } else if (status == RendererState.BUFFERING) {
-                    double t = System.currentTimeMillis() - projector.getPlayStartTime();
+                    double t = System.currentTimeMillis() - projector.getDisplayStartTime();
                     if (drawLogo(t, width, height)) {
                         drawSpinner(t, width, height);
                     }

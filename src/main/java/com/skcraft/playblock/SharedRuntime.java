@@ -5,6 +5,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 
+import com.skcraft.playblock.media.MediaResolver;
+import com.skcraft.playblock.media.QueueManager;
 import com.skcraft.playblock.player.ProjectorBlock;
 import com.skcraft.playblock.player.ProjectorTileEntity;
 
@@ -21,7 +23,9 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 public class SharedRuntime {
 
     private Block projectorBlock;
-    SharedConfiguration config;
+    private QueueManager queueManager;
+    private MediaResolver mediaResolver;
+    private SharedConfiguration config;
     
     /**
      * Gets the configuration.
@@ -47,6 +51,9 @@ public class SharedRuntime {
      * @param event the event
      */
     public void load(FMLInitializationEvent event) {
+        queueManager = new QueueManager();
+        mediaResolver = new MediaResolver();
+        
         projectorBlock = new ProjectorBlock(getConfig().getInt("playblock.id", 3400), 0, Material.iron)
                 .setHardness(0.5F).setStepSound(Block.soundGlassFootstep)
                 .setLightValue(1.0F)
@@ -75,6 +82,14 @@ public class SharedRuntime {
      * @param event the event
      */
     public void serverStopping(FMLServerStoppingEvent event) {
+    }
+
+    public QueueManager getQueueManager() {
+        return queueManager;
+    }
+
+    public MediaResolver getMediaResolver() {
+        return mediaResolver;
     }
 
     public void showProjectorGui(EntityPlayer player, ProjectorTileEntity tileEntity) {

@@ -4,7 +4,6 @@ import java.util.logging.Level;
 
 import com.skcraft.playblock.client.ClientRuntime;
 
-
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -32,7 +31,7 @@ public class PlayBlock {
     @Instance
     public static PlayBlock instance;
 
-    @SidedProxy(serverSide = "com.skcraft.playblock.SharedRuntime",
+    @SidedProxy(serverSide = "com.skcraft.playblock.ServerRuntime",
                 clientSide = "com.skcraft.playblock.client.ClientRuntime")
     public static SharedRuntime runtime;
 

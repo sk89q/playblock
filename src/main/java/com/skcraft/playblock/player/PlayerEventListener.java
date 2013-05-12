@@ -16,9 +16,18 @@ import com.skcraft.playblock.PlayBlock;
 public class PlayerEventListener extends MediaPlayerEventAdapter {
 
     private final MediaRenderer renderer;
-
+    private long seekPosition = 0;
+    
     public PlayerEventListener(MediaRenderer renderer) {
         this.renderer = renderer;
+    }
+
+    public long getSeekPosition() {
+        return seekPosition;
+    }
+
+    public void setSeekPosition(long seekPosition) {
+        this.seekPosition = seekPosition;
     }
 
     @Override
@@ -29,13 +38,12 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
 
     @Override
     public void finished(MediaPlayer mediaPlayer) {
-        //Used for YouTube videos.
+        // Used for YouTube videos
         List<String> subItems = mediaPlayer.subItems();
-        if(subItems != null && !subItems.isEmpty()) {
+        if (subItems != null && !subItems.isEmpty()) {
             String subItemURI = subItems.get(0);
             mediaPlayer.playMedia(subItemURI);
-        }
-        else {
+        } else {
             renderer.setState(RendererState.STOPPED);
             PlayBlock.getClientRuntime().getMediaManager().setCurrentTime(0);
         }
@@ -54,6 +62,10 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
     @Override
     public void playing(MediaPlayer mediaPlayer) {
         renderer.setState(RendererState.PLAYING);
+        long position = getSeekPosition();
+        if (position > 0) {
+            mediaPlayer.setTime(position);
+        }
     }
 
     @Override
