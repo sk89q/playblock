@@ -51,7 +51,6 @@ public class ProjectorTileEntity extends TileEntity {
     private MediaRenderer renderer;
     private boolean withinRange = false;
     private long playStartTime = 0;
-    private long updateReceivedTime = 0;
     private String lastUri;
     private float rendererWidth;
     private float rendererHeight;
@@ -254,7 +253,7 @@ public class ProjectorTileEntity extends TileEntity {
     public boolean isWithinRange() {
         return withinRange;
     }
-    
+
     /**
      * Get the start time (in milliseconds) when play started.
      * 
@@ -262,15 +261,6 @@ public class ProjectorTileEntity extends TileEntity {
      */
     public long getPlayStartTime() {
         return playStartTime;
-    }
-
-    /**
-     * Get the time (in milliseconds) when an update was received.
-     * 
-     * @return the update time.
-     */
-    public long getUpdateReceivedTime() {
-        return updateReceivedTime;
     }
 
     /**
@@ -307,7 +297,6 @@ public class ProjectorTileEntity extends TileEntity {
                 lastUri = uri;
                 renderer.playMedia(uri);
                 playStartTime = System.currentTimeMillis();
-                mediaManager.setCurrentTime(System.currentTimeMillis() - updateReceivedTime);
             }
         }
     }
@@ -423,8 +412,7 @@ public class ProjectorTileEntity extends TileEntity {
                 PlayBlock.log(Level.WARNING, "Failed to handle update packet sent from " +
                 		"the client");
             }
-            
-            updateReceivedTime = System.currentTimeMillis();
+    
             // Now let's send the updates to players around the area
             PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
                     worldObj.provider.dimensionId, getDescriptionPacket());
@@ -446,7 +434,7 @@ public class ProjectorTileEntity extends TileEntity {
             Packet132TileEntityData packet) {
         // Process data from the server
         if (this.worldObj.isRemote) {
-            readFromClientNBT(packet.customParam1);
+            readFromCientNBT(packet.customParam1);
         }
     }
 
@@ -467,13 +455,12 @@ public class ProjectorTileEntity extends TileEntity {
         tag.setFloat("height", getHeight());
         tag.setFloat("triggerRange", getTriggerRange());
         tag.setFloat("fadeRange", getFadeRange());
-        tag.setLong("updateTime", updateReceivedTime);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         super.readFromNBT(tag);
-        readFromClientNBT(tag);
+        readFromCientNBT(tag);
     }
 
     /**
@@ -481,13 +468,12 @@ public class ProjectorTileEntity extends TileEntity {
      * 
      * @param tag the tag
      */
-    private void readFromClientNBT(NBTTagCompound tag) {
+    private void readFromCientNBT(NBTTagCompound tag) {
         setUri(tag.getString("uri"));
         setWidth(tag.getFloat("width"));
         setHeight(tag.getFloat("height"));
         setTriggerRange(tag.getFloat("triggerRange"));
         setFadeRange(tag.getFloat("fadeRange"));
-        updateReceivedTime = tag.getLong("updateTime");
 
         if (hasRenderer()) {
             tryPlayingMedia();
