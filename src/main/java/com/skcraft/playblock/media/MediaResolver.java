@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import com.skcraft.playblock.util.Validate;
 
+import cpw.mods.fml.common.FMLCommonHandler;
+
 /**
  * A media resolver identifies types and media and returns metadata about media
  * when it can be retrieved. An example of metadata would be the length of a clip.
@@ -107,8 +109,8 @@ public class MediaResolver {
             return false;
         }
         
-        // Override with -DplayBlock.allowAnyUri=true
-        if (ALLOW_ANY_URI) {
+        // Override with -DplayBlock.allowAnyUri=true or Singleplayer
+        if (ALLOW_ANY_URI || FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
             return true;
         }
         

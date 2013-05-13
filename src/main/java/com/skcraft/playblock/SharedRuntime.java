@@ -4,10 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.media.QueueManager;
 import com.skcraft.playblock.player.ProjectorBlock;
+import com.skcraft.playblock.player.ProjectorRemoteItem;
 import com.skcraft.playblock.player.ProjectorTileEntity;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
@@ -23,6 +25,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 public class SharedRuntime {
 
     private Block projectorBlock;
+    private Item projectorRemoteItem;
     private QueueManager queueManager;
     private MediaResolver mediaResolver;
     private SharedConfiguration config;
@@ -64,6 +67,9 @@ public class SharedRuntime {
         GameRegistry.registerTileEntity(ProjectorTileEntity.class,
                 ProjectorTileEntity.INTERNAL_NAME);
         LanguageRegistry.addName(projectorBlock, "PlayBlock Projector");
+        
+        projectorRemoteItem = new ProjectorRemoteItem(getConfig().getInt("playremote.id", 15000));
+        
         getConfig().save();
     }
 
