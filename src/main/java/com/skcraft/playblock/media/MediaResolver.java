@@ -41,8 +41,9 @@ public class MediaResolver {
      * @param uri the URI
      * @return information about the given URI, possibly none
      * @throws IOException on an error
+     * @throws QueueException on non-I/O error
      */
-    public Media lookup(String uri) throws IOException {
+    public Media lookup(String uri) throws IOException, QueueException {
         Validate.notNull(uri);
         
         MediaProvider mostConfident = null;
