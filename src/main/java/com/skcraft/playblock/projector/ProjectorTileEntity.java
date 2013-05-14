@@ -13,6 +13,7 @@ import net.minecraft.util.AxisAlignedBB;
 
 import com.sk89q.forge.NbtEntityList;
 import com.sk89q.forge.NbtEntityListener;
+import com.sk89q.forge.Payload;
 import com.sk89q.forge.TileEntityPayloadReceiver;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.player.MediaPlayerClient;
@@ -20,6 +21,7 @@ import com.skcraft.playblock.player.MediaPlayerHost;
 import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
+import com.skcraft.playblock.util.Validate;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -100,6 +102,25 @@ public class ProjectorTileEntity extends TileEntity
         }
         
         return rangeTest.getCachedInRange();
+    }
+
+    /**
+     * Wraps the given payload to make sure that it can be later processed
+     * by {@link #readClientPayload(EntityPlayerMP, DataInputStream)}.
+     * 
+     * <p>Only supported payload types can be passed into this method, otherwise
+     * a {@link RuntimeException} may be thrown.</p>
+     * 
+     * @return a payload to wrap
+     */
+    public Payload wrapPayloadForSend(Payload payload) {
+        Validate.notNull(payload);
+        if (payload instanceof ProjectorUpdatePayload) {
+            return payload;
+        } else {
+            throw new RuntimeException("Invalid payload received of type " + 
+                    payload.getClass().getCanonicalName());
+        }
     }
 
     @Override

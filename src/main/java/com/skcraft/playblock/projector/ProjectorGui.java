@@ -118,7 +118,7 @@ public class ProjectorGui extends GuiScreen {
             update.setTriggerRange(triggerRange);
             update.setFadeRange(fadeRange);
             PlayBlockPayload payload = new PlayBlockPayload(
-                    new TileEntityPayload(tile, update));
+                    new TileEntityPayload(tile, tile.wrapPayloadForSend(update)));
             PacketHandler.sendToServer(payload);
 
             this.mc.displayGuiScreen((GuiScreen) null);
