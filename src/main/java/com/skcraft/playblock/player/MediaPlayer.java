@@ -2,7 +2,7 @@ package com.skcraft.playblock.player;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import com.sk89q.forge.AbstractNbtEntity;
+import com.sk89q.forge.AbstractBehavior;
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.util.MathUtils;
 import com.skcraft.playblock.util.Validate;
@@ -11,7 +11,7 @@ import com.skcraft.playblock.util.Validate;
  * This class (and its subclasses) manage a media player that is appropriately
  * synchronized between a server and clients.
  */
-public abstract class MediaPlayer extends AbstractNbtEntity {
+public abstract class MediaPlayer extends AbstractBehavior {
 
     private static final int MAX_SCREEN_SIZE = 64;
 

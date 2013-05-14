@@ -2,15 +2,14 @@ package com.sk89q.forge;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-
 /**
- * Listener for {@link NbtEntity} events.
+ * Listener for {@link Behavior} events.
  */
-public interface NbtEntityListener {
+public interface BehaviorListener {
     
     /**
      * Called when NBT data needs to be sent and later processed with
-     * {@link NbtEntity#handleNetworkNbtEvent(NBTTagCompound)}.
+     * {@link Behavior#handleNetworkNbtEvent(NBTTagCompound)}.
      * 
      * @param tag the tag
      */

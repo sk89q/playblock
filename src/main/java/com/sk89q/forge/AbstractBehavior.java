@@ -7,23 +7,23 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 
 
-public abstract class AbstractNbtEntity implements NbtEntity {
+public abstract class AbstractBehavior implements Behavior {
     
-    private List<NbtEntityListener> listeners = new ArrayList<NbtEntityListener>();
+    private List<BehaviorListener> listeners = new ArrayList<BehaviorListener>();
 
     public void fireNbtEvent(NBTTagCompound tag) {
-        for (NbtEntityListener listener : listeners) {
+        for (BehaviorListener listener : listeners) {
             listener.nbtEvent(tag);
         }
     }
 
     @Override
-    public void addNbtEntityListener(NbtEntityListener listener) {
+    public void addBehaviorListener(BehaviorListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeNbtEntityListener(NbtEntityListener listener) {
+    public void removeBehaviorListener(BehaviorListener listener) {
         listeners.remove(listener);
     }
 

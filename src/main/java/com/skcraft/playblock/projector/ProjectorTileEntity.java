@@ -11,8 +11,8 @@ import net.minecraft.network.packet.Packet132TileEntityData;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
-import com.sk89q.forge.NbtEntityList;
-import com.sk89q.forge.NbtEntityListener;
+import com.sk89q.forge.BehaviorList;
+import com.sk89q.forge.BehaviorListener;
 import com.sk89q.forge.Payload;
 import com.sk89q.forge.PayloadReceiver;
 import com.skcraft.playblock.player.MediaPlayer;
@@ -32,11 +32,11 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The tile entity for the projector block.
  */
 public class ProjectorTileEntity extends TileEntity 
-        implements NbtEntityListener, PayloadReceiver {
+        implements BehaviorListener, PayloadReceiver {
     
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
-    private final NbtEntityList nbtEntities = new NbtEntityList();
+    private final BehaviorList behaviors = new BehaviorList();
     private final AccessList accessList;
     private final MediaPlayer mediaPlayer;
     private final DoubleThresholdRange range;
@@ -47,18 +47,18 @@ public class ProjectorTileEntity extends TileEntity
      * Construct a new instance of the projector tile entity.
      */
     public ProjectorTileEntity() {
-        nbtEntities.addNbtEntityListener(this);
-        nbtEntities.add(range = new DoubleThresholdRange());
+        behaviors.addBehaviorListener(this);
+        behaviors.add(range = new DoubleThresholdRange());
         
         Side side = FMLCommonHandler.instance().getEffectiveSide();
 
         if (side == Side.CLIENT) {
             accessList = null;
-            nbtEntities.add(mediaPlayer = new MediaPlayerClient());
+            behaviors.add(mediaPlayer = new MediaPlayerClient());
             rangeTest = range.createRangeTest();
         } else {
             accessList = new AccessList();
-            nbtEntities.add(mediaPlayer = new MediaPlayerHost());
+            behaviors.add(mediaPlayer = new MediaPlayerHost());
             rangeTest = null;
         }
 
@@ -152,7 +152,7 @@ public class ProjectorTileEntity extends TileEntity
     public Packet getDescriptionPacket() {
         // Client -> Server
         NBTTagCompound tag = new NBTTagCompound();
-        nbtEntities.toNetworkSnapshotNbt(tag);
+        behaviors.toNetworkSnapshotNbt(tag);
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, -1, tag);
     }
 
@@ -160,7 +160,7 @@ public class ProjectorTileEntity extends TileEntity
     public void onDataPacket(INetworkManager net, Packet132TileEntityData packet) {
         // Only called on the client
         NBTTagCompound tag = packet.customParam1;
-        nbtEntities.fromNetworkSnapshotNbt(tag);
+        behaviors.fromNetworkSnapshotNbt(tag);
     }
     
     @Override
@@ -176,14 +176,14 @@ public class ProjectorTileEntity extends TileEntity
     public void writeToNBT(NBTTagCompound tag) {
         // Saving to disk
         super.writeToNBT(tag);
-        nbtEntities.toWorldSaveNbt(tag);
+        behaviors.toWorldSaveNbt(tag);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         // Saving to disk
         super.readFromNBT(tag);
-        nbtEntities.fromWorldSaveNbt(tag);
+        behaviors.fromWorldSaveNbt(tag);
     }
 
     @Override

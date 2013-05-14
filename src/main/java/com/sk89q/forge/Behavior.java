@@ -3,10 +3,10 @@ package com.sk89q.forge;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * A utility interface used to more easily keep a synchronized and persistent state
- * of an NBT-supporting object.
+ * An object that is automatically managed in regards to saving its persistent data and
+ * some of its network synchronization concerns.
  */
-public interface NbtEntity {
+public interface Behavior {
 
     /**
      * Write NBT data that needs to be saved to the world.
@@ -40,7 +40,7 @@ public interface NbtEntity {
     
     /**
      * Read NBT data that has been sent from 
-     * {@link NbtEntityListener#nbtEvent(NBTTagCompound)}.
+     * {@link BehaviorListener#nbtEvent(NBTTagCompound)}.
      * 
      * @param tag the tag
      */
@@ -51,14 +51,14 @@ public interface NbtEntity {
      * 
      * @param listener the listener
      */
-    void addNbtEntityListener(NbtEntityListener listener);
+    void addBehaviorListener(BehaviorListener listener);
 
     /**
      * Remove a listener.
      * 
      * @param listener the listener
      */
-    void removeNbtEntityListener(NbtEntityListener listener);
+    void removeBehaviorListener(BehaviorListener listener);
     
 }
 

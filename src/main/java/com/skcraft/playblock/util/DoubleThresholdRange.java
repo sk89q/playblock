@@ -4,13 +4,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
-import com.sk89q.forge.AbstractNbtEntity;
+import com.sk89q.forge.AbstractBehavior;
 
 
 /**
  * Manages subscribing clients to a resource based on their distance away.
  */
-public class DoubleThresholdRange extends AbstractNbtEntity {
+public class DoubleThresholdRange extends AbstractBehavior {
 
     private static final int MAX_RANGE = 64;
     private static final int MIN_BUFFER_RANGE = 5;

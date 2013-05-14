@@ -8,11 +8,13 @@ import java.util.ListIterator;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-
-public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListener {
+/**
+ * Manages a list of {@link Behavior}s.
+ */
+public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener {
     
-    private List<NbtEntity> list = new ArrayList<NbtEntity>();
-    private List<NbtEntityListener> listeners = new ArrayList<NbtEntityListener>();
+    private List<Behavior> list = new ArrayList<Behavior>();
+    private List<BehaviorListener> listeners = new ArrayList<BehaviorListener>();
 
     @Override
     public int size() {
@@ -30,7 +32,7 @@ public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListe
     }
 
     @Override
-    public Iterator<NbtEntity> iterator() {
+    public Iterator<Behavior> iterator() {
         return list.iterator();
     }
 
@@ -45,7 +47,7 @@ public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListe
     }
 
     @Override
-    public boolean add(NbtEntity e) {
+    public boolean add(Behavior e) {
         return list.add(e);
     }
 
@@ -60,12 +62,12 @@ public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListe
     }
 
     @Override
-    public boolean addAll(Collection<? extends NbtEntity> c) {
+    public boolean addAll(Collection<? extends Behavior> c) {
         return list.addAll(c);
     }
 
     @Override
-    public boolean addAll(int index, Collection<? extends NbtEntity> c) {
+    public boolean addAll(int index, Collection<? extends Behavior> c) {
         return list.addAll(index, c);
     }
 
@@ -95,22 +97,22 @@ public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListe
     }
 
     @Override
-    public NbtEntity get(int index) {
+    public Behavior get(int index) {
         return list.get(index);
     }
 
     @Override
-    public NbtEntity set(int index, NbtEntity element) {
+    public Behavior set(int index, Behavior element) {
         return list.set(index, element);
     }
 
     @Override
-    public void add(int index, NbtEntity element) {
+    public void add(int index, Behavior element) {
         list.add(index, element);
     }
 
     @Override
-    public NbtEntity remove(int index) {
+    public Behavior remove(int index) {
         return list.remove(index);
     }
 
@@ -125,69 +127,69 @@ public class NbtEntityList implements List<NbtEntity>, NbtEntity, NbtEntityListe
     }
 
     @Override
-    public ListIterator<NbtEntity> listIterator() {
+    public ListIterator<Behavior> listIterator() {
         return list.listIterator();
     }
 
     @Override
-    public ListIterator<NbtEntity> listIterator(int index) {
+    public ListIterator<Behavior> listIterator(int index) {
         return list.listIterator(index);
     }
 
     @Override
-    public List<NbtEntity> subList(int fromIndex, int toIndex) {
+    public List<Behavior> subList(int fromIndex, int toIndex) {
         return list.subList(fromIndex, toIndex);
     }
 
     @Override
     public void toWorldSaveNbt(NBTTagCompound tag) {
-        for (NbtEntity entity : this) {
+        for (Behavior entity : this) {
             entity.toWorldSaveNbt(tag);
         }
     }
 
     @Override
     public void fromWorldSaveNbt(NBTTagCompound tag) {
-        for (NbtEntity entity : this) {
+        for (Behavior entity : this) {
             entity.fromWorldSaveNbt(tag);
         }
     }
 
     @Override
     public void toNetworkSnapshotNbt(NBTTagCompound tag) {
-        for (NbtEntity entity : this) {
+        for (Behavior entity : this) {
             entity.toNetworkSnapshotNbt(tag);
         }
     }
 
     @Override
     public void fromNetworkSnapshotNbt(NBTTagCompound tag) {
-        for (NbtEntity entity : this) {
+        for (Behavior entity : this) {
             entity.fromNetworkSnapshotNbt(tag);
         }
     }
 
     @Override
     public void handleNetworkNbtEvent(NBTTagCompound tag) {
-        for (NbtEntity entity : this) {
+        for (Behavior entity : this) {
             entity.handleNetworkNbtEvent(tag);
         }
     }
 
     @Override
     public void nbtEvent(NBTTagCompound tag) {
-        for (NbtEntityListener listener : listeners) {
+        for (BehaviorListener listener : listeners) {
             listener.nbtEvent(tag);
         }
     }
 
     @Override
-    public void addNbtEntityListener(NbtEntityListener listener) {
+    public void addBehaviorListener(BehaviorListener listener) {
         listeners.add(listener);
     }
 
     @Override
-    public void removeNbtEntityListener(NbtEntityListener listener) {
+    public void removeBehaviorListener(BehaviorListener listener) {
         listeners.remove(listener);
     }
 
