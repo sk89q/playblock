@@ -11,9 +11,9 @@ import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.SharedConfiguration;
 import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
-import com.skcraft.playblock.player.ProjectorGui;
-import com.skcraft.playblock.player.ProjectorRenderer;
-import com.skcraft.playblock.player.ProjectorTileEntity;
+import com.skcraft.playblock.projector.ProjectorGui;
+import com.skcraft.playblock.projector.ProjectorRenderer;
+import com.skcraft.playblock.projector.ProjectorTileEntity;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;

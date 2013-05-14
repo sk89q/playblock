@@ -1,10 +1,14 @@
-package com.skcraft.playblock.player;
+package com.skcraft.playblock.projector;
 
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntity;
 
 import org.lwjgl.opengl.GL11;
 
+import com.skcraft.playblock.player.MediaManager;
+import com.skcraft.playblock.player.MediaPlayerClient;
+import com.skcraft.playblock.player.MediaRenderer;
+import com.skcraft.playblock.player.RendererState;
 import com.skcraft.playblock.util.DrawUtils;
 import com.skcraft.playblock.util.MathUtils;
 
@@ -39,8 +43,10 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
             double z, float direction) {
 
         ProjectorTileEntity projector = ((ProjectorTileEntity) tileEntity);
-        float width = projector.getWidth();
-        float height = projector.getHeight();
+        MediaPlayerClient mediaPlayer = (MediaPlayerClient) projector.getMediaPlayer();
+        
+        float width = mediaPlayer.getWidth();
+        float height = mediaPlayer.getHeight();
         int metadata = tileEntity.getBlockMetadata();
         float rot;
 
@@ -78,28 +84,28 @@ public class ProjectorRenderer extends TileEntitySpecialRenderer {
      */
     private void drawScreen(ProjectorTileEntity projector, float width, float height) {
         if (!mediaManager.isSupported()) {
-            if (projector.isWithinRange()) {
+            if (projector.inRange()) {
                 drawPlayBlockStatus(width, height);
             } else {
                 DrawUtils.drawRect(0, 0, width, height, 0xff000000);
             }
         } else {
-            MediaRenderer renderer = projector.getRenderer();
+            MediaPlayerClient mediaPlayer = ((MediaPlayerClient) projector.getMediaPlayer());
+            MediaRenderer renderer = mediaPlayer.getRenderer();
 
             if (renderer != null) {
                 renderer.drawMedia(0, 0, width, height);
                 RendererState status = renderer.getState();
                 
-                if (!projector.isPlayable()) {
-                    drawTextBox(0, 0, width, height, true, 0xffff0000,
-                            "No video set!");
+                if (!mediaPlayer.hasSomethingToPlay()) {
+                    drawTextBox(0, 0, width, height, true, 0xffff0000, "No video set!");
                 } else if (status == RendererState.INITIALIZING) {
-                    double t = System.currentTimeMillis() - projector.getDisplayStartTime();
+                    double t = System.currentTimeMillis() - renderer.getCreationTime();
                     if (drawLogo(t, width, height)) {
                         drawSpinner(t, width, height);
                     }
                 } else if (status == RendererState.BUFFERING) {
-                    double t = System.currentTimeMillis() - projector.getDisplayStartTime();
+                    double t = System.currentTimeMillis() - renderer.getCreationTime();
                     if (drawLogo(t, width, height)) {
                         drawSpinner(t, width, height);
                     }

@@ -1,4 +1,4 @@
-package com.skcraft.playblock.player;
+package com.skcraft.playblock.projector;
 
 import net.minecraft.item.Item;
 

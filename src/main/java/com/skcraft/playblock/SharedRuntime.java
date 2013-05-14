@@ -8,9 +8,9 @@ import net.minecraft.item.Item;
 
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.media.QueueManager;
-import com.skcraft.playblock.player.ProjectorBlock;
-import com.skcraft.playblock.player.ProjectorRemoteItem;
-import com.skcraft.playblock.player.ProjectorTileEntity;
+import com.skcraft.playblock.projector.ProjectorBlock;
+import com.skcraft.playblock.projector.ProjectorRemoteItem;
+import com.skcraft.playblock.projector.ProjectorTileEntity;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

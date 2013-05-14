@@ -22,7 +22,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(modid = "com.skcraft.PlayBlock", name = "PlayBlock", version = "XX", useMetadata = true)
 @NetworkMod(clientSideRequired = true, serverSideRequired = false,
-    channels = PlayBlock.CHANNEL_ID, packetHandler = ServerPacketHandler.class)
+    channels = PlayBlock.CHANNEL_ID, packetHandler = PacketHandler.class)
 public class PlayBlock {
 
     public static final String LOGGER_ID = "PlayBlock";

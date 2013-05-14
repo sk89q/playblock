@@ -18,6 +18,7 @@ import com.sun.jna.Memory;
 public final class MediaRenderer implements RenderCallback {
 
     private final MediaManager mediaManager;
+    private final long creationTime;
     private final int width;
     private final int height;
     private final int textureIndex;
@@ -36,6 +37,7 @@ public final class MediaRenderer implements RenderCallback {
      */
     MediaRenderer(MediaManager mediaManager, int width, int height, int textureIndex) {
         this.mediaManager = mediaManager;
+        this.creationTime = System.currentTimeMillis();
         this.width = width;
         this.height = height;
         this.textureIndex = textureIndex;
@@ -88,6 +90,15 @@ public final class MediaRenderer implements RenderCallback {
     }
     
     /**
+     * Get the time that this renderer was created at.
+     * 
+     * @return UNIX timestamp in milliseconds
+     */
+    public long getCreationTime() {
+        return creationTime;
+    }
+
+    /**
      * Return true if this renderer is being released or it has been released.
      * 
      * @return true if the renderer has been released
@@ -126,6 +137,24 @@ public final class MediaRenderer implements RenderCallback {
     }
 
     /**
+     * Get the width of the screen.
+     * 
+     * @return the width
+     */
+    public int getWidth() {
+        return width;
+    }
+
+    /**
+     * Get the height of the screen.
+     * 
+     * @return the height
+     */
+    public int getHeight() {
+        return height;
+    }
+
+    /**
      * Play a media file or URL.
      * 
      * @param uri the path to play
@@ -157,6 +186,19 @@ public final class MediaRenderer implements RenderCallback {
      */
     public void playMedia(final String uri) {
         playMedia(uri, -1, true);
+    }
+
+    /**
+     * Stop whatever is playing.
+     */
+    public void stop() {
+        
+        mediaManager.executeThreadSafe(new Runnable() {
+            @Override
+            public void run() {
+                player.stop();
+            }
+        });
     }
 
     /**

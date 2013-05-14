@@ -90,7 +90,7 @@ public class MediaManager {
      * 
      * @return a list of lines
      */
-    String[] getUnsupportedMessage() {
+    public String[] getUnsupportedMessage() {
         switch (getInstaller().getState()) {
         case NOT_INSTALLING:
             return INSTALL_MESSAGE;

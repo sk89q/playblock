@@ -1,4 +1,4 @@
-package com.skcraft.playblock.player;
+package com.skcraft.playblock.projector;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -7,10 +7,14 @@ import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import com.sk89q.forge.TileEntityPayload;
 import com.skcraft.playblock.LKey;
+import com.skcraft.playblock.PacketHandler;
+import com.skcraft.playblock.PlayBlockPayload;
 import com.skcraft.playblock.media.MediaResolver;
+import com.skcraft.playblock.player.MediaPlayer;
+import com.skcraft.playblock.util.DoubleThresholdRange;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -37,11 +41,13 @@ public class ProjectorGui extends GuiScreen {
 
     public ProjectorGui(ProjectorTileEntity tileEntity) {
         tile = tileEntity;
-        uri = tileEntity.getUri();
-        projectorWidth = tileEntity.getWidth();
-        projectorHeight = tileEntity.getHeight();
-        triggerRange = tileEntity.getTriggerRange();
-        fadeRange = tileEntity.getFadeRange();
+        MediaPlayer mediaPlayer = tileEntity.getMediaPlayer();
+        DoubleThresholdRange range = tileEntity.getRange();
+        uri = mediaPlayer.getUri();
+        projectorWidth = mediaPlayer.getWidth();
+        projectorHeight = mediaPlayer.getHeight();
+        triggerRange = range.getTriggerRange();
+        fadeRange = range.getFadeRange();
     }
 
     /**
@@ -105,17 +111,15 @@ public class ProjectorGui extends GuiScreen {
     @Override
     public void actionPerformed(GuiButton button) {
         if (button.id == applyButton.id) {
-            // Make a new tile entity so we don't change ours quite yet
-            // The server may reject our changes
-            ProjectorTileEntity newTile = new ProjectorTileEntity(tile);
-            newTile.setUri(uri);
-            newTile.setHeight(projectorHeight);
-            newTile.setWidth(projectorWidth);
-            newTile.setTriggerRange(triggerRange);
-            newTile.setFadeRange(fadeRange);
-
-            // Now tell the server about the changes
-            PacketDispatcher.sendPacketToServer(newTile.getUpdatePacket());
+            ProjectorUpdatePayload update = new ProjectorUpdatePayload();
+            update.setUri(uri);
+            update.setHeight(projectorHeight);
+            update.setWidth(projectorWidth);
+            update.setTriggerRange(triggerRange);
+            update.setFadeRange(fadeRange);
+            PlayBlockPayload payload = new PlayBlockPayload(
+                    new TileEntityPayload(tile, update));
+            PacketHandler.sendToServer(payload);
 
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();
