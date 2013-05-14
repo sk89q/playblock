@@ -8,7 +8,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 /**
  * Indicates an object that will receive a {@link TileEntityPayload}.
  */
-public interface TileEntityPayloadReceiver {
+public interface PayloadReceiver {
     
     /**
      * Process the payload, which will come from the client.
@@ -17,6 +17,6 @@ public interface TileEntityPayloadReceiver {
      * @param in stream
      * @throws IOException on I/O error
      */
-    void readClientPayload(EntityPlayerMP player, DataInputStream in) throws IOException;
+    void readPayload(EntityPlayerMP player, DataInputStream in) throws IOException;
 
 }

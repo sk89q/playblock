@@ -14,7 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.sk89q.forge.TileEntityPayload;
-import com.sk89q.forge.TileEntityPayloadReceiver;
+import com.sk89q.forge.PayloadReceiver;
 
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -69,9 +69,9 @@ public class PacketHandler implements IPacketHandler {
                 if (world.blockExists(x, y, z)) {
                     TileEntity tile = world.getBlockTileEntity(x, y, z);
                     
-                    if (tile instanceof TileEntityPayloadReceiver) {
-                        ((TileEntityPayloadReceiver) tile)
-                                .readClientPayload(entityPlayer, in);
+                    if (tile instanceof PayloadReceiver) {
+                        ((PayloadReceiver) tile)
+                                .readPayload(entityPlayer, in);
                     }
                 } else {
                     PlayBlock.log(Level.WARNING,

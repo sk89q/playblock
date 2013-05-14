@@ -14,7 +14,7 @@ import net.minecraft.util.AxisAlignedBB;
 import com.sk89q.forge.NbtEntityList;
 import com.sk89q.forge.NbtEntityListener;
 import com.sk89q.forge.Payload;
-import com.sk89q.forge.TileEntityPayloadReceiver;
+import com.sk89q.forge.PayloadReceiver;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.player.MediaPlayerClient;
 import com.skcraft.playblock.player.MediaPlayerHost;
@@ -32,7 +32,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The tile entity for the projector block.
  */
 public class ProjectorTileEntity extends TileEntity 
-        implements NbtEntityListener, TileEntityPayloadReceiver {
+        implements NbtEntityListener, PayloadReceiver {
     
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
@@ -106,12 +106,13 @@ public class ProjectorTileEntity extends TileEntity
 
     /**
      * Wraps the given payload to make sure that it can be later processed
-     * by {@link #readClientPayload(EntityPlayerMP, DataInputStream)}.
+     * by {@link #readPayload(EntityPlayerMP, DataInputStream)}.
      * 
      * <p>Only supported payload types can be passed into this method, otherwise
      * a {@link RuntimeException} may be thrown.</p>
      * 
-     * @return a payload to wrap
+     * @param payload payload to wrap
+     * @return payload to send
      */
     public Payload wrapPayloadForSend(Payload payload) {
         Validate.notNull(payload);
@@ -124,25 +125,26 @@ public class ProjectorTileEntity extends TileEntity
     }
 
     @Override
-    public void readClientPayload(EntityPlayerMP player, DataInputStream in)
-            throws IOException {
-        if (getAccessList().checkAndForget(player)) {
-            ProjectorUpdatePayload update = new ProjectorUpdatePayload();
-            update.read(in);
-            
-            // These values are validated
-            mediaPlayer.setUri(update.getUri());
-            mediaPlayer.setWidth(update.getWidth());
-            mediaPlayer.setHeight(update.getHeight());
-            range.setTriggerRange(update.getTriggerRange());
-            range.setFadeRange(update.getFadeRange());
-    
-            // Now let's send the updates to players around the area
-            PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
-                    worldObj.provider.dimensionId, getDescriptionPacket());
-        } else {
-            player.sendChatToPlayer("Sorry, you don't have permission " +
-            		"to modify that projector.");
+    public void readPayload(EntityPlayerMP player, DataInputStream in) throws IOException {
+        if (!worldObj.isRemote) {
+            if (getAccessList().checkAndForget(player)) {
+                ProjectorUpdatePayload update = new ProjectorUpdatePayload();
+                update.read(in);
+                
+                // These values are validated
+                mediaPlayer.setUri(update.getUri());
+                mediaPlayer.setWidth(update.getWidth());
+                mediaPlayer.setHeight(update.getHeight());
+                range.setTriggerRange(update.getTriggerRange());
+                range.setFadeRange(update.getFadeRange());
+        
+                // Now let's send the updates to players around the area
+                PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
+                        worldObj.provider.dimensionId, getDescriptionPacket());
+            } else {
+                player.sendChatToPlayer("Sorry, you don't have permission " +
+                        "to modify that projector.");
+            }
         }
     }
     
