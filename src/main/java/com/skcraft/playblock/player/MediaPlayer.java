@@ -118,12 +118,12 @@ public abstract class MediaPlayer extends AbstractBehavior {
     }
     
     @Override
-    public void toWorldSaveNbt(NBTTagCompound tag) {
+    public void writeSaveNBT(NBTTagCompound tag) {
         toSharedNbt(tag);
     }
     
     @Override
-    public void fromWorldSaveNbt(NBTTagCompound tag) {
+    public void readSaveNBT(NBTTagCompound tag) {
         fromSharedNbt(tag);
     }
 

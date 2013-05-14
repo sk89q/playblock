@@ -13,14 +13,14 @@ public interface Behavior {
      * 
      * @param tag the tag
      */
-    void toWorldSaveNbt(NBTTagCompound tag);
+    void writeSaveNBT(NBTTagCompound tag);
     
     /**
      * Read NBT data that has been retrieved from a saved world.
      * 
      * @param tag the tag
      */
-    void fromWorldSaveNbt(NBTTagCompound tag);
+    void readSaveNBT(NBTTagCompound tag);
     
     /**
      * Write NBT data that is sent to the client/server. The given NBT data should
@@ -28,7 +28,7 @@ public interface Behavior {
      * 
      * @param tag the tag
      */
-    void toNetworkSnapshotNbt(NBTTagCompound tag);
+    void writeNetworkedNBT(NBTTagCompound tag);
     
     /**
      * Read NBT data that is sent to the client/server. The given NBT data should
@@ -36,7 +36,7 @@ public interface Behavior {
      * 
      * @param tag the tag
      */
-    void fromNetworkSnapshotNbt(NBTTagCompound tag);
+    void readNetworkedNBT(NBTTagCompound tag);
     
     /**
      * Read NBT data that has been sent from 
@@ -44,7 +44,7 @@ public interface Behavior {
      * 
      * @param tag the tag
      */
-    void handleNetworkNbtEvent(NBTTagCompound tag);
+    void handleNBTEvent(NBTTagCompound tag);
     
     /**
      * Add a listener.

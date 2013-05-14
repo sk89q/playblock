@@ -142,37 +142,37 @@ public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener 
     }
 
     @Override
-    public void toWorldSaveNbt(NBTTagCompound tag) {
+    public void writeSaveNBT(NBTTagCompound tag) {
         for (Behavior entity : this) {
-            entity.toWorldSaveNbt(tag);
+            entity.writeSaveNBT(tag);
         }
     }
 
     @Override
-    public void fromWorldSaveNbt(NBTTagCompound tag) {
+    public void readSaveNBT(NBTTagCompound tag) {
         for (Behavior entity : this) {
-            entity.fromWorldSaveNbt(tag);
+            entity.readSaveNBT(tag);
         }
     }
 
     @Override
-    public void toNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void writeNetworkedNBT(NBTTagCompound tag) {
         for (Behavior entity : this) {
-            entity.toNetworkSnapshotNbt(tag);
+            entity.writeNetworkedNBT(tag);
         }
     }
 
     @Override
-    public void fromNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void readNetworkedNBT(NBTTagCompound tag) {
         for (Behavior entity : this) {
-            entity.fromNetworkSnapshotNbt(tag);
+            entity.readNetworkedNBT(tag);
         }
     }
 
     @Override
-    public void handleNetworkNbtEvent(NBTTagCompound tag) {
+    public void handleNBTEvent(NBTTagCompound tag) {
         for (Behavior entity : this) {
-            entity.handleNetworkNbtEvent(tag);
+            entity.handleNBTEvent(tag);
         }
     }
 

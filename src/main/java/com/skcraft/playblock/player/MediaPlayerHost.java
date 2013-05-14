@@ -63,7 +63,7 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     }
 
     @Override
-    public void toNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void writeNetworkedNBT(NBTTagCompound tag) {
         toSharedNbt(tag);
         
         if (inQueueMode()) {
@@ -76,12 +76,12 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     }
 
     @Override
-    public void fromNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void readNetworkedNBT(NBTTagCompound tag) {
         // State NBT can only come from the server
     }
 
     @Override
-    public void handleNetworkNbtEvent(NBTTagCompound tag) {
+    public void handleNBTEvent(NBTTagCompound tag) {
         // We don't get anything from the client
     }
 

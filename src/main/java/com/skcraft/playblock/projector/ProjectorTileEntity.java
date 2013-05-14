@@ -152,7 +152,7 @@ public class ProjectorTileEntity extends TileEntity
     public Packet getDescriptionPacket() {
         // Client -> Server
         NBTTagCompound tag = new NBTTagCompound();
-        behaviors.toNetworkSnapshotNbt(tag);
+        behaviors.writeNetworkedNBT(tag);
         return new Packet132TileEntityData(xCoord, yCoord, zCoord, -1, tag);
     }
 
@@ -160,7 +160,7 @@ public class ProjectorTileEntity extends TileEntity
     public void onDataPacket(INetworkManager net, Packet132TileEntityData packet) {
         // Only called on the client
         NBTTagCompound tag = packet.customParam1;
-        behaviors.fromNetworkSnapshotNbt(tag);
+        behaviors.readNetworkedNBT(tag);
     }
     
     @Override
@@ -176,14 +176,14 @@ public class ProjectorTileEntity extends TileEntity
     public void writeToNBT(NBTTagCompound tag) {
         // Saving to disk
         super.writeToNBT(tag);
-        behaviors.toWorldSaveNbt(tag);
+        behaviors.writeSaveNBT(tag);
     }
 
     @Override
     public void readFromNBT(NBTTagCompound tag) {
         // Saving to disk
         super.readFromNBT(tag);
-        behaviors.fromWorldSaveNbt(tag);
+        behaviors.readSaveNBT(tag);
     }
 
     @Override

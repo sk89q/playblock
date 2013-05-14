@@ -9,7 +9,7 @@ public interface BehaviorListener {
     
     /**
      * Called when NBT data needs to be sent and later processed with
-     * {@link Behavior#handleNetworkNbtEvent(NBTTagCompound)}.
+     * {@link Behavior#handleNBTEvent(NBTTagCompound)}.
      * 
      * @param tag the tag
      */

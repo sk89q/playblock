@@ -146,18 +146,18 @@ public class MediaPlayerClient extends MediaPlayer {
     }
     
     @Override
-    public void toNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void writeNetworkedNBT(NBTTagCompound tag) {
         // State NBT can only come from the server
     }
 
     @Override
-    public void fromNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void readNetworkedNBT(NBTTagCompound tag) {
         fromSharedNbt(tag);
         setPlayingFromTag(tag);
     }
 
     @Override
-    public void handleNetworkNbtEvent(NBTTagCompound tag) {
+    public void handleNBTEvent(NBTTagCompound tag) {
         setPlayingFromTag(tag);
     }
 

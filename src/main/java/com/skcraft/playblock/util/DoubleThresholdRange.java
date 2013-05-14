@@ -133,7 +133,7 @@ public class DoubleThresholdRange extends AbstractBehavior {
      * @param tag the tag
      */
     @Override
-    public void toWorldSaveNbt(NBTTagCompound tag) {
+    public void writeSaveNBT(NBTTagCompound tag) {
         tag.setFloat("triggerRange", getTriggerRange());
         tag.setFloat("fadeRange", getFadeRange());
     }
@@ -144,25 +144,25 @@ public class DoubleThresholdRange extends AbstractBehavior {
      * @param tag the tag
      */
     @Override
-    public void fromWorldSaveNbt(NBTTagCompound tag) {
+    public void readSaveNBT(NBTTagCompound tag) {
         setTriggerRange(tag.getFloat("triggerRange"));
         setFadeRange(tag.getFloat("fadeRange"));
     }
 
     @Override
-    public void toNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void writeNetworkedNBT(NBTTagCompound tag) {
         tag.setFloat("triggerRange", getTriggerRange());
         tag.setFloat("fadeRange", getFadeRange());
     }
 
     @Override
-    public void fromNetworkSnapshotNbt(NBTTagCompound tag) {
+    public void readNetworkedNBT(NBTTagCompound tag) {
         setTriggerRange(tag.getFloat("triggerRange"));
         setFadeRange(tag.getFloat("fadeRange"));
     }
 
     @Override
-    public void handleNetworkNbtEvent(NBTTagCompound tag) {
+    public void handleNBTEvent(NBTTagCompound tag) {
         // We have nothing to handle here
     }
     
