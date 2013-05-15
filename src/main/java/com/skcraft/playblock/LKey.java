@@ -16,7 +16,10 @@ public enum LKey {
     WEBSITE("playblock.options.website", "Website..."),
     VOLUME("playblock.options.volume", "Volume"),
     INSTALL("playblock.gui.installLibraries", "Install..."),
-    DONE("playblock.gui.done", "Done");
+    DONE("playblock.gui.done", "Done"),
+    ADD("playblock.gui.add", "Add"),
+    REMOVE("playblock.gui.remove", "Remove"),
+    CLEAR("playblock.gui.clear", "Clear");
     
     private final String key;
     private final String enUsDefault;
