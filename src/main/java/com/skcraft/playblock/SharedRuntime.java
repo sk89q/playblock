@@ -8,6 +8,7 @@ import net.minecraft.item.Item;
 
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.media.QueueManager;
+import com.skcraft.playblock.media.QueueSupervisor;
 import com.skcraft.playblock.projector.ProjectorBlock;
 import com.skcraft.playblock.projector.ProjectorRemoteItem;
 import com.skcraft.playblock.projector.ProjectorTileEntity;
@@ -27,6 +28,7 @@ public class SharedRuntime {
     private Block projectorBlock;
     private Item projectorRemoteItem;
     private QueueManager queueManager;
+    private QueueSupervisor queueSupervisor;
     private MediaResolver mediaResolver;
     private SharedConfiguration config;
     
@@ -96,6 +98,14 @@ public class SharedRuntime {
 
     public MediaResolver getMediaResolver() {
         return mediaResolver;
+    }
+
+    public QueueSupervisor getQueueSupervisor() {
+        return queueSupervisor;
+    }
+
+    public void setQueueSupervisor(QueueSupervisor queueSupervisor) {
+        this.queueSupervisor = queueSupervisor;
     }
 
     public void showProjectorGui(EntityPlayer player, ProjectorTileEntity tileEntity) {

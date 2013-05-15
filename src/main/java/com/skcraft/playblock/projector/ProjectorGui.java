@@ -7,10 +7,7 @@ import net.minecraft.client.gui.GuiTextField;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import com.sk89q.forge.TileEntityPayload;
 import com.skcraft.playblock.LKey;
-import com.skcraft.playblock.PacketHandler;
-import com.skcraft.playblock.PlayBlockPayload;
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.util.DoubleThresholdRange;
@@ -34,7 +31,6 @@ public class ProjectorGui extends GuiScreen {
             fadeRangeField;
     private GuiButton applyButton;
     private GuiButton clearUriButton;
-    
     
     private float projectorWidth, projectorHeight, triggerRange, fadeRange;
     private String uri;
@@ -111,15 +107,8 @@ public class ProjectorGui extends GuiScreen {
     @Override
     public void actionPerformed(GuiButton button) {
         if (button.id == applyButton.id) {
-            ProjectorUpdatePayload update = new ProjectorUpdatePayload();
-            update.setUri(uri);
-            update.setHeight(projectorHeight);
-            update.setWidth(projectorWidth);
-            update.setTriggerRange(triggerRange);
-            update.setFadeRange(fadeRange);
-            PlayBlockPayload payload = new PlayBlockPayload(
-                    new TileEntityPayload(tile, tile.wrapPayloadForSend(update)));
-            PacketHandler.sendToServer(payload);
+            tile.getOptions().sendUpdate(
+                    uri, projectorWidth, projectorHeight, triggerRange, fadeRange);
 
             this.mc.displayGuiScreen((GuiScreen) null);
             this.mc.setIngameFocus();

@@ -1,4 +1,4 @@
-package com.skcraft.playblock.projector;
+package com.skcraft.playblock.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

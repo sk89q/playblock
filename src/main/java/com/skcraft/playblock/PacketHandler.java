@@ -5,16 +5,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import com.sk89q.forge.TileEntityPayload;
 import com.sk89q.forge.PayloadReceiver;
+import com.sk89q.forge.TileEntityPayload;
+import com.skcraft.playblock.network.PlayBlockPayload;
 
 import cpw.mods.fml.common.network.IPacketHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -98,7 +101,7 @@ public class PacketHandler implements IPacketHandler {
             payload.write(out);
             out.flush();
         } catch (IOException e) {
-            PlayBlock.log(Level.WARNING, "Failed to send update packet to the server");
+            PlayBlock.log(Level.WARNING, "Failed to send packet to the server");
             return;
         }
 
@@ -106,6 +109,31 @@ public class PacketHandler implements IPacketHandler {
                 PlayBlock.CHANNEL_ID, bytes.toByteArray());
         
         PacketDispatcher.sendPacketToServer(packet);
+    }
+
+    public static void sendToClient(PlayBlockPayload payload, List<EntityPlayer> players) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(bytes);
+
+        try {
+            payload.write(out);
+            out.flush();
+        } catch (IOException e) {
+            PlayBlock.log(Level.WARNING, "Failed to build packet to send to the client");
+            return;
+        }
+
+        Packet250CustomPayload packet = new Packet250CustomPayload(
+                PlayBlock.CHANNEL_ID, bytes.toByteArray());
+        
+        if (players == null) {
+            PacketDispatcher.sendPacketToAllPlayers(packet);
+        } else {
+            for (EntityPlayer player : players) {
+                PacketDispatcher.sendPacketToPlayer(packet, 
+                        ((Player) player));
+            }
+        }
     }
 
 }

@@ -2,7 +2,9 @@ package com.skcraft.playblock.projector;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.List;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
@@ -13,8 +15,13 @@ import net.minecraft.util.AxisAlignedBB;
 
 import com.sk89q.forge.BehaviorList;
 import com.sk89q.forge.BehaviorListener;
+import com.sk89q.forge.BehaviorPayload;
 import com.sk89q.forge.Payload;
 import com.sk89q.forge.PayloadReceiver;
+import com.sk89q.forge.TileEntityPayload;
+import com.skcraft.playblock.PacketHandler;
+import com.skcraft.playblock.network.PlayBlockPayload;
+import com.skcraft.playblock.network.ProjectorUpdatePayload;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.player.MediaPlayerClient;
 import com.skcraft.playblock.player.MediaPlayerHost;
@@ -37,9 +44,11 @@ public class ProjectorTileEntity extends TileEntity
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
     private final BehaviorList behaviors = new BehaviorList();
-    private final AccessList accessList;
+    
     private final MediaPlayer mediaPlayer;
     private final DoubleThresholdRange range;
+    private final ProjectorOptions options;
+    
     private final RangeTest rangeTest;
     private boolean withinRange = false;
 
@@ -53,15 +62,17 @@ public class ProjectorTileEntity extends TileEntity
         Side side = FMLCommonHandler.instance().getEffectiveSide();
 
         if (side == Side.CLIENT) {
-            accessList = null;
             behaviors.add(mediaPlayer = new MediaPlayerClient());
             rangeTest = range.createRangeTest();
         } else {
-            accessList = new AccessList();
             behaviors.add(mediaPlayer = new MediaPlayerHost());
             rangeTest = null;
         }
-
+        
+        behaviors.add(options = new ProjectorOptions(mediaPlayer, range));
+        if (side != Side.CLIENT) {
+            options.useAccessList(true);
+        }
     }
 
     /**
@@ -81,6 +92,15 @@ public class ProjectorTileEntity extends TileEntity
     public DoubleThresholdRange getRange() {
         return range;
     }
+    
+    /**
+     * Get the options controller.
+     * 
+     * @return options controller
+     */
+    public ProjectorOptions getOptions() {
+        return options;
+    }
 
     /**
      * Get the access list.
@@ -88,7 +108,7 @@ public class ProjectorTileEntity extends TileEntity
      * @return the access list, null if on the client
      */
     public AccessList getAccessList() {
-        return accessList;
+        return getOptions().getAccessList();
     }
 
     /**
@@ -126,26 +146,9 @@ public class ProjectorTileEntity extends TileEntity
 
     @Override
     public void readPayload(EntityPlayerMP player, DataInputStream in) throws IOException {
-        if (!worldObj.isRemote) {
-            if (getAccessList().checkAndForget(player)) {
-                ProjectorUpdatePayload update = new ProjectorUpdatePayload();
-                update.read(in);
-                
-                // These values are validated
-                mediaPlayer.setUri(update.getUri());
-                mediaPlayer.setWidth(update.getWidth());
-                mediaPlayer.setHeight(update.getHeight());
-                range.setTriggerRange(update.getTriggerRange());
-                range.setFadeRange(update.getFadeRange());
-        
-                // Now let's send the updates to players around the area
-                PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
-                        worldObj.provider.dimensionId, getDescriptionPacket());
-            } else {
-                player.sendChatToPlayer("Sorry, you don't have permission " +
-                        "to modify that projector.");
-            }
-        }
+        BehaviorPayload payload = new BehaviorPayload();
+        payload.read(in);
+        behaviors.readPayload(player, payload, in);
     }
     
     @Override
@@ -167,8 +170,22 @@ public class ProjectorTileEntity extends TileEntity
     public void nbtEvent(NBTTagCompound tag) {
         if (!this.worldObj.isRemote) {
             super.writeToNBT(tag); // Coordinates
+            Packet132TileEntityData packet = 
+                    new Packet132TileEntityData(xCoord, yCoord, zCoord, -1, tag);
             PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 250,
-                    worldObj.provider.dimensionId, getDescriptionPacket());
+                    worldObj.provider.dimensionId, packet);
+        }
+    }
+
+    @Override
+    public void payloadSend(BehaviorPayload behaviorPayload, List<EntityPlayer> players) {
+        PlayBlockPayload payload = new PlayBlockPayload(
+                new TileEntityPayload(this, behaviorPayload));
+        
+        if (worldObj.isRemote) {
+            PacketHandler.sendToServer(payload);
+        } else {
+            PacketHandler.sendToClient(payload, players);
         }
     }
 

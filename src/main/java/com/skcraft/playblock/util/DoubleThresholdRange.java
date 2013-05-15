@@ -160,11 +160,6 @@ public class DoubleThresholdRange extends AbstractBehavior {
         setTriggerRange(tag.getFloat("triggerRange"));
         setFadeRange(tag.getFloat("fadeRange"));
     }
-
-    @Override
-    public void handleNBTEvent(NBTTagCompound tag) {
-        // We have nothing to handle here
-    }
     
     public class RangeTest {
         

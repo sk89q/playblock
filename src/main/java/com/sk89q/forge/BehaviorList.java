@@ -1,17 +1,19 @@
 package com.sk89q.forge;
 
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * Manages a list of {@link Behavior}s.
  */
-public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener {
+public class BehaviorList implements Collection<Behavior>, Behavior, BehaviorListener {
     
     private List<Behavior> list = new ArrayList<Behavior>();
     private List<BehaviorListener> listeners = new ArrayList<BehaviorListener>();
@@ -48,11 +50,15 @@ public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener 
 
     @Override
     public boolean add(Behavior e) {
+        e.addBehaviorListener(this);
         return list.add(e);
     }
 
     @Override
     public boolean remove(Object o) {
+        if (o instanceof Behavior) {
+            ((Behavior) o).removeBehaviorListener(this);
+        }
         return list.remove(o);
     }
 
@@ -63,22 +69,27 @@ public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener 
 
     @Override
     public boolean addAll(Collection<? extends Behavior> c) {
-        return list.addAll(c);
-    }
-
-    @Override
-    public boolean addAll(int index, Collection<? extends Behavior> c) {
-        return list.addAll(index, c);
+        boolean changed = false;
+        for (Behavior e : c) {
+            changed = add(e) || changed;
+        }
+        return changed;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return list.removeAll(c);
+        boolean changed = false;
+        for (Object e : c) {
+            if (e instanceof Behavior) {
+                changed = remove(e) || changed;
+            }
+        }
+        return changed;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return list.retainAll(c);
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -94,51 +105,6 @@ public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener 
     @Override
     public int hashCode() {
         return list.hashCode();
-    }
-
-    @Override
-    public Behavior get(int index) {
-        return list.get(index);
-    }
-
-    @Override
-    public Behavior set(int index, Behavior element) {
-        return list.set(index, element);
-    }
-
-    @Override
-    public void add(int index, Behavior element) {
-        list.add(index, element);
-    }
-
-    @Override
-    public Behavior remove(int index) {
-        return list.remove(index);
-    }
-
-    @Override
-    public int indexOf(Object o) {
-        return list.indexOf(o);
-    }
-
-    @Override
-    public int lastIndexOf(Object o) {
-        return list.lastIndexOf(o);
-    }
-
-    @Override
-    public ListIterator<Behavior> listIterator() {
-        return list.listIterator();
-    }
-
-    @Override
-    public ListIterator<Behavior> listIterator(int index) {
-        return list.listIterator(index);
-    }
-
-    @Override
-    public List<Behavior> subList(int fromIndex, int toIndex) {
-        return list.subList(fromIndex, toIndex);
     }
 
     @Override
@@ -177,9 +143,24 @@ public class BehaviorList implements List<Behavior>, Behavior, BehaviorListener 
     }
 
     @Override
+    public void readPayload(EntityPlayer player, BehaviorPayload payload,
+            DataInputStream in) throws IOException {
+        for (Behavior entity : this) {
+            entity.readPayload(player, payload, in);
+        }
+    }
+
+    @Override
     public void nbtEvent(NBTTagCompound tag) {
         for (BehaviorListener listener : listeners) {
             listener.nbtEvent(tag);
+        }
+    }
+
+    @Override
+    public void payloadSend(BehaviorPayload payload, List<EntityPlayer> player) {
+        for (BehaviorListener listener : listeners) {
+            listener.payloadSend(payload, player);
         }
     }
 

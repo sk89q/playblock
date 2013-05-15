@@ -126,5 +126,5 @@ public abstract class MediaPlayer extends AbstractBehavior {
     public void readSaveNBT(NBTTagCompound tag) {
         fromSharedNbt(tag);
     }
-
+    
 }
