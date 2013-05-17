@@ -1,19 +1,19 @@
 package com.skcraft.playblock.client;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.input.Keyboard;
 
 import com.skcraft.playblock.LKey;
-import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.SharedConfiguration;
 import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
 import com.skcraft.playblock.projector.ProjectorGui;
 import com.skcraft.playblock.projector.ProjectorRenderer;
 import com.skcraft.playblock.projector.ProjectorTileEntity;
+import com.skcraft.playblock.queue.QueueGui;
+import com.skcraft.playblock.queue.ExposedQueue;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -78,6 +78,11 @@ public class ClientRuntime extends SharedRuntime {
     @Override
     public void showProjectorGui(EntityPlayer player, ProjectorTileEntity tileEntity) {
         FMLClientHandler.instance().displayGuiScreen(player, new ProjectorGui(tileEntity));
+    }
+
+    @Override
+    public void showRemoteGui(EntityPlayer player, ExposedQueue queuable) {
+        FMLClientHandler.instance().displayGuiScreen(player, new QueueGui(queuable));
     }
 
 }

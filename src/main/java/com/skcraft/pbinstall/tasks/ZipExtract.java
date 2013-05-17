@@ -13,7 +13,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import com.sk89q.task.Task;
-import com.skcraft.pbinstall.SetupUtils;
+import com.skcraft.playblock.util.IOUtils;
 
 /**
  * Extracts a .zip file's contents to a directory.
@@ -83,13 +83,13 @@ public class ZipExtract extends Task {
                         StreamCopy copy = new StreamCopy(in, out);
                         copy.execute();
                     } finally {
-                        SetupUtils.close(in);
-                        SetupUtils.close(out);
+                        IOUtils.close(in);
+                        IOUtils.close(out);
                     }
                 }
             }
         } finally {
-            SetupUtils.close(zip);
+            IOUtils.close(zip);
         }
     }
 

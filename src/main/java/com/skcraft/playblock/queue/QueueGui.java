@@ -1,26 +1,32 @@
-package com.skcraft.playblock.projector;
+package com.skcraft.playblock.queue;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
 import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.media.MediaResolver;
+import com.skcraft.playblock.network.EnqueueResponsePayload;
+import com.skcraft.playblock.projector.ProjectorQueueSlot;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
 
 /**
  * The GUI for the media queue.
  */
 @SideOnly(Side.CLIENT)
-public class ProjectorQueueGui extends GuiScreen {
+public class QueueGui extends GuiScreen {
 
     private static final int xSize = 247;
     private static final int ySize = 165;
@@ -35,9 +41,14 @@ public class ProjectorQueueGui extends GuiScreen {
     private boolean isScrolling = false;
     private boolean wasClicking = false;
 
-    private List<ProjectorQueueSlot> slots = new ArrayList<ProjectorQueueSlot>();
+    private final ExposedQueue queuable;
+    private final List<ProjectorQueueSlot> slots = new ArrayList<ProjectorQueueSlot>();
     private ProjectorQueueSlot selectedSlot;
     private String uri;
+
+    public QueueGui(ExposedQueue queuable) {
+        this.queuable = queuable;
+    }
 
     /**
      * Adds the buttons (and other controls) to the screen in question.
@@ -49,10 +60,10 @@ public class ProjectorQueueGui extends GuiScreen {
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
 
-        controlList.add(addButton = new GuiButton(0, left + 215, top + 14, 25, 
+        controlList.add(addButton = new GuiButton(0, left + 215, top + 14, 25,
                 20, LKey.ADD.toString()));
-        controlList.add(clearUriButton = new GuiButton(1, left + 195, top + 14,
-                17, 20, "X"));
+        controlList.add(clearUriButton = new GuiButton(1, left + 195,
+                top + 14, 17, 20, "X"));
         controlList.add(removeButton = new GuiButton(2, left + 4, top + 130,
                 42, 20, LKey.REMOVE.toString()));
         controlList.add(clearButton = new GuiButton(3, left + 4, top + 100,
@@ -73,7 +84,8 @@ public class ProjectorQueueGui extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
-        int texture = mc.renderEngine.getTexture("/playblock/gui/queue_bg.png");
+        int texture = mc.renderEngine
+                .getTexture("/playblock/gui/queue_bg.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         mc.renderEngine.bindTexture(texture);
         int left = (width - xSize) / 2;
@@ -81,69 +93,67 @@ public class ProjectorQueueGui extends GuiScreen {
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);
 
         uriField.drawTextBox();
-        fontRenderer.drawString(LKey.URL.toString(), left + 10, top + 20, 0xff999999);
+        fontRenderer.drawString(LKey.URL.toString(), left + 10, top + 20,
+                0xff999999);
 
         boolean mouseDown = Mouse.isButtonDown(0);
         int scrollLeft = left + 199;
         int scrollRight = left + 204;
         int scrollTop = top + 54;
         int scrollBottom = top + 153;
-        if(!wasClicking && mouseDown && mouseX >= scrollLeft && 
-                mouseX < scrollRight && mouseY >= scrollTop && 
-                mouseY < scrollBottom) {
+        if (!wasClicking && mouseDown && mouseX >= scrollLeft
+                && mouseX < scrollRight && mouseY >= scrollTop
+                && mouseY < scrollBottom) {
             isScrolling = needsScrollBar();
         }
 
-        if(!mouseDown) {
+        if (!mouseDown) {
             isScrolling = false;
         }
         wasClicking = mouseDown;
 
-        if(isScrolling) {
-            currentScroll = ((float)(mouseY - scrollTop) - 7.5F) 
-                    / ((float)(scrollBottom - scrollTop) - 15);
+        if (isScrolling) {
+            currentScroll = (mouseY - scrollTop - 7.5F)
+                    / ((float) (scrollBottom - scrollTop) - 15);
 
-            if(currentScroll < 0) {
+            if (currentScroll < 0) {
                 currentScroll = 0;
-            }
-            else if(currentScroll > 1) {
+            } else if (currentScroll > 1) {
                 currentScroll = 1;
             }
         }
 
         mc.renderEngine.bindTexture(texture);
-        drawTexturedModalRect(left + 199, top + (int)((scrollBottom - scrollTop - 32)
-                * currentScroll) + 54, 0, ySize + 1, 5, 32);
+        drawTexturedModalRect(left + 199,
+                top + (int) ((scrollBottom - scrollTop - 32) * currentScroll)
+                        + 54, 0, ySize + 1, 5, 32);
         renderQueue(left, top);
         super.drawScreen(mouseX, mouseY, par3);
     }
 
     @Override
     public void actionPerformed(GuiButton button) {
-        if(button.id == addButton.id) {
-            String name = uriField.getText(); //Should be media.getTitle()
-            if(fontRenderer.getStringWidth(name) > 134) {
+        if (button.id == addButton.id) {
+            String name = uriField.getText(); // Should be media.getTitle()
+            if (fontRenderer.getStringWidth(name) > 134) {
                 name = fontRenderer.trimStringToWidth(name, 128).concat("...");
             }
-            
+
             createSlot(name);
+            submitEnqueue(uriField.getText());
             uriField.setText("");
             uriField.setFocused(true);
-            //We need to send this update to the server
-        }
-        else if(button.id == removeButton.id) {
-            if(selectedSlot != null) {
+        } else if (button.id == removeButton.id) {
+            if (selectedSlot != null) {
                 slots.remove(selectedSlot);
                 removeButton.enabled = false;
-                //We need to send this update to the server
+                // We need to send this update to the server
             }
-        }
-        else if(button.id == clearUriButton.id) {
+        } else if (button.id == clearUriButton.id) {
             uriField.setText("");
             uriField.setFocused(true);
             uri = uriField.getText();
-        }
-        else if(button.id == clearButton.id) {
+        } else if (button.id == clearButton.id) {
             slots.clear();
             currentScroll = 0;
             removeButton.enabled = false;
@@ -153,7 +163,7 @@ public class ProjectorQueueGui extends GuiScreen {
     @Override
     protected void keyTyped(char key, int par2) {
         super.keyTyped(key, par2);
-        if(uriField.isFocused()) {
+        if (uriField.isFocused()) {
             uriField.textboxKeyTyped(key, par2);
             uri = uriField.getText();
 
@@ -170,10 +180,10 @@ public class ProjectorQueueGui extends GuiScreen {
         super.mouseClicked(x, y, buttonClicked);
 
         int unseenSlots = slots.size() - 7;
-        int startIndex = (int)(currentScroll * unseenSlots + 0.5);
-        if(!slots.isEmpty()) {
-            for(int i = startIndex; i < startIndex + 7; i++) {
-                if(i < slots.size()) {
+        int startIndex = (int) (currentScroll * unseenSlots + 0.5);
+        if (!slots.isEmpty()) {
+            for (int i = startIndex; i < startIndex + 7; i++) {
+                if (i < slots.size()) {
                     slots.get(i).mouseClicked(x, y, buttonClicked);
                 }
             }
@@ -187,52 +197,52 @@ public class ProjectorQueueGui extends GuiScreen {
         super.handleMouseInput();
         int wheelDelta = Mouse.getEventDWheel();
 
-        if(wheelDelta != 0 && needsScrollBar()) {
+        if (wheelDelta != 0 && needsScrollBar()) {
             int unseenSlots = slots.size() - 7;
 
-            if(wheelDelta < 0)
+            if (wheelDelta < 0)
                 wheelDelta = -1;
-            else if(wheelDelta > 0)
+            else if (wheelDelta > 0)
                 wheelDelta = 1;
 
-            currentScroll -= (float)wheelDelta / (float)unseenSlots;
+            currentScroll -= (float) wheelDelta / (float) unseenSlots;
 
-            if(currentScroll < 0) {
+            if (currentScroll < 0) {
                 currentScroll = 0;
-            }
-            else if(currentScroll > 1) {
+            } else if (currentScroll > 1) {
                 currentScroll = 1;
             }
         }
     }
-    
+
     /**
      * Creates a slot with the given name.
      * 
-     * @param name the name
+     * @param name
+     *            the name
      */
     public void createSlot(String name) {
         slots.add(new ProjectorQueueSlot(this, mc, name));
     }
-    
+
     /**
      * Sets the selected slot.
      * 
-     * @param slot the slot
+     * @param slot
+     *            the slot
      */
     public void setSelectedSlot(ProjectorQueueSlot slot) {
-        for(ProjectorQueueSlot queueSlot : slots) {
-            if(queueSlot != slot) {
+        for (ProjectorQueueSlot queueSlot : slots) {
+            if (queueSlot != slot) {
                 queueSlot.setSelected(false);
-            }
-            else {
+            } else {
                 queueSlot.setSelected(true);
             }
         }
         removeButton.enabled = true;
         selectedSlot = slot;
     }
-    
+
     /**
      * Renders the media queue.
      * 
@@ -240,19 +250,19 @@ public class ProjectorQueueGui extends GuiScreen {
      * @param top
      */
     private void renderQueue(int left, int top) {
-        if(slots.isEmpty()) {
+        if (slots.isEmpty()) {
             return;
         }
 
         int unseenSlots = slots.size() - 7;
-        int startIndex = (int)(currentScroll * unseenSlots + 0.5);
-        for(int i = startIndex; i < startIndex + 7; i++) {
-            if(i < slots.size()) {
+        int startIndex = (int) (currentScroll * unseenSlots + 0.5);
+        for (int i = startIndex; i < startIndex + 7; i++) {
+            if (i < slots.size()) {
                 slots.get(i).drawSlot(i - startIndex, left, top);
             }
         }
     }
-    
+
     /**
      * Determines if a scroll bar is needed.
      * 
@@ -270,5 +280,25 @@ public class ProjectorQueueGui extends GuiScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+    
+    /**
+     * Submit a URI for the queue.
+     * 
+     * @param uri the URI
+     */
+    protected void submitEnqueue(String uri) {
+        ListenableFuture<EnqueueResponsePayload> future = 
+                queuable.getQueueBehavior().sendEnqueueRequest(uri);
+        
+        // Called when we receive a response
+        Futures.addCallback(future, new FutureCallback<EnqueueResponsePayload>() {
+            @Override
+            public void onSuccess(EnqueueResponsePayload result) {
+            }
+
+            @Override
+            public void onFailure(Throwable t) {}
+        });
     }
 }

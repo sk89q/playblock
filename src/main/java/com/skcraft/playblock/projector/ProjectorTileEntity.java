@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet;
@@ -16,19 +15,18 @@ import net.minecraft.util.AxisAlignedBB;
 import com.sk89q.forge.BehaviorList;
 import com.sk89q.forge.BehaviorListener;
 import com.sk89q.forge.BehaviorPayload;
-import com.sk89q.forge.Payload;
 import com.sk89q.forge.PayloadReceiver;
 import com.sk89q.forge.TileEntityPayload;
 import com.skcraft.playblock.PacketHandler;
 import com.skcraft.playblock.network.PlayBlockPayload;
-import com.skcraft.playblock.network.ProjectorUpdatePayload;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.player.MediaPlayerClient;
 import com.skcraft.playblock.player.MediaPlayerHost;
+import com.skcraft.playblock.queue.ExposedQueue;
+import com.skcraft.playblock.queue.QueueBehavior;
 import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
-import com.skcraft.playblock.util.Validate;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -39,7 +37,7 @@ import cpw.mods.fml.relauncher.SideOnly;
  * The tile entity for the projector block.
  */
 public class ProjectorTileEntity extends TileEntity 
-        implements BehaviorListener, PayloadReceiver {
+        implements BehaviorListener, PayloadReceiver, ExposedQueue {
     
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
@@ -48,6 +46,7 @@ public class ProjectorTileEntity extends TileEntity
     private final MediaPlayer mediaPlayer;
     private final DoubleThresholdRange range;
     private final ProjectorOptions options;
+    private final QueueBehavior queueBehavior;
     
     private final RangeTest rangeTest;
     private boolean withinRange = false;
@@ -63,9 +62,11 @@ public class ProjectorTileEntity extends TileEntity
 
         if (side == Side.CLIENT) {
             behaviors.add(mediaPlayer = new MediaPlayerClient());
+            behaviors.add(queueBehavior = new QueueBehavior(null));
             rangeTest = range.createRangeTest();
         } else {
             behaviors.add(mediaPlayer = new MediaPlayerHost());
+            behaviors.add(queueBehavior = new QueueBehavior((MediaPlayerHost) mediaPlayer));
             rangeTest = null;
         }
         
@@ -112,6 +113,16 @@ public class ProjectorTileEntity extends TileEntity
     }
 
     /**
+     * Get the queue behavior.
+     * 
+     * @return the queue behavior
+     */
+    @Override
+    public QueueBehavior getQueueBehavior() {
+        return queueBehavior;
+    }
+
+    /**
      * Get the local player is in range.
      * 
      * @return true if in range
@@ -124,28 +135,8 @@ public class ProjectorTileEntity extends TileEntity
         return rangeTest.getCachedInRange();
     }
 
-    /**
-     * Wraps the given payload to make sure that it can be later processed
-     * by {@link #readPayload(EntityPlayerMP, DataInputStream)}.
-     * 
-     * <p>Only supported payload types can be passed into this method, otherwise
-     * a {@link RuntimeException} may be thrown.</p>
-     * 
-     * @param payload payload to wrap
-     * @return payload to send
-     */
-    public Payload wrapPayloadForSend(Payload payload) {
-        Validate.notNull(payload);
-        if (payload instanceof ProjectorUpdatePayload) {
-            return payload;
-        } else {
-            throw new RuntimeException("Invalid payload received of type " + 
-                    payload.getClass().getCanonicalName());
-        }
-    }
-
     @Override
-    public void readPayload(EntityPlayerMP player, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, DataInputStream in) throws IOException {
         BehaviorPayload payload = new BehaviorPayload();
         payload.read(in);
         behaviors.readPayload(player, payload, in);
@@ -167,7 +158,7 @@ public class ProjectorTileEntity extends TileEntity
     }
     
     @Override
-    public void nbtEvent(NBTTagCompound tag) {
+    public void networkedNbt(NBTTagCompound tag) {
         if (!this.worldObj.isRemote) {
             super.writeToNBT(tag); // Coordinates
             Packet132TileEntityData packet = 

@@ -1,5 +1,7 @@
 package com.skcraft.playblock.media;
 
+import com.skcraft.playblock.queue.QueueException;
+
 public class InvalidLengthException extends QueueException {
 
     public InvalidLengthException() {

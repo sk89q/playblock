@@ -57,7 +57,7 @@ public class ProjectorOptions extends AbstractBehavior {
                 NBTTagCompound tag = new NBTTagCompound();
                 mediaPlayer.writeNetworkedNBT(tag);
                 range.writeNetworkedNBT(tag);
-                mediaPlayer.fireNbtEvent(tag);
+                mediaPlayer.fireNetworkedNbt(tag);
             } else {
                 player.sendChatToPlayer("Sorry, you don't have permission " +
                         "to modify that projector.");

@@ -36,12 +36,12 @@ public class MediaPlayerClient extends MediaPlayer {
      * isn't considered valid according to {@link MediaResolver#canPlayUri(String)}, then
      * the currently playing media clip will be set to null.</p>
      * 
-     * @param uri the URI
+     * @param uri the URI, null to play nothing
      * @param position a non-negative position to start from, in milliseconds, otherwise
      *      -1 to indicate that the video should not be time shifted
      */
     private void setPlaying(String uri, long position) {
-        if (MediaResolver.canPlayUri(uri)) {
+        if (uri != null && MediaResolver.canPlayUri(uri)) {
             playing = PlayingMedia.fromRelative(new Media(uri), position);
         } else {
             playing = null;
@@ -134,8 +134,14 @@ public class MediaPlayerClient extends MediaPlayer {
     }
     
     private void setPlayingFromTag(NBTTagCompound tag) {
-        if (tag.hasKey("playedUri")) {
-            setPlaying(tag.getString("playedUri"), tag.getInteger("position"));
+        if (inQueueMode()) {
+            String playedUri = tag.getString("playedUri");
+            
+            if (!playedUri.isEmpty()) {
+                setPlaying(playedUri, tag.getInteger("position"));
+            } else {
+                setPlaying(null, -1);
+            }
         } else if (tag.hasKey("uri")) {
             setPlaying(getUri(), -1);
         }
@@ -152,13 +158,13 @@ public class MediaPlayerClient extends MediaPlayer {
 
     @Override
     public void readNetworkedNBT(NBTTagCompound tag) {
-        fromSharedNbt(tag);
-        setPlayingFromTag(tag);
-    }
-
-    @Override
-    public void handleNBTEvent(NBTTagCompound tag) {
-        setPlayingFromTag(tag);
+        if (tag.hasKey("uri")) {
+            fromSharedNbt(tag);
+        }
+        
+        if (tag.hasKey("playedUri") || tag.hasKey("uri")) {
+            setPlayingFromTag(tag);
+        }
     }
 
 }

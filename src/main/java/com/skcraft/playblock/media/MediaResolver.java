@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.skcraft.playblock.queue.QueueException;
 import com.skcraft.playblock.util.Validate;
 
 import cpw.mods.fml.common.FMLCommonHandler;

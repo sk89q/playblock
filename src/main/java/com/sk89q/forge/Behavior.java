@@ -69,10 +69,12 @@ public interface Behavior {
     void writeNetworkedNBT(NBTTagCompound tag);
     
     /**
-     * read the NBT tag that is going to be sent to the other side and handled by
+     * Read the NBT tag that is going to be sent to the other side and handled by
      * a call to {@link #readNetworkedNBT(NBTTagCompound)} on the other side. This tag
-     * is only called to derive a "full snapshot" of all necessary data to restore
-     * the {@link Behavior}'s state from an empty slate.
+     * is may called to derive a "full snapshot" of all necessary data to restore
+     * the {@link Behavior}'s state from an empty slate, OR it may only contain
+     * partial data as triggered by a call to
+     * {@link BehaviorListener#networkedNbt(NBTTagCompound)}.
      * 
      * @see Behavior for an important discussion how the given data is shared
      * @param tag the tag
@@ -93,15 +95,6 @@ public interface Behavior {
      */
     void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) 
             throws IOException;
-    
-    /**
-     * Read NBT data that has been sent from 
-     * {@link BehaviorListener#nbtEvent(NBTTagCompound)}.
-     * 
-     * @see Behavior for an important discussion how the given data is shared
-     * @param tag the tag
-     */
-    void handleNBTEvent(NBTTagCompound tag);
     
     /**
      * Add a listener.

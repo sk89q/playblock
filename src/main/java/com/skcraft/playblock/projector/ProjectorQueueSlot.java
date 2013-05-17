@@ -1,5 +1,7 @@
 package com.skcraft.playblock.projector;
 
+import com.skcraft.playblock.queue.QueueGui;
+
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
@@ -14,9 +16,9 @@ public class ProjectorQueueSlot extends Gui {
     private boolean selected;
     private Minecraft mc;
     private String name;
-    private ProjectorQueueGui parentScreen;
+    private QueueGui parentScreen;
     
-    public ProjectorQueueSlot(ProjectorQueueGui parent, Minecraft mc, String name) {
+    public ProjectorQueueSlot(QueueGui parent, Minecraft mc, String name) {
         this.parentScreen = parent;
         this.mc = mc;
         this.name = name;

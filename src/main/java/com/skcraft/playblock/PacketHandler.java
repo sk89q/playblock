@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.logging.Level;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
@@ -34,15 +33,15 @@ public class PacketHandler implements IPacketHandler {
     public void onPacketData(INetworkManager manager,
             Packet250CustomPayload packet, Player player) {
         
-        EntityPlayerMP entityPlayer;
+        EntityPlayer entityPlayer;
         World world;
         
         // Get the player and world
-        if (player instanceof EntityPlayerMP) {
-            entityPlayer = ((EntityPlayerMP) player);
+        if (player instanceof EntityPlayer) {
+            entityPlayer = ((EntityPlayer) player);
             world = entityPlayer.worldObj;
         } else {
-            PlayBlock.log(Level.WARNING, "Expected EntityPlayerMP but got "
+            PlayBlock.log(Level.WARNING, "Expected EntityPlayer but got "
                     + player.getClass().getCanonicalName());
             return;
         }

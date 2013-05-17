@@ -1,8 +1,9 @@
-package com.skcraft.playblock.media;
+package com.skcraft.playblock.queue;
 
 import java.io.IOException;
 
 import com.google.common.util.concurrent.ListenableFuture;
+import com.skcraft.playblock.media.Media;
 
 /**
  * Handles the not-so-simple adding media files to queues, which includes looking

@@ -1,4 +1,4 @@
-package com.skcraft.playblock.media;
+package com.skcraft.playblock.queue;
 
 public class QueueException extends Exception {
 

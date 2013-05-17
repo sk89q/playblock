@@ -5,9 +5,7 @@ import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.io.Closeable;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
@@ -34,15 +32,6 @@ public final class SetupUtils {
         }
     }
     
-    public static void close(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (IOException e) {
-            }
-        }
-    }
-
     public static boolean isParent(File testParent, File child) {
         File parent = child.getParentFile();
         while (parent != null) {

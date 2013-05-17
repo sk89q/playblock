@@ -3,10 +3,10 @@ package com.sk89q.forge;
 import java.io.DataInputStream;
 import java.io.IOException;
 
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 
 /**
- * Indicates an object that will receive a {@link TileEntityPayload}.
+ * Indicates an object that will receive a payload targeted for it.
  */
 public interface PayloadReceiver {
     
@@ -17,6 +17,6 @@ public interface PayloadReceiver {
      * @param in stream
      * @throws IOException on I/O error
      */
-    void readPayload(EntityPlayerMP player, DataInputStream in) throws IOException;
+    void readPayload(EntityPlayer player, DataInputStream in) throws IOException;
 
 }

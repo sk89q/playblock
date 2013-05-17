@@ -6,6 +6,9 @@ import java.io.IOException;
 
 import com.skcraft.playblock.projector.ProjectorTileEntity;
 
+/**
+ * A payload that is targeted specifically to a tile entity.
+ */
 public class TileEntityPayload implements Payload {
     
     private int x;

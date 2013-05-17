@@ -6,12 +6,15 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
+import com.sk89q.forge.ResponseTracker;
 import com.skcraft.playblock.media.MediaResolver;
-import com.skcraft.playblock.media.QueueManager;
-import com.skcraft.playblock.media.QueueSupervisor;
 import com.skcraft.playblock.projector.ProjectorBlock;
-import com.skcraft.playblock.projector.ProjectorRemoteItem;
 import com.skcraft.playblock.projector.ProjectorTileEntity;
+import com.skcraft.playblock.projector.RemoteItem;
+import com.skcraft.playblock.queue.ExposedQueue;
+import com.skcraft.playblock.queue.QueueManager;
+import com.skcraft.playblock.queue.QueueSupervisor;
+import com.skcraft.playblock.queue.SimpleQueueSupervisor;
 
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -25,6 +28,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
  */
 public class SharedRuntime {
 
+    private ResponseTracker tracker = new ResponseTracker();
     private Block projectorBlock;
     private Item projectorRemoteItem;
     private QueueManager queueManager;
@@ -32,6 +36,15 @@ public class SharedRuntime {
     private MediaResolver mediaResolver;
     private SharedConfiguration config;
     
+    /**
+     * Get the response tracker.
+     * 
+     * @return the tracker
+     */
+    public ResponseTracker getTracker() {
+        return tracker;
+    }
+
     /**
      * Gets the configuration.
      * 
@@ -58,6 +71,7 @@ public class SharedRuntime {
     public void load(FMLInitializationEvent event) {
         queueManager = new QueueManager();
         mediaResolver = new MediaResolver();
+        queueSupervisor = new SimpleQueueSupervisor(mediaResolver);
         
         projectorBlock = new ProjectorBlock(getConfig().getInt("playblock.id", 3400), 0, Material.iron)
                 .setHardness(0.5F).setStepSound(Block.soundGlassFootstep)
@@ -70,7 +84,10 @@ public class SharedRuntime {
                 ProjectorTileEntity.INTERNAL_NAME);
         LanguageRegistry.addName(projectorBlock, "PlayBlock Projector");
         
-        projectorRemoteItem = new ProjectorRemoteItem(getConfig().getInt("playremote.id", 15000));
+        projectorRemoteItem = new RemoteItem(getConfig().getInt("playremote.id", 15000))
+            .setCreativeTab(CreativeTabs.tabMisc)
+            .setItemName(RemoteItem.INTERNAL_NAME);
+        LanguageRegistry.addName(projectorRemoteItem, "PlayBlock Remote");
         
         getConfig().save();
     }
@@ -109,6 +126,10 @@ public class SharedRuntime {
     }
 
     public void showProjectorGui(EntityPlayer player, ProjectorTileEntity tileEntity) {
+        // Overriden on the client
+    }
+
+    public void showRemoteGui(EntityPlayer player, ExposedQueue queuable) {
         // Overriden on the client
     }
 

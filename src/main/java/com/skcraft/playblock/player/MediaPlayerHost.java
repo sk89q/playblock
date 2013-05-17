@@ -4,10 +4,10 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.media.Media;
-import com.skcraft.playblock.media.MediaQueue;
 import com.skcraft.playblock.media.PlayingMedia;
-import com.skcraft.playblock.media.QueueListener;
-import com.skcraft.playblock.media.QueueManager;
+import com.skcraft.playblock.queue.MediaQueue;
+import com.skcraft.playblock.queue.QueueListener;
+import com.skcraft.playblock.queue.QueueManager;
 
 /**
  * This class manages the server side of the media player.
@@ -57,9 +57,13 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     @Override
     public void mediaAdvance(Media media) {
         NBTTagCompound tag = new NBTTagCompound();
-        tag.setString("playedUri", media.getUri());
-        tag.setInteger("position", -1); // We don't want the video to be skipped ahead
-        fireNbtEvent(tag);
+        if (media != null) {
+            tag.setString("playedUri", media.getUri());
+            tag.setInteger("position", 0);
+        } else {
+            tag.setString("playedUri", "");
+        }
+        fireNetworkedNbt(tag);
     }
 
     @Override
@@ -78,11 +82,6 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     @Override
     public void readNetworkedNBT(NBTTagCompound tag) {
         // State NBT can only come from the server
-    }
-
-    @Override
-    public void handleNBTEvent(NBTTagCompound tag) {
-        // We don't get anything from the client
     }
 
 }

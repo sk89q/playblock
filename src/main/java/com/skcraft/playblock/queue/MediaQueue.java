@@ -1,10 +1,13 @@
-package com.skcraft.playblock.media;
+package com.skcraft.playblock.queue;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.TimerTask;
+
+import com.skcraft.playblock.media.Media;
+import com.skcraft.playblock.media.PlayingMedia;
 
 /**
  * Handles a queue of media by keeping track of queued media and automatically

@@ -14,22 +14,26 @@ import net.minecraft.nbt.NBTTagCompound;
 public interface BehaviorListener {
     
     /**
-     * Called when NBT data needs to be sent across the network barrier and later
-     * handled with {@link Behavior#handleNBTEvent(NBTTagCompound)}.
+     * Sends a new network state packet that will later be received by
+     * {@link Behavior#readNetworkedNBT(NBTTagCompound)}.
+     * 
+     * <p>The packet can contain only partial data. It is the responsibility of
+     * implementations of {@link Behavior#readNetworkedNBT(NBTTagCompound)} to
+     * be aware of this.</p>
      * 
      * @see Behavior for an important discussion how the given data is shared
      * @param tag the tag
      */
-    void nbtEvent(NBTTagCompound tag);
+    void networkedNbt(NBTTagCompound tag);
     
     /**
      * Called when a payload needs to be sent specifically to the same {@link Behavior}
      * on the other side of the connection (i.e. server->client).
      * 
      * @param payload the payload
-     * @param player a list of players to send to, otherwise null 
+     * @param players a list of players to send to, otherwise null 
      *               to broadcast appropriately to all parties that should receive it
      */
-    void payloadSend(BehaviorPayload payload, List<EntityPlayer> player);
+    void payloadSend(BehaviorPayload payload, List<EntityPlayer> players);
 
 }

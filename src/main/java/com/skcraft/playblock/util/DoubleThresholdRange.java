@@ -157,8 +157,10 @@ public class DoubleThresholdRange extends AbstractBehavior {
 
     @Override
     public void readNetworkedNBT(NBTTagCompound tag) {
-        setTriggerRange(tag.getFloat("triggerRange"));
-        setFadeRange(tag.getFloat("fadeRange"));
+        if (tag.hasKey("triggerRange")) {
+            setTriggerRange(tag.getFloat("triggerRange"));
+            setFadeRange(tag.getFloat("fadeRange"));
+        }
     }
     
     public class RangeTest {

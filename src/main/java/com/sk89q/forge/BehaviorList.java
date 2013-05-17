@@ -12,6 +12,15 @@ import net.minecraft.nbt.NBTTagCompound;
 
 /**
  * Manages a list of {@link Behavior}s.
+ * 
+ * <p>Multiple behaviors can be added to this list and the events of each one will
+ * bubble to listeners assigned specifically to this list. In addition, any calls for
+ * {@link Behavior} on this method will be passed on all the behaviors within this list.
+ * </p>
+ * 
+ * <p>Behaviors should not throw exceptions, as those are not caught by the methods on
+ * this list, and that may result in undefined behavior (beyond the scope of the failing
+ * behavior).</p>
  */
 public class BehaviorList implements Collection<Behavior>, Behavior, BehaviorListener {
     
@@ -136,13 +145,6 @@ public class BehaviorList implements Collection<Behavior>, Behavior, BehaviorLis
     }
 
     @Override
-    public void handleNBTEvent(NBTTagCompound tag) {
-        for (Behavior entity : this) {
-            entity.handleNBTEvent(tag);
-        }
-    }
-
-    @Override
     public void readPayload(EntityPlayer player, BehaviorPayload payload,
             DataInputStream in) throws IOException {
         for (Behavior entity : this) {
@@ -151,9 +153,9 @@ public class BehaviorList implements Collection<Behavior>, Behavior, BehaviorLis
     }
 
     @Override
-    public void nbtEvent(NBTTagCompound tag) {
+    public void networkedNbt(NBTTagCompound tag) {
         for (BehaviorListener listener : listeners) {
-            listener.nbtEvent(tag);
+            listener.networkedNbt(tag);
         }
     }
 

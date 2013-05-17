@@ -10,10 +10,6 @@ import net.minecraft.world.World;
 
 import com.skcraft.playblock.PlayBlock;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 /**
  * The projector block.
  */
@@ -39,6 +35,8 @@ public class ProjectorBlock extends Block {
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z,
             EntityPlayer player, int side, float vx, float vy, float cz) {
+        
+        // Be sure rather than crash the world
         TileEntity tileEntity = world.getBlockTileEntity(x, y, z);
         if (tileEntity == null || !(tileEntity instanceof ProjectorTileEntity)
                 || player.isSneaking()) {

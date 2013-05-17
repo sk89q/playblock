@@ -16,7 +16,7 @@ import javax.swing.SwingWorker;
 
 import com.sk89q.task.Task;
 import com.sk89q.task.TaskException;
-import com.skcraft.pbinstall.SetupUtils;
+import com.skcraft.playblock.util.IOUtils;
 
 /**
  * Downloads a URL to a file.
@@ -87,8 +87,8 @@ public class HttpDownload extends Task {
         } catch (IOException e) {
             throw new TaskException("Failed to download: " + e.getMessage(), e);
         } finally {
-            SetupUtils.close(out);
-            SetupUtils.close(in);
+            IOUtils.close(out);
+            IOUtils.close(in);
         }
     }
 

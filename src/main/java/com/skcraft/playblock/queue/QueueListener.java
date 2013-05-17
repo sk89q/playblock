@@ -1,4 +1,6 @@
-package com.skcraft.playblock.media;
+package com.skcraft.playblock.queue;
+
+import com.skcraft.playblock.media.Media;
 
 /**
  * Listeners for queue-related events.
