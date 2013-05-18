@@ -10,7 +10,7 @@ import com.sk89q.forge.RequestResponse;
 /**
  * A client -> server request to add a media clip to a queue.
  */
-public class EnqueuePayload implements Payload, RequestResponse<EnqueueResponsePayload> {
+public class Enqueue implements Payload, RequestResponse<EnqueueResponse> {
     
     private short callId;
     private String uri;

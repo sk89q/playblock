@@ -18,9 +18,9 @@ import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.media.InvalidLengthException;
 import com.skcraft.playblock.media.Media;
 import com.skcraft.playblock.network.BehaviorType;
-import com.skcraft.playblock.network.EnqueuePayload;
-import com.skcraft.playblock.network.EnqueueResponsePayload;
-import com.skcraft.playblock.network.EnqueueResponsePayload.Response;
+import com.skcraft.playblock.network.Enqueue;
+import com.skcraft.playblock.network.EnqueueResponse;
+import com.skcraft.playblock.network.EnqueueResponse.Response;
 import com.skcraft.playblock.player.MediaPlayerHost;
 
 /**
@@ -55,11 +55,11 @@ public class QueueBehavior extends AbstractBehavior {
      * @param uri the URI
      * @return a future
      */
-    public ListenableFuture<EnqueueResponsePayload> sendEnqueueRequest(String uri) {
-        EnqueuePayload enqueue = new EnqueuePayload();
+    public ListenableFuture<EnqueueResponse> sendEnqueueRequest(String uri) {
+        Enqueue enqueue = new Enqueue();
         enqueue.setUri(uri);
         
-        ListenableFuture<EnqueueResponsePayload> future = 
+        ListenableFuture<EnqueueResponse> future = 
                 PlayBlock.getRuntime().getTracker().track(enqueue);
         
         firePayloadSend(new BehaviorPayload(BehaviorType.ENQUEUE, enqueue), null);
@@ -75,9 +75,9 @@ public class QueueBehavior extends AbstractBehavior {
      * @param type the type of response
      * @param media the media clip, or null
      */
-    protected void sendEnqueueResponse(EnqueuePayload request, EntityPlayer player, 
+    protected void sendEnqueueResponse(Enqueue request, EntityPlayer player, 
             Response type, Media media) {
-        EnqueueResponsePayload response = new EnqueueResponsePayload(type, media);
+        EnqueueResponse response = new EnqueueResponse(type, media);
         ResponseTracker.markResponseFor(request, response);
         List<EntityPlayer> players = new ArrayList<EntityPlayer>();
         players.add(player);
@@ -86,12 +86,12 @@ public class QueueBehavior extends AbstractBehavior {
     }
     
     /**
-     * Read an {@link EnqueuePayload}.
+     * Read an {@link Enqueue}.
      * 
      * @param player the player
      * @param enqueue the payload
      */
-    private void handleClientEnqueue(final EntityPlayer player, final EnqueuePayload enqueue) {
+    private void handleClientEnqueue(final EntityPlayer player, final Enqueue enqueue) {
         MediaQueue queue = getQueue();
         
         // Check to see whether we have a queue
@@ -133,7 +133,7 @@ public class QueueBehavior extends AbstractBehavior {
         // Server
         if (host != null) {
             if (payload.isType(BehaviorType.ENQUEUE)) {
-                EnqueuePayload enqueue = new EnqueuePayload();
+                Enqueue enqueue = new Enqueue();
                 enqueue.read(in);
                 
                 handleClientEnqueue(player, enqueue);
@@ -142,7 +142,7 @@ public class QueueBehavior extends AbstractBehavior {
         // Client
         } else {
             if (payload.isType(BehaviorType.ENQUEUE_RESULT)) {
-                EnqueueResponsePayload response = new EnqueueResponsePayload();
+                EnqueueResponse response = new EnqueueResponse();
                 response.read(in);
                 
                 PlayBlock.getRuntime().getTracker().fireFuture(response);

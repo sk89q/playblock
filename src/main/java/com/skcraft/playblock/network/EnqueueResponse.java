@@ -10,9 +10,9 @@ import com.skcraft.playblock.media.Media;
 import com.skcraft.playblock.util.IOUtils;
 
 /**
- * A server -> client response to an {@link EnqueuePayload}.
+ * A server -> client response to an {@link Enqueue}.
  */
-public class EnqueueResponsePayload implements Payload, RequestResponse<EnqueueResponsePayload> {
+public class EnqueueResponse implements Payload, RequestResponse<EnqueueResponse> {
     
     public enum Response {
         OK,
@@ -27,10 +27,10 @@ public class EnqueueResponsePayload implements Payload, RequestResponse<EnqueueR
     private Response response;
     private String uri;
     
-    public EnqueueResponsePayload() {
+    public EnqueueResponse() {
     }
     
-    public EnqueueResponsePayload(Response response, Media media) {
+    public EnqueueResponse(Response response, Media media) {
         setResponse(response);
         setMedia(media);
     }

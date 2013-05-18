@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import com.sk89q.forge.Payload;
 
-public class ProjectorUpdatePayload implements Payload {
+public class ProjectorUpdate implements Payload {
     
     private String uri;
     private float height;
@@ -14,7 +14,7 @@ public class ProjectorUpdatePayload implements Payload {
     private float triggerRange;
     private float fadeRange;
 
-    public ProjectorUpdatePayload() {
+    public ProjectorUpdate() {
     }
 
     public String getUri() {

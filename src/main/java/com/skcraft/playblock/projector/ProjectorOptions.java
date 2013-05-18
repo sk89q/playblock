@@ -9,7 +9,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import com.sk89q.forge.AbstractBehavior;
 import com.sk89q.forge.BehaviorPayload;
 import com.skcraft.playblock.network.BehaviorType;
-import com.skcraft.playblock.network.ProjectorUpdatePayload;
+import com.skcraft.playblock.network.ProjectorUpdate;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.DoubleThresholdRange;
@@ -44,7 +44,7 @@ public class ProjectorOptions extends AbstractBehavior {
             DataInputStream in) throws IOException {
         if (payload.isType(BehaviorType.UPDATE)) {
             if (getAccessList() == null || getAccessList().checkAndForget(player)) {
-                ProjectorUpdatePayload update = new ProjectorUpdatePayload();
+                ProjectorUpdate update = new ProjectorUpdate();
                 update.read(in);
                 
                 mediaPlayer.setUri(update.getUri());
@@ -67,7 +67,7 @@ public class ProjectorOptions extends AbstractBehavior {
     
     public void sendUpdate(String uri, float width, float height, 
             float triggerRange, float fadeRange) {
-        ProjectorUpdatePayload update = new ProjectorUpdatePayload();
+        ProjectorUpdate update = new ProjectorUpdate();
         update.setUri(uri);
         update.setWidth(width);
         update.setHeight(height);

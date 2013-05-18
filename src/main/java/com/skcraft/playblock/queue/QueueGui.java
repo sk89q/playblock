@@ -16,7 +16,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.media.MediaResolver;
-import com.skcraft.playblock.network.EnqueueResponsePayload;
+import com.skcraft.playblock.network.EnqueueResponse;
 import com.skcraft.playblock.projector.ProjectorQueueSlot;
 
 import cpw.mods.fml.relauncher.Side;
@@ -288,13 +288,13 @@ public class QueueGui extends GuiScreen {
      * @param uri the URI
      */
     protected void submitEnqueue(String uri) {
-        ListenableFuture<EnqueueResponsePayload> future = 
+        ListenableFuture<EnqueueResponse> future = 
                 queuable.getQueueBehavior().sendEnqueueRequest(uri);
         
         // Called when we receive a response
-        Futures.addCallback(future, new FutureCallback<EnqueueResponsePayload>() {
+        Futures.addCallback(future, new FutureCallback<EnqueueResponse>() {
             @Override
-            public void onSuccess(EnqueueResponsePayload result) {
+            public void onSuccess(EnqueueResponse result) {
             }
 
             @Override
