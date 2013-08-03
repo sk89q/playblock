@@ -51,15 +51,15 @@ public class ProjectorGui extends GuiScreen {
      */
     @Override
     public void initGui() {
-        this.controlList.clear();
+        this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
 
-        this.controlList.add(applyButton = 
+        this.buttonList.add(applyButton = 
                 new GuiButton(0, left + 160, top + 125, 80, 20, LKey.DONE.toString()));
 
-        this.controlList.add(clearUriButton = 
+        this.buttonList.add(clearUriButton = 
                 new GuiButton(1, left + 220, top + 14, 17, 20, "X"));
 
         uriField = new GuiTextField(this.fontRenderer, left + 60, top + 17,
@@ -124,9 +124,8 @@ public class ProjectorGui extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
-        int texture = mc.renderEngine.getTexture("/playblock/gui/projector_bg.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(texture);
+        mc.renderEngine.bindTexture("/playblock/gui/projector_bg.png");
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);

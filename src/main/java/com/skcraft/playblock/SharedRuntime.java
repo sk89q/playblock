@@ -2,7 +2,6 @@ package com.skcraft.playblock;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 
@@ -73,20 +72,14 @@ public class SharedRuntime {
         mediaResolver = new MediaResolver();
         queueSupervisor = new SimpleQueueSupervisor(mediaResolver);
         
-        projectorBlock = new ProjectorBlock(getConfig().getInt("playblock.id", 3400), 0, Material.iron)
-                .setHardness(0.5F).setStepSound(Block.soundGlassFootstep)
-                .setLightValue(1.0F)
-                .setBlockName(ProjectorBlock.INTERNAL_NAME)
-                .setCreativeTab(CreativeTabs.tabMisc);
+        projectorBlock = new ProjectorBlock(getConfig().getInt("playblock.id", 3400), Material.iron);
 
         GameRegistry.registerBlock(projectorBlock, ProjectorBlock.INTERNAL_NAME);
         GameRegistry.registerTileEntity(ProjectorTileEntity.class,
                 ProjectorTileEntity.INTERNAL_NAME);
         LanguageRegistry.addName(projectorBlock, "PlayBlock Projector");
         
-        projectorRemoteItem = new RemoteItem(getConfig().getInt("playremote.id", 15000))
-            .setCreativeTab(CreativeTabs.tabMisc)
-            .setItemName(RemoteItem.INTERNAL_NAME);
+        projectorRemoteItem = new RemoteItem(getConfig().getInt("playremote.id", 15000));
         LanguageRegistry.addName(projectorRemoteItem, "PlayBlock Remote");
         
         getConfig().save();

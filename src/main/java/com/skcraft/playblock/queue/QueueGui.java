@@ -36,7 +36,7 @@ public class QueueGui extends GuiScreen {
     private GuiButton removeButton;
     private GuiButton clearButton;
     private GuiTextField uriField;
-
+    
     private float currentScroll = 0;
     private boolean isScrolling = false;
     private boolean wasClicking = false;
@@ -55,18 +55,18 @@ public class QueueGui extends GuiScreen {
      */
     @Override
     public void initGui() {
-        this.controlList.clear();
+        this.buttonList.clear();
         Keyboard.enableRepeatEvents(true);
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
 
-        controlList.add(addButton = new GuiButton(0, left + 215, top + 14, 25,
+        buttonList.add(addButton = new GuiButton(0, left + 215, top + 14, 25,
                 20, LKey.ADD.toString()));
-        controlList.add(clearUriButton = new GuiButton(1, left + 195,
+        buttonList.add(clearUriButton = new GuiButton(1, left + 195,
                 top + 14, 17, 20, "X"));
-        controlList.add(removeButton = new GuiButton(2, left + 4, top + 130,
+        buttonList.add(removeButton = new GuiButton(2, left + 4, top + 130,
                 42, 20, LKey.REMOVE.toString()));
-        controlList.add(clearButton = new GuiButton(3, left + 4, top + 100,
+        buttonList.add(clearButton = new GuiButton(3, left + 4, top + 100,
                 42, 20, LKey.CLEAR.toString()));
         removeButton.enabled = false;
 
@@ -84,10 +84,8 @@ public class QueueGui extends GuiScreen {
      */
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
-        int texture = mc.renderEngine
-                .getTexture("/playblock/gui/queue_bg.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(texture);
+        mc.renderEngine.bindTexture("/playblock/gui/queue_bg.png");
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);
@@ -106,27 +104,27 @@ public class QueueGui extends GuiScreen {
                 && mouseY < scrollBottom) {
             isScrolling = needsScrollBar();
         }
-
+        
         if (!mouseDown) {
             isScrolling = false;
         }
         wasClicking = mouseDown;
-
+        
         if (isScrolling) {
             currentScroll = (mouseY - scrollTop - 7.5F)
                     / ((float) (scrollBottom - scrollTop) - 15);
-
             if (currentScroll < 0) {
                 currentScroll = 0;
             } else if (currentScroll > 1) {
                 currentScroll = 1;
             }
         }
-
-        mc.renderEngine.bindTexture(texture);
+        
+        mc.renderEngine.bindTexture("/playblock/gui/queue_bg.png");
         drawTexturedModalRect(left + 199,
                 top + (int) ((scrollBottom - scrollTop - 32) * currentScroll)
                         + 54, 0, ySize + 1, 5, 32);
+        scrollbar.drawScrollbar(mouseX, mouseY);
         renderQueue(left, top);
         super.drawScreen(mouseX, mouseY, par3);
     }
@@ -138,7 +136,7 @@ public class QueueGui extends GuiScreen {
             if (fontRenderer.getStringWidth(name) > 134) {
                 name = fontRenderer.trimStringToWidth(name, 128).concat("...");
             }
-
+            
             createSlot(name);
             submitEnqueue(uriField.getText());
             uriField.setText("");
@@ -262,7 +260,7 @@ public class QueueGui extends GuiScreen {
             }
         }
     }
-
+    
     /**
      * Determines if a scroll bar is needed.
      * 
