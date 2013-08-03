@@ -19,7 +19,8 @@ public enum LKey {
     DONE("playblock.gui.done", "Done"),
     ADD("playblock.gui.add", "Add"),
     REMOVE("playblock.gui.remove", "Remove"),
-    CLEAR("playblock.gui.clear", "Clear");
+    CLEAR("playblock.gui.clear", "Clear"),
+    SEARCH("playblock.gui.search", "Search");
     
     private final String key;
     private final String enUsDefault;

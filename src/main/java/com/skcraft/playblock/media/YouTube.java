@@ -12,7 +12,7 @@ import com.skcraft.playblock.util.HttpRequest;
  */
 public class YouTube implements MediaProvider {
     
-    private static final String API_URL = "https://www.googleapis.com/youtube/v3/videos";
+    private static final String API_URL = "https://www.googleapis.com/youtube/v3/";
     
     /**
      * API key for accessing YouTube, managed by sk89q.
@@ -51,7 +51,7 @@ public class YouTube implements MediaProvider {
     }
 
     private Media queryVideo(String id) throws IOException {
-        HttpRequest request = new HttpRequest(API_URL);
+        HttpRequest request = new HttpRequest(API_URL + "videos");
         request.addQueryParam("key", API_KEY);
         request.addQueryParam("id", id);
         request.addQueryParam("part", "snippet,contentDetails,status");
@@ -94,6 +94,31 @@ public class YouTube implements MediaProvider {
         }
         
         return null;
+    }
+    
+    public Media[] search(String query, int startIndex, int maxResults) throws IOException {
+        HttpRequest request = new HttpRequest(API_URL + "search");
+        request.addQueryParam("part", "id,snippet");
+        request.addQueryParam("maxResults", Integer.toString(maxResults));
+        request.addQueryParam("order", "relevance");
+        request.addQueryParam("q", query);
+        request.addQueryParam("type", "video");
+        request.addQueryParam("key", API_KEY);
+        
+        String data = request.readText();
+        MapQuery result = MapQuery.fromJsonApi(data, "error.message");
+        Media[] results = new Media[maxResults];
+        
+        for(int i = 0; i < maxResults; i++) {
+            MapQuery entry = result.wrapMapQuery("items." + i);
+            Media videoResult = new Media("http://youtube.com/watch?v=" + entry.getString("id.videoId"));
+            videoResult.setTitle(entry.getString("snippet.title"));
+            videoResult.setThumbnail(entry.getString("snippet.thumbnails.default.url"));
+            videoResult.setCreator(entry.getString("snippet.channelTitle"));
+            results[i] = videoResult;
+        }
+        
+        return results;
     }
     
 }
