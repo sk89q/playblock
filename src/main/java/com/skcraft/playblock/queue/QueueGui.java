@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -18,6 +17,7 @@ import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.media.MediaResolver;
 import com.skcraft.playblock.network.EnqueueResponse;
 import com.skcraft.playblock.projector.ProjectorQueueSlot;
+import com.skcraft.playblock.util.GuiScrollbar;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -36,10 +36,7 @@ public class QueueGui extends GuiScreen {
     private GuiButton removeButton;
     private GuiButton clearButton;
     private GuiTextField uriField;
-    
-    private float currentScroll = 0;
-    private boolean isScrolling = false;
-    private boolean wasClicking = false;
+    private GuiScrollbar scrollbar;
 
     private final ExposedQueue queuable;
     private final List<ProjectorQueueSlot> slots = new ArrayList<ProjectorQueueSlot>();
@@ -77,6 +74,9 @@ public class QueueGui extends GuiScreen {
         uriField.setEnableBackgroundDrawing(true);
         uriField.setCanLoseFocus(true);
         uriField.setFocused(false);
+        
+        scrollbar = new GuiScrollbar(mc, left + 199, top + 54, 99, 0, ySize + 1,
+                5, 32, "/playblock/gui/queue_bg.png");
     }
 
     /**
@@ -93,37 +93,16 @@ public class QueueGui extends GuiScreen {
         uriField.drawTextBox();
         fontRenderer.drawString(LKey.URL.toString(), left + 10, top + 20,
                 0xff999999);
+        
+        if(!scrollbar.isEnabled() && slots.size() / 7.0 > 1) {
+            scrollbar.setEnabled(true);
+        }
+        //else if(scrollbar.isEnabled() && slots.size() / 7.0 < 1) {
+        //    scrollbar.setEnabled(false);
+        //}
+        
+        scrollbar.setEnabled(true);
 
-        boolean mouseDown = Mouse.isButtonDown(0);
-        int scrollLeft = left + 199;
-        int scrollRight = left + 204;
-        int scrollTop = top + 54;
-        int scrollBottom = top + 153;
-        if (!wasClicking && mouseDown && mouseX >= scrollLeft
-                && mouseX < scrollRight && mouseY >= scrollTop
-                && mouseY < scrollBottom) {
-            isScrolling = needsScrollBar();
-        }
-        
-        if (!mouseDown) {
-            isScrolling = false;
-        }
-        wasClicking = mouseDown;
-        
-        if (isScrolling) {
-            currentScroll = (mouseY - scrollTop - 7.5F)
-                    / ((float) (scrollBottom - scrollTop) - 15);
-            if (currentScroll < 0) {
-                currentScroll = 0;
-            } else if (currentScroll > 1) {
-                currentScroll = 1;
-            }
-        }
-        
-        mc.renderEngine.bindTexture("/playblock/gui/queue_bg.png");
-        drawTexturedModalRect(left + 199,
-                top + (int) ((scrollBottom - scrollTop - 32) * currentScroll)
-                        + 54, 0, ySize + 1, 5, 32);
         scrollbar.drawScrollbar(mouseX, mouseY);
         renderQueue(left, top);
         super.drawScreen(mouseX, mouseY, par3);
@@ -153,7 +132,7 @@ public class QueueGui extends GuiScreen {
             uri = uriField.getText();
         } else if (button.id == clearButton.id) {
             slots.clear();
-            currentScroll = 0;
+            scrollbar.setCurrentScroll(0);
             removeButton.enabled = false;
         }
     }
@@ -178,7 +157,7 @@ public class QueueGui extends GuiScreen {
         super.mouseClicked(x, y, buttonClicked);
 
         int unseenSlots = slots.size() - 7;
-        int startIndex = (int) (currentScroll * unseenSlots + 0.5);
+        int startIndex = (int) (scrollbar.getCurrentScroll() * unseenSlots + 0.5);
         if (!slots.isEmpty()) {
             for (int i = startIndex; i < startIndex + 7; i++) {
                 if (i < slots.size()) {
@@ -193,24 +172,7 @@ public class QueueGui extends GuiScreen {
     @Override
     public void handleMouseInput() {
         super.handleMouseInput();
-        int wheelDelta = Mouse.getEventDWheel();
-
-        if (wheelDelta != 0 && needsScrollBar()) {
-            int unseenSlots = slots.size() - 7;
-
-            if (wheelDelta < 0)
-                wheelDelta = -1;
-            else if (wheelDelta > 0)
-                wheelDelta = 1;
-
-            currentScroll -= (float) wheelDelta / (float) unseenSlots;
-
-            if (currentScroll < 0) {
-                currentScroll = 0;
-            } else if (currentScroll > 1) {
-                currentScroll = 1;
-            }
-        }
+        scrollbar.handleMouseInput(slots.size(), 7);
     }
 
     /**
@@ -253,21 +215,12 @@ public class QueueGui extends GuiScreen {
         }
 
         int unseenSlots = slots.size() - 7;
-        int startIndex = (int) (currentScroll * unseenSlots + 0.5);
+        int startIndex = (int) (scrollbar.getCurrentScroll() * unseenSlots + 0.5);
         for (int i = startIndex; i < startIndex + 7; i++) {
             if (i < slots.size()) {
                 slots.get(i).drawSlot(i - startIndex, left, top);
             }
         }
-    }
-    
-    /**
-     * Determines if a scroll bar is needed.
-     * 
-     * @return whether or not the gui needs a scroll bar
-     */
-    private boolean needsScrollBar() {
-        return slots.size() / 7.0 > 1;
     }
 
     @Override
