@@ -1,7 +1,7 @@
 <project name="PlayBlock" default="main">
     <property name="project.version" value="1.2.0"/>
-    <property name="forge.version" value="6.6.2.534"/>
-    <property name="mc.version" value="1.4.7"/>
+    <property name="forge.version" value="7.8.1.737"/>
+    <property name="mc.version" value="1.5.2"/>
     
     <property name="download.dir" value="download"/>
     <property name="forge.name" value="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
@@ -69,10 +69,10 @@
         
         <!-- Reobfuscate -->
 		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
-			<arg line="/c reobfuscate.bat"/>
+			<arg line="/c reobfuscate_srg.bat"/>
 		</exec>
 		<exec dir="${mcp.dir}" executable="sh" osfamily="unix">
-			<arg value="reobfuscate.sh"/>
+			<arg value="reobfuscate_srg.sh"/>
 		</exec>
         
         <!-- Copy classes -->
