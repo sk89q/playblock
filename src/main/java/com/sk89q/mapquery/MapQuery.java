@@ -18,13 +18,13 @@ public class MapQuery {
 
     private static final String DELIMETER = "(?<!\\\\)\\.";
     private static final Pattern ARRAY_SYNTAX = Pattern.compile("^([0-9]+)$");
-    
+
     private final Map<Object, Object> root;
-    
+
     public MapQuery() {
         this(new HashMap<Object, Object>());
     }
-    
+
     public MapQuery(Map<Object, Object> root) {
         this.root = root;
     }
@@ -40,13 +40,13 @@ public class MapQuery {
         }
         return null;
     }
-    
+
     public PathSegment[] parsePath(String path) {
         List<PathSegment> segments = new ArrayList<PathSegment>();
         for (String token : path.split(DELIMETER)) {
             token = token.replaceAll("\\\\", "");
             Matcher m;
-            
+
             // Array access
             m = ARRAY_SYNTAX.matcher(token);
             if (m.matches()) {
@@ -55,20 +55,20 @@ public class MapQuery {
                 segments.add(new MapAccessor(token));
             }
         }
-        
+
         PathSegment[] segmentsArr = new PathSegment[segments.size()];
         segments.toArray(segmentsArr);
         return segmentsArr;
     }
-    
+
     public boolean containsPath(String path) {
         return get(parsePath(path)) != null;
     }
-    
+
     public Object get(String path) {
         return get(parsePath(path));
     }
-    
+
     public <T> T getOf(String path, Class<T> type) {
         Object v = get(path);
         if (v == null) {
@@ -80,27 +80,27 @@ public class MapQuery {
             return null;
         }
     }
-    
+
     public String getString(String path) {
         return getOf(path, String.class);
     }
-    
+
     public Integer getInt(String path) {
         return getOf(path, Integer.class);
     }
-    
+
     public Long getLong(String path) {
         return getOf(path, Long.class);
     }
-    
+
     public Float getFloat(String path) {
         return getOf(path, Float.class);
     }
-    
+
     public Double getDouble(String path) {
         return getOf(path, Double.class);
     }
-    
+
     public MapQuery wrapMapQuery(String path) {
         Map v = getOf(path, Map.class);
         if (v == null) {

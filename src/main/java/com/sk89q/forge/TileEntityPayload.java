@@ -4,23 +4,23 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import com.skcraft.playblock.projector.ProjectorTileEntity;
+import com.skcraft.playblock.projector.TileEntityProjector;
 
 /**
  * A payload that is targeted specifically to a tile entity.
  */
 public class TileEntityPayload implements Payload {
-    
+
     private int x;
     private int y;
     private int z;
     private Payload payload;
-    
+
     public TileEntityPayload() {
-        
+
     }
 
-    public TileEntityPayload(ProjectorTileEntity tile, Payload payload) {
+    public TileEntityPayload(TileEntityProjector tile, Payload payload) {
         x = tile.xCoord;
         y = tile.yCoord;
         z = tile.zCoord;

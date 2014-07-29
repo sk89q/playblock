@@ -1,7 +1,7 @@
 package com.sk89q.task;
 
 public class TaskException extends RuntimeException {
-    
+
     private final String log;
 
     public TaskException() {

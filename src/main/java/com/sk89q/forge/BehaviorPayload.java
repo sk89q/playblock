@@ -5,14 +5,16 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * A payload designed for usage with {@link Behavior}s. A type field is provided to
- * differentiate different payload types for each {@link Behavior}.
+ * A payload designed for usage with {@link Behavior}s. A type field is provided
+ * to differentiate different payload types for each {@link Behavior}.
  * 
- * <p>However, to prevent payload ID collision, it is important for projects to define
- * a standard for assigning such IDs.</p>
+ * <p>
+ * However, to prevent payload ID collision, it is important for projects to
+ * define a standard for assigning such IDs.
+ * </p>
  */
 public class BehaviorPayload implements Payload {
-    
+
     private int type;
     private Payload payload;
 
@@ -32,7 +34,7 @@ public class BehaviorPayload implements Payload {
     public int getType() {
         return type;
     }
-    
+
     public boolean isType(Enum<?> e) {
         return e.ordinal() == getType();
     }

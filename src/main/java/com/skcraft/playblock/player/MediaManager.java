@@ -7,7 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
 
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
@@ -23,10 +24,7 @@ import com.sun.jna.NativeLibrary;
  */
 public class MediaManager {
 
-    private static final String[] INSTALL_MESSAGE = {
-        "To view this video,",
-        "install " + (EnvUtils.getJvmArch() == Arch.X86_64 ? "64-bit" : "32-bit") + " VLC",
-        "by pressing F4.", };
+    private static final String[] INSTALL_MESSAGE = { "To view this video,", "install " + (EnvUtils.getJvmArch() == Arch.X86_64 ? "64-bit" : "32-bit") + " VLC", "by pressing F4.", };
 
     private final ExecutorService executor;
     private TextureCache textureCache = new TextureCache();
@@ -34,7 +32,7 @@ public class MediaManager {
     private MediaRenderer activeRenderer;
     private float volume = 1;
     private EmbeddedInstaller installer;
-    
+
     // Simple texture cache
 
     static {
@@ -52,15 +50,14 @@ public class MediaManager {
         // In order to prevent freezing when changing media, the player will be
         // called from this dedicated thread
         executor = Executors.newFixedThreadPool(1);
-        
+
         try {
             factory = new MediaPlayerFactory(getFactoryOptions());
         } catch (Throwable t) {
-            PlayBlock.log(Level.WARNING, "Failed to find VLC!", t);
+            PlayBlock.log(Level.WARN, "Failed to find VLC!", t);
         }
-        
-        volume = PlayBlock.getClientRuntime().getClientOptions()
-                .getFloat("volume", 1);
+
+        volume = PlayBlock.getClientRuntime().getClientOptions().getFloat("volume", 1);
     }
 
     /**
@@ -71,7 +68,7 @@ public class MediaManager {
     public boolean isSupported() {
         return factory != null;
     }
-    
+
     /**
      * Get the in-game installer.
      * 
@@ -81,10 +78,10 @@ public class MediaManager {
         if (installer == null) {
             installer = new EmbeddedInstaller();
         }
-        
+
         return installer;
     }
-    
+
     /**
      * Get the message shown on the screen for unsupported usres.
      * 
@@ -123,7 +120,9 @@ public class MediaManager {
     /**
      * Returns whether a new player can be acquired and started.
      * 
-     * <p>For performance reasons, only one player can be playing at a time.</p>
+     * <p>
+     * For performance reasons, only one player can be playing at a time.
+     * </p>
      * 
      * @return true true if there is a free player available
      */
@@ -134,8 +133,10 @@ public class MediaManager {
     /**
      * Acquire a new renderer and set it as the active renderer.
      * 
-     * @param width the width of the video
-     * @param height the height of the video
+     * @param width
+     *            the width of the video
+     * @param height
+     *            the height of the video
      * @return the renderer
      */
     public MediaRenderer acquireRenderer(int width, int height) {
@@ -150,11 +151,15 @@ public class MediaManager {
     /**
      * Create a new renderer to render media on.
      * 
-     * <p>The rendered is tracked using this instance and it can be released
-     * selectively or all together.</p>
+     * <p>
+     * The rendered is tracked using this instance and it can be released
+     * selectively or all together.
+     * </p>
      * 
-     * @param width the width of the player
-     * @param height the height of the player
+     * @param width
+     *            the width of the player
+     * @param height
+     *            the height of the player
      * @return a new media renderer
      */
     protected MediaRenderer newRenderer(final int width, final int height) {
@@ -163,50 +168,53 @@ public class MediaManager {
         }
 
         int textureIndex = textureCache.createTexture(width, height);
-        
+
         // Create and initialize the renderer
         MediaRenderer instance = new MediaRenderer(this, width, height, textureIndex);
         instance.initialize(factory, getVolume());
-        
+
         return instance;
     }
 
     /**
      * Frees up a renderer.
      * 
-     * @param instance the renderer
+     * @param instance
+     *            the renderer
      */
     public void release(final MediaRenderer instance) {
         if (!isSupported()) {
             throw new RuntimeException("VLC library is not available!");
         }
-        
+
         if (instance.isReleased()) {
             return; // Don't re-release
         }
-        
+
         // For thread safety reasons, mark the release flag
         instance.markForRelease();
 
         // Start releasing -- this does not block
         instance.release();
-        
+
         // Release the texture for the screen
         int textureIndex = instance.getTextureIndex();
         if (textureIndex > 0) {
             textureCache.deleteTexture(textureIndex);
         }
-        
+
         // Clear the active renderer
         if (instance == activeRenderer) {
             activeRenderer = null;
         }
     }
-    
+
     /**
-     * Execute a given {@link Runnable} in the dedicated thread for interacting with VLC.
+     * Execute a given {@link Runnable} in the dedicated thread for interacting
+     * with VLC.
      * 
-     * @param runnable the object to run
+     * @param runnable
+     *            the object to run
      */
     void executeThreadSafe(Runnable runnable) {
         executor.execute(runnable);
@@ -236,16 +244,17 @@ public class MediaManager {
     /**
      * Set the volume of the player.
      * 
-     * @param volume the volume
+     * @param volume
+     *            the volume
      */
     public void setVolume(float volume) {
         this.volume = volume;
-        
+
         if (activeRenderer != null) {
             activeRenderer.setVolume(volume);
         }
     }
-    
+
     /**
      * Return the volume of the player.
      * 

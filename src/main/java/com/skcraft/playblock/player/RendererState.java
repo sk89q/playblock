@@ -5,12 +5,6 @@ package com.skcraft.playblock.player;
  */
 public enum RendererState {
 
-    INITIALIZING,
-    ERROR,
-    STOPPED,
-    PAUSED,
-    BUFFERING,
-    PLAYING,
-    RELEASED
+    INITIALIZING, ERROR, STOPPED, PAUSED, BUFFERING, PLAYING, RELEASED
 
 }

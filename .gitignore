@@ -1,8 +1,9 @@
 /build
-/bin
-/download
-/forge
+/eclipse
+.classpath
+.project
+/.gradle
 /.settings
-/.project
-/.classpath
-/pom.xml
+/bin
+/gradle
+gradlew*

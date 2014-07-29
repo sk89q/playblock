@@ -22,20 +22,20 @@ import java.util.Map.Entry;
  * A very simple and small HTTP client.
  */
 public class HttpRequest {
-    
-    public static enum Method { GET, POST };
+
+    public static enum Method {
+        GET, POST
+    };
 
     private String userAgent = "PlayBlock";
     private int readTimeout = 4000;
     private int bufferSize = 1024 * 8;
     private Method method = Method.GET;
     private String url;
-    
-    private final List<Entry<String, String>> queryParams = 
-            new ArrayList<Entry<String,String>>();
-    private final List<Entry<String, String>> postParams = 
-            new ArrayList<Entry<String,String>>();
-    
+
+    private final List<Entry<String, String>> queryParams = new ArrayList<Entry<String, String>>();
+    private final List<Entry<String, String>> postParams = new ArrayList<Entry<String, String>>();
+
     public HttpRequest(String url) {
         Validate.notNull(url);
         this.url = url;
@@ -48,7 +48,7 @@ public class HttpRequest {
     public void setMethod(Method method) {
         this.method = method;
     }
-    
+
     public String getUserAgent() {
         return userAgent;
     }
@@ -88,28 +88,28 @@ public class HttpRequest {
     public String getUrl() {
         return url;
     }
-    
+
     public void setUrl(String url) {
         Validate.notNull(url);
         this.url = url;
     }
-    
+
     private URL buildUrl() throws MalformedURLException {
         String query = buildQuery(queryParams);
         return new URL(url + (!query.isEmpty() ? "?" + query : ""));
     }
-    
+
     public void read(OutputStream out) throws IOException {
         Validate.notNull(out);
-        
+
         HttpURLConnection conn = null;
         InputStream in = null;
         byte[] postData = null;
-        
+
         if (postParams.size() > 0) {
             postData = buildQuery(postParams).getBytes("UTF-8");
         }
-        
+
         try {
             conn = (HttpURLConnection) buildUrl().openConnection();
             conn.setRequestProperty("User-Agent", userAgent);
@@ -126,7 +126,7 @@ public class HttpRequest {
 
             conn.setDoOutput(true);
             conn.connect();
-            
+
             // Write POST data
             if (postData != null) {
                 OutputStream postOut = conn.getOutputStream();
@@ -136,10 +136,10 @@ public class HttpRequest {
             }
 
             in = new BufferedInputStream(conn.getInputStream());
-            
+
             byte[] data = new byte[bufferSize];
             int len = 0;
-            
+
             while ((len = in.read(data, 0, bufferSize)) >= 0) {
                 out.write(data, 0, len);
             }
@@ -147,7 +147,7 @@ public class HttpRequest {
             close(in);
         }
     }
-    
+
     public String getText(Charset charset) throws IOException {
         ByteArrayOutputStream byteArray = new ByteArrayOutputStream();
         BufferedOutputStream bos = new BufferedOutputStream(byteArray);
@@ -159,30 +159,30 @@ public class HttpRequest {
         }
         return new String(byteArray.toByteArray(), charset);
     }
-    
+
     public String readText() throws IOException {
         return getText(Charset.forName("UTF-8"));
     }
-    
+
     private static String buildQuery(List<Entry<String, String>> params) {
         StringBuilder builder = new StringBuilder();
         boolean first = true;
-        
+
         for (Entry<String, String> param : params) {
             if (!first) {
                 builder.append("&");
             }
-            
+
             builder.append(urlEncode(param.getKey()));
             builder.append("=");
             builder.append(urlEncode(param.getValue()));
-            
+
             first = false;
         }
-        
+
         return builder.toString();
     }
-    
+
     private static String urlEncode(String value) {
         try {
             return URLEncoder.encode(value, "UTF-8");
@@ -190,7 +190,7 @@ public class HttpRequest {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static void close(Closeable closeable) {
         if (closeable != null) {
             try {

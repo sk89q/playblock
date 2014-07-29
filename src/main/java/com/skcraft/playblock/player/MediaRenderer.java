@@ -31,9 +31,12 @@ public final class MediaRenderer implements RenderCallback {
     /**
      * Create a new media renderer with the given width and height.
      * 
-     * @param width the width
-     * @param height the height
-     * @param textureIndex the text of the index
+     * @param width
+     *            the width
+     * @param height
+     *            the height
+     * @param textureIndex
+     *            the text of the index
      */
     MediaRenderer(MediaManager mediaManager, int width, int height, int textureIndex) {
         this.mediaManager = mediaManager;
@@ -46,25 +49,25 @@ public final class MediaRenderer implements RenderCallback {
     /**
      * Initialize the instance and create a new player.
      * 
-     * @param factory the factory for creating a new player
-     * @param volume the initial volume
+     * @param factory
+     *            the factory for creating a new player
+     * @param volume
+     *            the initial volume
      */
     void initialize(final MediaPlayerFactory factory, final float volume) {
         final MediaRenderer instance = this;
-        
+
         // Release the VLC player instance in the dedicated thread
         mediaManager.executeThreadSafe(new Runnable() {
             @Override
             public void run() {
                 // Create the VLC media player instance
-                DirectMediaPlayer player = factory.newDirectMediaPlayer(
-                        "RGBA", width, height, width * 4, instance);
+                DirectMediaPlayer player = factory.newDirectMediaPlayer("RGBA", width, height, width * 4, instance);
                 player.setPlaySubItems(true);
                 player.setRepeat(true);
-                player.addMediaPlayerEventListener(
-                        listener = new PlayerEventListener(instance));
+                player.addMediaPlayerEventListener(listener = new PlayerEventListener(instance));
                 player.setVolume((int) (volume * 100));
-                
+
                 instance.player = player;
             }
         });
@@ -75,7 +78,7 @@ public final class MediaRenderer implements RenderCallback {
      */
     void release() {
         final MediaRenderer instance = this;
-        
+
         // Release the VLC player instance in the dedicated thread
         mediaManager.executeThreadSafe(new Runnable() {
             @Override
@@ -88,7 +91,7 @@ public final class MediaRenderer implements RenderCallback {
             }
         });
     }
-    
+
     /**
      * Get the time that this renderer was created at.
      * 
@@ -108,11 +111,11 @@ public final class MediaRenderer implements RenderCallback {
     }
 
     /**
-     * Mark this instance for release so that any object using this renderer 
+     * Mark this instance for release so that any object using this renderer
      * (and also {@link MediaManager}) knows that it has been released already.
      * 
-     * @see MediaManager#release(MediaRenderer) the method where things are actually
-     *      unloaded
+     * @see MediaManager#release(MediaRenderer) the method where things are
+     *      actually unloaded
      */
     void markForRelease() {
         released = true;
@@ -157,17 +160,20 @@ public final class MediaRenderer implements RenderCallback {
     /**
      * Play a media file or URL.
      * 
-     * @param uri the path to play
-     * @param position milliseconds to skip in the video
-     * @param repeat true to repeat the video
+     * @param uri
+     *            the path to play
+     * @param position
+     *            milliseconds to skip in the video
+     * @param repeat
+     *            true to repeat the video
      */
     public void playMedia(final String uri, final long position, final boolean repeat) {
         if (isReleased()) {
             throw new RuntimeException("Cannot play media on released player");
         }
-        
+
         final long startTime = System.currentTimeMillis() - position;
-        
+
         mediaManager.executeThreadSafe(new Runnable() {
             @Override
             public void run() {
@@ -182,7 +188,8 @@ public final class MediaRenderer implements RenderCallback {
     /**
      * Play a media file or URL, defaulting to repeat.
      * 
-     * @param uri the path to play
+     * @param uri
+     *            the path to play
      */
     public void playMedia(final String uri) {
         playMedia(uri, -1, true);
@@ -192,7 +199,7 @@ public final class MediaRenderer implements RenderCallback {
      * Stop whatever is playing.
      */
     public void stop() {
-        
+
         mediaManager.executeThreadSafe(new Runnable() {
             @Override
             public void run() {
@@ -210,7 +217,7 @@ public final class MediaRenderer implements RenderCallback {
         if (isReleased()) {
             return;
         }
-        
+
         player.setVolume((int) (volume * 100));
     }
 
@@ -223,18 +230,22 @@ public final class MediaRenderer implements RenderCallback {
         if (isReleased()) {
             return RendererState.RELEASED;
         }
-        
+
         return state;
     }
-    
+
     /**
      * Set the state of this renderer.
      * 
-     * <p>This is used by only {@link PlayerEventListener} so that state information
-     * can be updated on this renderer. Do not call this method from anywhere else.</p>
+     * <p>
+     * This is used by only {@link PlayerEventListener} so that state
+     * information can be updated on this renderer. Do not call this method from
+     * anywhere else.
+     * </p>
      * 
      * @see PlayerEventListener calls this method
-     * @param state the new state
+     * @param state
+     *            the new state
      */
     void setState(RendererState state) {
         this.state = state;
@@ -243,12 +254,18 @@ public final class MediaRenderer implements RenderCallback {
     /**
      * Draw the display at the given location in 2D.
      * 
-     * <p>The video will be resized accordingly.</p>
+     * <p>
+     * The video will be resized accordingly.
+     * </p>
      * 
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param width the width of the screen
-     * @param height the height of the screen
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     * @param width
+     *            the width of the screen
+     * @param height
+     *            the height of the screen
      */
     public void drawMedia(int x, int y, float width, float height) {
         if (buffer != null && !isReleased()) {
@@ -264,11 +281,11 @@ public final class MediaRenderer implements RenderCallback {
             GL11.glTexCoord2f(1, 1);
             GL11.glVertex3f(x + width, y + height, 0.0F);
             GL11.glEnd();
-            
-            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, this.width,
-                    this.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
+
+            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, this.width, this.height, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buffer);
         } else {
-            // Because we don't zero out the texture data for the texture that we
+            // Because we don't zero out the texture data for the texture that
+            // we
             // had created for this player, it may contain existing texture data
             // that may have been used for who knows what before (UI drawing,
             // another game, another video), and it's best we not draw that!
@@ -277,12 +294,11 @@ public final class MediaRenderer implements RenderCallback {
     }
 
     @Override
-    public void display(DirectMediaPlayer mediaPlayer, Memory[] nativeBuffers,
-            BufferFormat bufferFormat) {
+    public void display(DirectMediaPlayer mediaPlayer, Memory[] nativeBuffers, BufferFormat bufferFormat) {
         if (released) {
             return;
         }
-        
+
         buffer = nativeBuffers[0].getByteBuffer(0, width * height * 4);
     }
 

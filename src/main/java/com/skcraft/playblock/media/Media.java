@@ -13,7 +13,7 @@ public class Media {
     private String thumbnail;
     private String creator;
     private Long length;
-    
+
     public Media(String uri) {
         setUri(uri);
     }
@@ -53,21 +53,21 @@ public class Media {
         }
         this.length = length;
     }
-    
+
     public String getThumbnail() {
         return thumbnail;
     }
-    
+
     public void setThumbnail(String uri) {
         thumbnail = uri;
     }
-    
+
     public String getCreator() {
         return creator;
     }
-    
+
     public void setCreator(String creator) {
         this.creator = creator;
     }
-    
+
 }

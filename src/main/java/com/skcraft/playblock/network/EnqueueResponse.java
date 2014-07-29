@@ -13,23 +13,18 @@ import com.skcraft.playblock.util.IOUtils;
  * A server -> client response to an {@link Enqueue}.
  */
 public class EnqueueResponse implements Payload, RequestResponse<EnqueueResponse> {
-    
+
     public enum Response {
-        OK,
-        ERROR_NO_QUEUE,
-        ERROR_UNKNOWN_LENGTH,
-        ERROR_TOO_LONG,
-        ERROR_TOO_SHORT,
-        ERROR_INTERNAL
+        OK, ERROR_NO_QUEUE, ERROR_UNKNOWN_LENGTH, ERROR_TOO_LONG, ERROR_TOO_SHORT, ERROR_INTERNAL
     }
 
     private short callId;
     private Response response;
     private String uri;
-    
+
     public EnqueueResponse() {
     }
-    
+
     public EnqueueResponse(Response response, Media media) {
         setResponse(response);
         setMedia(media);

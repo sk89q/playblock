@@ -1,0 +1,20 @@
+itemGroup.tabPlayBlock=PlayBlock
+
+tile.playblock.projector.name=Projector Block
+item.playblock.remote.name=Projector Remote
+
+playblock.options=PlayBlock Options
+playblock.options.url=URL
+playblock.options.screenSize=Size
+playblock.options.turnOn=Turn On
+playblock.options.turnOff=Turn Off
+playblock.options.blocksAway=blocks away
+playblock.options.website=Website...
+playblock.options.volume=Volume
+
+playblock.gui.installLibraries=Install...
+playblock.gui.done=Done
+playblock.gui.add=Add
+playblock.gui.remove=Remove
+playblock.gui.clear=Clear
+playblock.gui.search=Search

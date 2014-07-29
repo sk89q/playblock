@@ -32,7 +32,7 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     public MediaQueue getQueue() {
         return queue;
     }
-    
+
     @Override
     public void setQueueMode(boolean queueMode) {
         // Create a queue if queue mode is turned on
@@ -46,7 +46,7 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
                 queue = null;
             }
         }
-        
+
         super.setQueueMode(queueMode);
     }
 
@@ -69,7 +69,7 @@ public class MediaPlayerHost extends MediaPlayer implements QueueListener {
     @Override
     public void writeNetworkedNBT(NBTTagCompound tag) {
         toSharedNbt(tag);
-        
+
         if (inQueueMode()) {
             PlayingMedia playing = queue.getCurrentMedia();
             if (playing != null) {

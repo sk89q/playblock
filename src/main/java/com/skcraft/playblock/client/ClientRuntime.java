@@ -1,36 +1,30 @@
 package com.skcraft.playblock.client;
 
-import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 
-import org.lwjgl.input.Keyboard;
-
-import com.skcraft.playblock.LKey;
 import com.skcraft.playblock.SharedConfiguration;
 import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
-import com.skcraft.playblock.projector.ProjectorGui;
-import com.skcraft.playblock.projector.ProjectorRenderer;
-import com.skcraft.playblock.projector.ProjectorTileEntity;
-import com.skcraft.playblock.queue.QueueGui;
+import com.skcraft.playblock.projector.GuiProjector;
+import com.skcraft.playblock.projector.RenderProjector;
+import com.skcraft.playblock.projector.TileEntityProjector;
 import com.skcraft.playblock.queue.ExposedQueue;
+import com.skcraft.playblock.queue.GuiQueue;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.relauncher.Side;
 
 /**
  * Client-side initialization.
  */
 public class ClientRuntime extends SharedRuntime {
-    
+
     private MediaManager manager;
     private SharedConfiguration options;
-    
+
     /**
      * Get the media manager.
      * 
@@ -39,7 +33,7 @@ public class ClientRuntime extends SharedRuntime {
     public MediaManager getMediaManager() {
         return manager;
     }
-    
+
     /**
      * Gets the client options.
      * 
@@ -48,23 +42,18 @@ public class ClientRuntime extends SharedRuntime {
     public SharedConfiguration getClientOptions() {
         return options;
     }
-    
+
     @Override
     public void load(FMLInitializationEvent event) {
         super.load(event);
         options = new SharedConfiguration("PlayBlockSettings.txt");
         manager = new MediaManager();
 
-        // Bind the key
-        KeyBinding[] key = { new KeyBinding(LKey.PLAYBLOCK_OPTIONS.toString(), Keyboard.KEY_F4) };
-        boolean[] repeating = { false };
-        KeyBindingRegistry.registerKeyBinding(new GlobalKeyHandler(key, repeating));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntityProjector.class, new RenderProjector(manager));
 
-        ClientRegistry.bindTileEntitySpecialRenderer(
-                ProjectorTileEntity.class, new ProjectorRenderer(manager));
-        
-        TickRegistry.registerTickHandler(new ClientTickHandler(), Side.CLIENT);
-        
+        FMLCommonHandler.instance().bus().register(new ClientTickHandler());
+        FMLCommonHandler.instance().bus().register(new KeyHandler());
+
         getClientOptions().save();
     }
 
@@ -76,13 +65,13 @@ public class ClientRuntime extends SharedRuntime {
     }
 
     @Override
-    public void showProjectorGui(EntityPlayer player, ProjectorTileEntity tileEntity) {
-        FMLClientHandler.instance().displayGuiScreen(player, new ProjectorGui(tileEntity));
+    public void showProjectorGui(EntityPlayer player, TileEntityProjector tileEntity) {
+        FMLClientHandler.instance().displayGuiScreen(player, new GuiProjector(tileEntity));
     }
 
     @Override
     public void showRemoteGui(EntityPlayer player, ExposedQueue queuable) {
-        FMLClientHandler.instance().displayGuiScreen(player, new QueueGui(queuable));
+        FMLClientHandler.instance().displayGuiScreen(player, new GuiQueue(queuable));
     }
 
 }

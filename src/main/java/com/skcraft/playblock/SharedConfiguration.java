@@ -6,9 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-import java.util.logging.Level;
 
-import com.skcraft.playblock.PlayBlock;
+import org.apache.logging.log4j.Level;
 
 import cpw.mods.fml.common.Loader;
 
@@ -23,12 +22,10 @@ public class SharedConfiguration {
         try {
             options = new File(configDir, fileName);
             props.load(new FileInputStream(options));
-        }
-        catch(FileNotFoundException e) {
-            PlayBlock.log(Level.WARNING, "Failed to find " + options.getName());
-        }
-        catch(IOException e) {
-            PlayBlock.log(Level.WARNING, "Failed to load " + options.getName());
+        } catch (FileNotFoundException e) {
+            PlayBlock.log(Level.WARN, "Failed to find " + options.getName());
+        } catch (IOException e) {
+            PlayBlock.log(Level.WARN, "Failed to load " + options.getName());
         }
     }
 
@@ -38,15 +35,13 @@ public class SharedConfiguration {
     public void save() {
         try {
             props.store(new FileOutputStream(options), null);
-        }
-        catch(FileNotFoundException e) {
-            PlayBlock.log(Level.WARNING, "Failed to find " + options.getName());
-        }
-        catch(IOException e) {
-            PlayBlock.log(Level.WARNING, "Failed to save " + options.getName());
+        } catch (FileNotFoundException e) {
+            PlayBlock.log(Level.WARN, "Failed to find " + options.getName());
+        } catch (IOException e) {
+            PlayBlock.log(Level.WARN, "Failed to save " + options.getName());
         }
     }
-    
+
     /**
      * Gets an integer.
      * 
@@ -56,16 +51,14 @@ public class SharedConfiguration {
      */
     public int getInt(String key, int def) {
         String value = props.getProperty(key);
-        if(value != null) {
+        if (value != null) {
             try {
                 return Integer.parseInt(value);
-            }
-            catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 props.setProperty(key, String.valueOf(def));
                 return def;
             }
-        }
-        else {
+        } else {
             props.setProperty(key, String.valueOf(def));
             return def;
         }
@@ -74,22 +67,20 @@ public class SharedConfiguration {
     /**
      * Gets a float value.
      * 
-     * @param key 
+     * @param key
      * @param def
-     * @return the value 
+     * @return the value
      */
     public float getFloat(String key, float def) {
         String value = props.getProperty(key);
-        if(value != null) {
+        if (value != null) {
             try {
                 return Float.parseFloat(value);
-            }
-            catch(NumberFormatException e) {
+            } catch (NumberFormatException e) {
                 props.setProperty(key, String.valueOf(def));
                 return def;
             }
-        }
-        else {
+        } else {
             props.setProperty(key, String.valueOf(def));
             return def;
         }

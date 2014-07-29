@@ -41,7 +41,8 @@ public abstract class MediaPlayer extends AbstractBehavior {
     /**
      * Get the URI of the stream.
      * 
-     * @param uri the URI
+     * @param uri
+     *            the URI
      */
     public void setUri(String uri) {
         Validate.notNull(uri);
@@ -51,7 +52,8 @@ public abstract class MediaPlayer extends AbstractBehavior {
     /**
      * Set the width of the screen.
      * 
-     * @param width the width
+     * @param width
+     *            the width
      */
     public void setWidth(float width) {
         this.width = MathUtils.clamp(width, 1, MAX_SCREEN_SIZE);
@@ -69,12 +71,13 @@ public abstract class MediaPlayer extends AbstractBehavior {
     /**
      * Set the height of the screen.
      * 
-     * @param height the height
+     * @param height
+     *            the height
      */
     public void setHeight(float height) {
         this.height = MathUtils.clamp(height, 1, MAX_SCREEN_SIZE);
     }
-    
+
     /**
      * Return whether queue mode is on.
      * 
@@ -87,16 +90,19 @@ public abstract class MediaPlayer extends AbstractBehavior {
     /**
      * Set whether queue mode is on.
      * 
-     * @param queueMode true if queue mode is on
+     * @param queueMode
+     *            true if queue mode is on
      */
     public void setQueueMode(boolean queueMode) {
         this.queueMode = queueMode;
     }
-    
+
     /**
-     * Write NBT data that is both sent to the client, and is also saved to disk.
+     * Write NBT data that is both sent to the client, and is also saved to
+     * disk.
      * 
-     * @param tag the tag
+     * @param tag
+     *            the tag
      */
     protected void toSharedNbt(NBTTagCompound tag) {
         tag.setString("uri", getUri());
@@ -108,7 +114,8 @@ public abstract class MediaPlayer extends AbstractBehavior {
     /**
      * Read NBT data that is both sent to the client, and is also saved to disk.
      * 
-     * @param tag the tag
+     * @param tag
+     *            the tag
      */
     protected void fromSharedNbt(NBTTagCompound tag) {
         setUri(tag.getString("uri"));
@@ -116,15 +123,15 @@ public abstract class MediaPlayer extends AbstractBehavior {
         setHeight(tag.getFloat("height"));
         setQueueMode(tag.getBoolean("queueMode"));
     }
-    
+
     @Override
     public void writeSaveNBT(NBTTagCompound tag) {
         toSharedNbt(tag);
     }
-    
+
     @Override
     public void readSaveNBT(NBTTagCompound tag) {
         fromSharedNbt(tag);
     }
-    
+
 }

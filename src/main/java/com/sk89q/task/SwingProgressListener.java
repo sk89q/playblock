@@ -3,10 +3,11 @@ package com.sk89q.task;
 import javax.swing.SwingUtilities;
 
 /**
- * Wraps a thread-unsafe listener and makes calls executed within the Swing thread.
+ * Wraps a thread-unsafe listener and makes calls executed within the Swing
+ * thread.
  */
 public class SwingProgressListener implements ProgressListener {
-    
+
     private final ProgressListener listener;
 
     public SwingProgressListener(ProgressListener listener) {

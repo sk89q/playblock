@@ -7,7 +7,7 @@ import java.io.IOException;
 import com.sk89q.forge.Payload;
 
 public class ProjectorUpdate implements Payload {
-    
+
     private String uri;
     private float height;
     private float width;
@@ -56,7 +56,7 @@ public class ProjectorUpdate implements Payload {
     public void setFadeRange(float fadeRange) {
         this.fadeRange = fadeRange;
     }
-    
+
     @Override
     public void read(DataInputStream in) throws IOException {
         setUri(in.readUTF());
@@ -65,7 +65,7 @@ public class ProjectorUpdate implements Payload {
         setTriggerRange(in.readFloat());
         setFadeRange(in.readFloat());
     }
-    
+
     @Override
     public void write(DataOutputStream out) throws IOException {
         out.writeUTF(getUri());

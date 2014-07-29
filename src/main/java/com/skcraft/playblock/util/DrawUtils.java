@@ -15,11 +15,16 @@ public final class DrawUtils {
     /**
      * Draw a rectangle.
      * 
-     * @param x0 top left X
-     * @param y0 top left Y
-     * @param x1 bottom right X
-     * @param y1 bottom right Y
-     * @param color the color
+     * @param x0
+     *            top left X
+     * @param y0
+     *            top left Y
+     * @param x1
+     *            bottom right X
+     * @param y1
+     *            bottom right Y
+     * @param color
+     *            the color
      */
     public static void drawRect(float x0, float y0, float x1, float y1, int color) {
         float offset;
@@ -58,12 +63,16 @@ public final class DrawUtils {
     /**
      * Draw a texture at a given location.
      * 
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param width the width
-     * @param height the height
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     * @param width
+     *            the width
+     * @param height
+     *            the height
      */
-    public static void drawTexture(float x, float y,  float width, float height) {
+    public static void drawTexture(float x, float y, float width, float height) {
         GL11.glBegin(GL11.GL_TRIANGLE_STRIP);
         GL11.glTexCoord2f(0, 0);
         GL11.glVertex3f(x, y, 0.0F);
@@ -79,13 +88,16 @@ public final class DrawUtils {
     /**
      * Draw a texture at a given location.
      * 
-     * @param x the X coordinate
-     * @param y the Y coordinate
-     * @param width the width
-     * @param height the height
+     * @param x
+     *            the X coordinate
+     * @param y
+     *            the Y coordinate
+     * @param width
+     *            the width
+     * @param height
+     *            the height
      */
-    public static void drawCenteredTexture(float x, float y, 
-            float width, float height) {
+    public static void drawCenteredTexture(float x, float y, float width, float height) {
         drawTexture((float) (x - width / 2.0), (float) (y - height / 2.0), width, height);
     }
 

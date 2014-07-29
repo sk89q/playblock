@@ -3,9 +3,9 @@ package com.sk89q.mapquery;
 import java.util.Map;
 
 public class MapAccessor implements PathSegment {
-    
+
     private final Object key;
-    
+
     public MapAccessor(Object key) {
         this.key = key;
     }
@@ -24,5 +24,5 @@ public class MapAccessor implements PathSegment {
         }
         return null;
     }
-    
+
 }

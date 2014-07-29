@@ -9,11 +9,12 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
- * An abstract implementation of {@link Behavior} that allows the registration of
- * listeners and do-nothing implementations of all of {@link Behavior}'s methods.
+ * An abstract implementation of {@link Behavior} that allows the registration
+ * of listeners and do-nothing implementations of all of {@link Behavior}'s
+ * methods.
  */
 public abstract class AbstractBehavior implements Behavior {
-    
+
     private List<BehaviorListener> listeners = new ArrayList<BehaviorListener>();
 
     @Override
@@ -33,8 +34,7 @@ public abstract class AbstractBehavior implements Behavior {
     }
 
     @Override
-    public void readPayload(EntityPlayer player, BehaviorPayload payload,
-            DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException {
     }
 
     @Override
@@ -50,7 +50,8 @@ public abstract class AbstractBehavior implements Behavior {
     /**
      * Fire a networked NBT event that is to be handled by listeners.
      * 
-     * @param tag the tag
+     * @param tag
+     *            the tag
      */
     public void fireNetworkedNbt(NBTTagCompound tag) {
         for (BehaviorListener listener : listeners) {
@@ -61,9 +62,12 @@ public abstract class AbstractBehavior implements Behavior {
     /**
      * Fire a payload send event that is handled by listeners.
      * 
-     * @param payload the payload
-     * @param players the player(s)
-     * @see BehaviorListener#payloadSend(BehaviorPayload, List) for more information
+     * @param payload
+     *            the payload
+     * @param players
+     *            the player(s)
+     * @see BehaviorListener#payloadSend(BehaviorPayload, List) for more
+     *      information
      */
     public void firePayloadSend(BehaviorPayload payload, List<EntityPlayer> players) {
         for (BehaviorListener listener : listeners) {

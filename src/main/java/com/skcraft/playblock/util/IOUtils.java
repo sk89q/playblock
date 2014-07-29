@@ -10,14 +10,17 @@ public final class IOUtils {
 
     private IOUtils() {
     }
-    
+
     /**
      * Resolve an ordinal into a value in an enum.
      * 
-     * @param e the enum class
-     * @param ordinal the ordinal
+     * @param e
+     *            the enum class
+     * @param ordinal
+     *            the ordinal
      * @return the value
-     * @throws IOException if the value doesn't exist
+     * @throws IOException
+     *             if the value doesn't exist
      */
     public static <T extends Enum<?>> T resolveOrdinal(Class<T> e, int ordinal) throws IOException {
         if (ordinal < 0) {
@@ -34,7 +37,8 @@ public final class IOUtils {
      * Close something that is {@link Closeable} and ignore all thrown
      * {@link IOException}s.
      * 
-     * @param closeable the closeable, which can be null
+     * @param closeable
+     *            the closeable, which can be null
      */
     public static void close(Closeable closeable) {
         if (closeable != null) {

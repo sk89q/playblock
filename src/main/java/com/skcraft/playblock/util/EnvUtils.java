@@ -1,10 +1,6 @@
 package com.skcraft.playblock.util;
 
 import java.io.File;
-import java.net.URISyntaxException;
-import java.security.CodeSource;
-
-import com.skcraft.playblock.PlayBlock;
 
 /**
  * System utility functions.
@@ -17,7 +13,7 @@ public final class EnvUtils {
     public enum Platform {
         WINDOWS, MAC_OS_X, LINUX, SOLARIS, UNKNOWN;
     }
-    
+
     /**
      * List of CPU architectures.
      */
@@ -31,8 +27,10 @@ public final class EnvUtils {
     /**
      * Join several path parts into one {@link File}.
      * 
-     * @param base the base file
-     * @param parts the path segments
+     * @param base
+     *            the base file
+     * @param parts
+     *            the path segments
      * @return the final path
      */
     public static File join(File base, String... parts) {
@@ -42,7 +40,8 @@ public final class EnvUtils {
     /**
      * Join several path parts into one {@link File}.
      * 
-     * @param parts the path segments
+     * @param parts
+     *            the path segments
      * @return the final path
      */
     public static String join(String... parts) {
@@ -74,8 +73,8 @@ public final class EnvUtils {
     }
 
     /**
-     * Get the path to Windows' Program Files directory for 32-bit programs on a 64-bit
-     * system.
+     * Get the path to Windows' Program Files directory for 32-bit programs on a
+     * 64-bit system.
      * 
      * @return the path or null
      */
@@ -104,20 +103,21 @@ public final class EnvUtils {
             return Platform.LINUX;
         if (osName.contains("unix"))
             return Platform.LINUX;
-        
+
         return Platform.UNKNOWN;
     }
 
     /**
      * Gets the architecture of the JVM.
      * 
-     * <p>Right now, this method assumes everything is x86 or x86-64.</p>
+     * <p>
+     * Right now, this method assumes everything is x86 or x86-64.
+     * </p>
      * 
      * @return the architecture
      */
     public static Arch getJvmArch() {
-        return System.getProperty("sun.arch.data.model").equals("64") ?
-                Arch.X86_64 : Arch.X86;
+        return System.getProperty("sun.arch.data.model").equals("64") ? Arch.X86_64 : Arch.X86;
     }
 
 }

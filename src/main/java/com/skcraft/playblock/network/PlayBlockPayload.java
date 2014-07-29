@@ -8,9 +8,11 @@ import com.sk89q.forge.Payload;
 import com.sk89q.forge.TileEntityPayload;
 
 public class PlayBlockPayload implements Payload {
-    
-    public enum Type { TILE_ENTITY };
-    
+
+    public enum Type {
+        TILE_ENTITY
+    };
+
     private Type type;
     private Payload payload;
 
@@ -50,7 +52,7 @@ public class PlayBlockPayload implements Payload {
         if (payload != null) {
             payload.read(in);
         }
-        
+
     }
 
     @Override

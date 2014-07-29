@@ -11,14 +11,14 @@ import com.skcraft.playblock.media.Media;
 import com.skcraft.playblock.media.MediaResolver;
 
 public class SimpleQueueSupervisor implements QueueSupervisor {
-    
+
     private final Executor executor = Executors.newCachedThreadPool();
     private final MediaResolver resolver;
-    
+
     public SimpleQueueSupervisor(MediaResolver resolver) {
         this.resolver = resolver;
     }
-    
+
     @Override
     public ListenableFuture<Media> submit(MediaQueue queue, String uri) {
         SettableFuture<Media> future = SettableFuture.create();
@@ -26,15 +26,14 @@ public class SimpleQueueSupervisor implements QueueSupervisor {
         executor.execute(submitter);
         return future;
     }
-    
+
     private class QueueSubmitter implements Runnable {
-        
+
         private final SettableFuture<Media> future;
         private final MediaQueue queue;
         private final String uri;
-        
-        private QueueSubmitter(
-                SettableFuture<Media> future, MediaQueue queue, String uri) {
+
+        private QueueSubmitter(SettableFuture<Media> future, MediaQueue queue, String uri) {
             this.future = future;
             this.queue = queue;
             this.uri = uri;
@@ -55,7 +54,7 @@ public class SimpleQueueSupervisor implements QueueSupervisor {
                 future.setException(t);
             }
         }
-        
+
     }
 
 }

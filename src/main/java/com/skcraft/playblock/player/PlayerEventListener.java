@@ -1,7 +1,8 @@
 package com.skcraft.playblock.player;
 
 import java.util.List;
-import java.util.logging.Level;
+
+import org.apache.logging.log4j.Level;
 
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.binding.internal.libvlc_state_t;
@@ -17,7 +18,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter {
 
     private final MediaRenderer renderer;
     private long seekPosition = 0;
-    
+
     public PlayerEventListener(MediaRenderer renderer) {
         this.renderer = renderer;
     }
