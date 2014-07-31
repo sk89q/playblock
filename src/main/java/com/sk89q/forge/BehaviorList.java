@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -149,7 +151,7 @@ public class BehaviorList implements Collection<Behavior>, Behavior, BehaviorLis
     }
 
     @Override
-    public void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, BehaviorPayload payload, ByteBufInputStream in) throws IOException {
         for (Behavior entity : this) {
             entity.readPayload(player, payload, in);
         }

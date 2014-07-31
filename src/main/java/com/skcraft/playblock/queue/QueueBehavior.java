@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import org.apache.logging.log4j.Level;
 
 import com.google.common.util.concurrent.FutureCallback;
@@ -130,7 +132,7 @@ public class QueueBehavior extends AbstractBehavior {
     }
 
     @Override
-    public void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, BehaviorPayload payload, ByteBufInputStream in) throws IOException {
 
         // Server
         if (host != null) {

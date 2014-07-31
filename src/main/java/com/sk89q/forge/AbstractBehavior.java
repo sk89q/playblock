@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -34,7 +36,7 @@ public abstract class AbstractBehavior implements Behavior {
     }
 
     @Override
-    public void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, BehaviorPayload payload, ByteBufInputStream in) throws IOException {
     }
 
     @Override

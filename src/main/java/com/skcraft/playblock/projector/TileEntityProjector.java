@@ -1,9 +1,17 @@
 package com.skcraft.playblock.projector;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.List;
 
+import com.skcraft.playblock.PacketHandler;
+import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.SharedRuntime;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -30,6 +38,7 @@ import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
 
 /**
  * The tile entity for the projector block.
@@ -71,6 +80,15 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         if (side != Side.CLIENT) {
             options.useAccessList(true);
         }
+    }
+
+    /**
+     * Get the behaviors of this projector.
+     *
+     * @return the list of behaviors
+     */
+    public BehaviorList getBehaviors() {
+        return behaviors;
     }
 
     /**
@@ -133,7 +151,7 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
     }
 
     @Override
-    public void readPayload(EntityPlayer player, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, ByteBufInputStream in) throws IOException {
         BehaviorPayload payload = new BehaviorPayload();
         payload.read(in);
         behaviors.readPayload(player, payload, in);
@@ -157,10 +175,17 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
     @Override
     public void networkedNbt(NBTTagCompound tag) {
         if (!this.worldObj.isRemote) {
-            super.writeToNBT(tag); // Coordinates
-            S35PacketUpdateTileEntity packet = new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, -1, tag);
-            // PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord,
-            // 250, worldObj.provider.dimensionId, packet);
+            try {
+                super.writeToNBT(tag); // Coordinates
+                ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());
+                out.writeByte(PlayBlockPayload.Type.TILE_ENTITY_NBT.ordinal());
+                ByteBufUtils.writeTag(out.buffer(), tag);
+                FMLProxyPacket packet = new FMLProxyPacket(out.buffer(), PlayBlock.CHANNEL_ID);
+                SharedRuntime.networkWrapper.sendToAllAround(packet,
+                        new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 250));
+            } catch(IOException e) {
+                PlayBlock.log(Level.WARN, "Failed to send tile info to players!");
+            }
         }
     }
 
@@ -169,9 +194,9 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         PlayBlockPayload payload = new PlayBlockPayload(new TileEntityPayload(this, behaviorPayload));
 
         if (worldObj.isRemote) {
-            // PacketHandler.sendToServer(payload);
+            PacketHandler.sendToServer(payload);
         } else {
-            // PacketHandler.sendToClient(payload, players);
+            PacketHandler.sendToClient(payload, players);
         }
     }
 

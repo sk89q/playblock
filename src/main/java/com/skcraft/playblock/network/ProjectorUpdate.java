@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.sk89q.forge.Payload;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 public class ProjectorUpdate implements Payload {
 
@@ -58,7 +60,7 @@ public class ProjectorUpdate implements Payload {
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         setUri(in.readUTF());
         setWidth(in.readFloat());
         setHeight(in.readFloat());
@@ -67,7 +69,7 @@ public class ProjectorUpdate implements Payload {
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.writeUTF(getUri());
         out.writeFloat(getWidth());
         out.writeFloat(getHeight());

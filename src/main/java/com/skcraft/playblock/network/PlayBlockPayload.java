@@ -1,17 +1,18 @@
 package com.skcraft.playblock.network;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.sk89q.forge.Payload;
 import com.sk89q.forge.TileEntityPayload;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 public class PlayBlockPayload implements Payload {
 
     public enum Type {
-        TILE_ENTITY
-    };
+        TILE_ENTITY,
+        TILE_ENTITY_NBT
+    }
 
     private Type type;
     private Payload payload;
@@ -41,7 +42,7 @@ public class PlayBlockPayload implements Payload {
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         Type[] types = Type.values();
         int typeCode = in.readByte() & 0xFF;
         if (typeCode >= 0 && typeCode < types.length) {
@@ -56,7 +57,7 @@ public class PlayBlockPayload implements Payload {
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.writeByte(type.ordinal());
         if (payload != null) {
             payload.write(out);

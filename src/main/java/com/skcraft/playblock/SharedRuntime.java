@@ -1,5 +1,6 @@
 package com.skcraft.playblock;
 
+import cpw.mods.fml.common.network.FMLEventChannel;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -34,6 +35,7 @@ public class SharedRuntime {
 
     public static Block blockProjector = null;
     public static Item itemRemote = null;
+    public static FMLEventChannel networkWrapper;
 
     /**
      * Get the response tracker.
@@ -73,9 +75,9 @@ public class SharedRuntime {
         queueManager = new QueueManager();
         mediaResolver = new MediaResolver();
         queueSupervisor = new SimpleQueueSupervisor(mediaResolver);
-        PacketHandler.registerMessages();
         NetworkRegistry.INSTANCE.registerGuiHandler(PlayBlock.instance, new GuiHandler());
-
+        networkWrapper = NetworkRegistry.INSTANCE.newEventDrivenChannel(PlayBlock.CHANNEL_ID);
+        networkWrapper.register(new PacketHandler());
         blockProjector = new BlockProjector();
 
         GameRegistry.registerBlock(blockProjector, BlockProjector.INTERNAL_NAME);

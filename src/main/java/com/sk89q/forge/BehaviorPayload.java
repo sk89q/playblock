@@ -1,5 +1,8 @@
 package com.sk89q.forge;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -56,7 +59,7 @@ public class BehaviorPayload implements Payload {
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         setType(in.readByte() & 0xff);
         if (payload != null) {
             payload.read(in);
@@ -64,7 +67,7 @@ public class BehaviorPayload implements Payload {
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.write(type);
         if (payload != null) {
             payload.write(out);

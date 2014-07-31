@@ -1,10 +1,10 @@
 package com.sk89q.forge;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 
 import com.skcraft.playblock.projector.TileEntityProjector;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 /**
  * A payload that is targeted specifically to a tile entity.
@@ -52,7 +52,7 @@ public class TileEntityPayload implements Payload {
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         x = in.readInt();
         y = in.readInt();
         z = in.readInt();
@@ -62,7 +62,7 @@ public class TileEntityPayload implements Payload {
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.writeInt(x);
         out.writeInt(y);
         out.writeInt(z);

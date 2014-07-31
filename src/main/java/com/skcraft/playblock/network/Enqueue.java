@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import com.sk89q.forge.Payload;
 import com.sk89q.forge.RequestResponse;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 /**
  * A client -> server request to add a media clip to a queue.
@@ -34,13 +36,13 @@ public class Enqueue implements Payload, RequestResponse<EnqueueResponse> {
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         setCallId(in.readShort());
         setUri(in.readUTF());
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.writeShort(getCallId());
         out.writeUTF(getUri());
     }

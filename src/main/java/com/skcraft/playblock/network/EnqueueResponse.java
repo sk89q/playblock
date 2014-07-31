@@ -8,6 +8,8 @@ import com.sk89q.forge.Payload;
 import com.sk89q.forge.RequestResponse;
 import com.skcraft.playblock.media.Media;
 import com.skcraft.playblock.util.IOUtils;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
 
 /**
  * A server -> client response to an {@link Enqueue}.
@@ -61,14 +63,14 @@ public class EnqueueResponse implements Payload, RequestResponse<EnqueueResponse
     }
 
     @Override
-    public void read(DataInputStream in) throws IOException {
+    public void read(ByteBufInputStream in) throws IOException {
         setCallId(in.readByte());
         setResponse(IOUtils.resolveOrdinal(Response.class, in.readByte()));
         setUri(in.readUTF());
     }
 
     @Override
-    public void write(DataOutputStream out) throws IOException {
+    public void write(ByteBufOutputStream out) throws IOException {
         out.writeByte(getCallId());
         out.writeByte(getResponse().ordinal());
         out.writeUTF(getUri());

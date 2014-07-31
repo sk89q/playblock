@@ -1,5 +1,8 @@
 package com.sk89q.forge;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -23,7 +26,7 @@ public interface Payload {
      * @throws IOException
      *             on I/O error
      */
-    void read(DataInputStream in) throws IOException;
+    void read(ByteBufInputStream in) throws IOException;
 
     /**
      * Write data to the given output stream.
@@ -33,6 +36,6 @@ public interface Payload {
      * @throws IOException
      *             on I/O error
      */
-    void write(DataOutputStream out) throws IOException;
+    void write(ByteBufOutputStream out) throws IOException;
 
 }

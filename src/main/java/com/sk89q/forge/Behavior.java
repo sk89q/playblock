@@ -4,7 +4,9 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
+import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**
@@ -115,7 +117,7 @@ public interface Behavior {
      * @throws IOException
      *             thrown on I/O error
      */
-    void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException;
+    void readPayload(EntityPlayer player, BehaviorPayload payload, ByteBufInputStream in) throws IOException;
 
     /**
      * Add a listener.
