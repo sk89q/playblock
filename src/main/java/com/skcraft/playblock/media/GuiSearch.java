@@ -51,7 +51,7 @@ public class GuiSearch extends GuiScreen {
         queryField.setFocused(false);
         queryField.setEnableBackgroundDrawing(false);
 
-        scrollbar = new GuiScrollbar(mc, left + 217, top + 44, 114, 0, ySize + 1, 8, 15, "/playblock/gui/search_bg.png");
+        scrollbar = new GuiScrollbar(mc, left + 217, top + 44, 114, 0, ySize + 1, 8, 15, "playblock:textures/gui/search_bg.png");
     }
 
     /**
@@ -60,7 +60,7 @@ public class GuiSearch extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float par3) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.renderEngine.bindTexture(new ResourceLocation("playblock:gui/search_bg.png"));
+        mc.renderEngine.bindTexture(new ResourceLocation("playblock:textures/gui/search_bg.png"));
         int left = (width - xSize) / 2;
         int top = (height - ySize) / 2;
         drawTexturedModalRect(left, top, 0, 0, xSize, ySize);

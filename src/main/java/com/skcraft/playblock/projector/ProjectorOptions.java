@@ -3,7 +3,9 @@ package com.skcraft.playblock.projector;
 import java.io.DataInputStream;
 import java.io.IOException;
 
+import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 
@@ -41,7 +43,7 @@ public class ProjectorOptions extends AbstractBehavior {
     }
 
     @Override
-    public void readPayload(EntityPlayer player, BehaviorPayload payload, DataInputStream in) throws IOException {
+    public void readPayload(EntityPlayer player, BehaviorPayload payload, ByteBufInputStream in) throws IOException {
         if (payload.isType(BehaviorType.UPDATE)) {
             if (getAccessList() == null || getAccessList().checkAndForget(player)) {
                 ProjectorUpdate update = new ProjectorUpdate();

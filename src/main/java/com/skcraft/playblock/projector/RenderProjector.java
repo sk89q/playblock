@@ -147,7 +147,7 @@ public class RenderProjector extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0, 0, -0.01f);
             GL11.glColor4f(1, 1, 1, 1);
 
-            bindTexture(new ResourceLocation("playblock:screen_logo.png"));
+            bindTexture(new ResourceLocation("playblock:textures/misc/screen_logo.png"));
 
             float x = width * 0.04f;
             float y = height * 0.04f;
@@ -189,7 +189,7 @@ public class RenderProjector extends TileEntitySpecialRenderer {
             GL11.glTranslatef(0, 0, -0.01f);
             GL11.glColor4f(1, 1, 1, alpha);
 
-            bindTexture(new ResourceLocation("playblock:screen_logo.png"));
+            bindTexture(new ResourceLocation("playblock:textures/misc/screen_logo.png"));
 
             float x = width / 2.0f;
             float y = height / 2.0f;
@@ -236,7 +236,7 @@ public class RenderProjector extends TileEntitySpecialRenderer {
             GL11.glRotatef(angle, 0, 0, -0.01f);
             GL11.glColor4f(1, 1, 1, 1);
 
-            bindTexture(new ResourceLocation("playblock:spinner.png"));
+            bindTexture(new ResourceLocation("playblock:textures/misc/spinner.png"));
             if (width >= height) {
                 DrawUtils.drawCenteredTexture(0, 0, width * SPINNER_SCALE, width * SPINNER_SCALE);
             } else {
