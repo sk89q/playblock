@@ -55,7 +55,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
         setLocationRelativeTo(null);
 
         try {
-            InputStream in = PlayBlockSetup.class.getResourceAsStream("/installer_icon.png");
+            InputStream in = PlayBlockSetup.class.getResourceAsStream("/installer/installer_icon.png");
             if (in != null) {
                 setIconImage(ImageIO.read(in));
             }
@@ -86,7 +86,7 @@ public class PlayBlockSetup extends JFrame implements ProgressListener {
         final PlayBlockSetup parent = this;
 
         try {
-            InputStream is = PlayBlockSetup.class.getResourceAsStream("/installer_bg.png");
+            InputStream is = PlayBlockSetup.class.getResourceAsStream("/installer/installer_bg.png");
 
             if (is != null) {
                 BufferedImage banner = ImageIO.read(is);

@@ -91,11 +91,9 @@ public class GuiQueue extends GuiScreen {
         if (!scrollbar.isEnabled() && slots.size() / 7.0 > 1) {
             scrollbar.setEnabled(true);
         }
-        // else if(scrollbar.isEnabled() && slots.size() / 7.0 < 1) {
-        // scrollbar.setEnabled(false);
-        // }
-
-        scrollbar.setEnabled(true);
+        else if(scrollbar.isEnabled() && slots.size() / 7.0 <= 1) {
+            scrollbar.setEnabled(false);
+        }
 
         scrollbar.drawScrollbar(mouseX, mouseY);
         renderQueue(left, top);
@@ -208,7 +206,7 @@ public class GuiQueue extends GuiScreen {
             return;
         }
 
-        int unseenSlots = slots.size() - 7;
+        int unseenSlots = Math.max(slots.size() - 7, 0);
         int startIndex = (int) (scrollbar.getCurrentScroll() * unseenSlots + 0.5);
         for (int i = startIndex; i < startIndex + 7; i++) {
             if (i < slots.size()) {
