@@ -1,10 +1,11 @@
 package com.sk89q.forge;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
 import java.io.IOException;
 
 import com.skcraft.playblock.projector.TileEntityProjector;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 
 /**
  * A payload that is targeted specifically to a tile entity.

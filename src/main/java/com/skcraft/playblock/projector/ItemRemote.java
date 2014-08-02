@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.PlayBlockCreativeTab;
 import com.skcraft.playblock.queue.ExposedQueue;
+import com.skcraft.playblock.util.StringUtils;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -82,9 +83,9 @@ public class ItemRemote extends Item {
             int y = item.getTagCompound().getInteger("y");
             int z = item.getTagCompound().getInteger("z");
 
-            items.add("Linked to " + x + ", " + y + ", " + z);
+            items.add(StringUtils.translate("remote.linkedTo") + " " + x + ", " + y + ", " + z);
         } else {
-            items.add("Right click a projector to link.");
+            items.add(StringUtils.translate("remote.instruction"));
         }
     }
 

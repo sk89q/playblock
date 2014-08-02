@@ -18,3 +18,6 @@ playblock.gui.add=Add
 playblock.gui.remove=Remove
 playblock.gui.clear=Clear
 playblock.gui.search=Search
+
+playblock.remote.linkedTo=Linked to
+playblock.remote.instruction=Right click a projector to link.

@@ -1,17 +1,17 @@
 package com.skcraft.playblock.network;
 
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+
 import java.io.IOException;
 
 import com.sk89q.forge.Payload;
 import com.sk89q.forge.TileEntityPayload;
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
 
 public class PlayBlockPayload implements Payload {
 
     public enum Type {
-        TILE_ENTITY,
-        TILE_ENTITY_NBT
+        TILE_ENTITY, TILE_ENTITY_NBT
     }
 
     private Type type;

@@ -1,11 +1,10 @@
 package com.skcraft.playblock.projector;
 
-import java.io.DataInputStream;
+import io.netty.buffer.ByteBufInputStream;
+
 import java.io.IOException;
 
-import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatComponentText;
 

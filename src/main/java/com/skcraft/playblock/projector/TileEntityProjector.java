@@ -1,17 +1,12 @@
 package com.skcraft.playblock.projector;
 
-import java.io.IOException;
-import java.util.List;
-
-import com.skcraft.playblock.PacketHandler;
-import com.skcraft.playblock.PlayBlock;
-import com.skcraft.playblock.SharedRuntime;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.buffer.Unpooled;
+
+import java.io.IOException;
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -20,11 +15,16 @@ import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 
+import org.apache.logging.log4j.Level;
+
 import com.sk89q.forge.BehaviorList;
 import com.sk89q.forge.BehaviorListener;
 import com.sk89q.forge.BehaviorPayload;
 import com.sk89q.forge.PayloadReceiver;
 import com.sk89q.forge.TileEntityPayload;
+import com.skcraft.playblock.PacketHandler;
+import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.network.PlayBlockPayload;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.player.MediaPlayerClient;
@@ -36,9 +36,11 @@ import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.ByteBufUtils;
+import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import org.apache.logging.log4j.Level;
 
 /**
  * The tile entity for the projector block.
@@ -84,7 +86,7 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
 
     /**
      * Get the behaviors of this projector.
-     *
+     * 
      * @return the list of behaviors
      */
     public BehaviorList getBehaviors() {
@@ -181,9 +183,9 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
                 out.writeByte(PlayBlockPayload.Type.TILE_ENTITY_NBT.ordinal());
                 ByteBufUtils.writeTag(out.buffer(), tag);
                 FMLProxyPacket packet = new FMLProxyPacket(out.buffer(), PlayBlock.CHANNEL_ID);
-                SharedRuntime.networkWrapper.sendToAllAround(packet,
-                        new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 250));
-            } catch(IOException e) {
+                SharedRuntime.networkWrapper.sendToAllAround(packet, new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 250));
+                out.close();
+            } catch (IOException e) {
                 PlayBlock.log(Level.WARN, "Failed to send tile info to players!");
             }
         }
@@ -249,7 +251,7 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
     @Override
     @SideOnly(Side.CLIENT)
     public AxisAlignedBB getRenderBoundingBox() {
-        // TODO: May want to use a less expansive render AABB
+        // XXX: May want to use a less expansive render AABB
         return INFINITE_EXTENT_AABB;
     }
 

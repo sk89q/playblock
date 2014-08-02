@@ -90,8 +90,7 @@ public class GuiQueue extends GuiScreen {
 
         if (!scrollbar.isEnabled() && slots.size() / 7.0 > 1) {
             scrollbar.setEnabled(true);
-        }
-        else if(scrollbar.isEnabled() && slots.size() / 7.0 <= 1) {
+        } else if (scrollbar.isEnabled() && slots.size() / 7.0 <= 1) {
             scrollbar.setEnabled(false);
         }
 

@@ -1,12 +1,11 @@
 package com.sk89q.forge;
 
-import java.io.DataInputStream;
+import io.netty.buffer.ByteBufInputStream;
+
 import java.io.EOFException;
 import java.io.IOException;
 
-import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 
 /**

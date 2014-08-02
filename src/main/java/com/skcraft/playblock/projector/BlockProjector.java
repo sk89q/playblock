@@ -52,7 +52,7 @@ public class BlockProjector extends Block {
         // Show the GUI if it's the client
         player.openGui(PlayBlock.instance, GuiHandler.PROJECTOR, world, x, y, z);
 
-        if(!world.isRemote) {
+        if (!world.isRemote) {
             projector.getAccessList().allow(player);
         }
 

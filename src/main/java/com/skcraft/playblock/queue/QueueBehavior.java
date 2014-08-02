@@ -1,14 +1,13 @@
 package com.skcraft.playblock.queue;
 
-import java.io.DataInputStream;
+import io.netty.buffer.ByteBufInputStream;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.netty.buffer.ByteBufInputStream;
 import net.minecraft.entity.player.EntityPlayer;
 
-import net.minecraft.entity.player.EntityPlayerMP;
 import org.apache.logging.log4j.Level;
 
 import com.google.common.util.concurrent.FutureCallback;
