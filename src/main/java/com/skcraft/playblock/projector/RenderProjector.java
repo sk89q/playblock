@@ -73,6 +73,9 @@ public class RenderProjector extends TileEntitySpecialRenderer {
             GL11.glScalef(-1, -1, 1);
             GL11.glDisable(GL11.GL_LIGHTING);
             drawScreen(projector, width, height);
+            GL11.glRotatef(180, 0, 1, 0);
+            // TODO: draw an actual texture
+            DrawUtils.drawRect(0, 0, -width, height, 0xff333333);
             GL11.glEnable(GL11.GL_LIGHTING);
         }
         GL11.glPopMatrix();
