@@ -72,17 +72,18 @@ public class PlayBlock {
         return (ClientRuntime) runtime;
     }
 
-    public static void logf(Level level, String format, Object... data) {
-        log.log(level, format, data);
-    }
-
     public static void log(Level level, String message) {
-        logf(level, "%s", message);
+        log.log(level, message);
     }
 
     public static void log(Level level, String message, Throwable t) {
-        logf(level, "%s", message);
+        log.log(level, message);
         t.printStackTrace();
+    }
+
+    public static void logf(Level level, String format, Object... data) {
+        String message = String.format(format, data);
+        log(level, message);
     }
 
 }
