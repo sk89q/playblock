@@ -27,12 +27,15 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 /**
  * Handles packets for PlayBlock.
  */
 public class PacketHandler {
 
+    @SideOnly(Side.CLIENT)
     @SubscribeEvent
     public void onReceiveClient(FMLNetworkEvent.ClientCustomPacketEvent evt) {
         World world = Minecraft.getMinecraft().theWorld;

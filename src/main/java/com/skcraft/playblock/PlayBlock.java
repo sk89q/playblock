@@ -28,7 +28,7 @@ public class PlayBlock {
     @Instance
     public static PlayBlock instance;
 
-    @SidedProxy(serverSide = "com.skcraft.playblock.ServerRuntime", clientSide = "com.skcraft.playblock.client.ClientRuntime")
+    @SidedProxy(serverSide = "com.skcraft.playblock.SharedRuntime", clientSide = "com.skcraft.playblock.client.ClientRuntime")
     public static SharedRuntime runtime;
 
     @EventHandler
