@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import net.minecraft.server.MinecraftServer;
+
 import com.skcraft.playblock.queue.QueueException;
 import com.skcraft.playblock.util.Validate;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 
 /**
  * A media resolver identifies types and media and returns metadata about media
@@ -113,7 +113,8 @@ public class MediaResolver {
         }
 
         // Override with -DplayBlock.allowAnyUri=true or Singleplayer
-        if (ALLOW_ANY_URI || FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer()) {
+        MinecraftServer server = MinecraftServer.getServer();
+        if (ALLOW_ANY_URI || (server != null && server.isSinglePlayer())) {
             return true;
         }
 
