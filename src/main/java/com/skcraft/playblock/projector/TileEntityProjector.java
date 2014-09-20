@@ -11,7 +11,6 @@ import li.cil.oc.api.network.Arguments;
 import li.cil.oc.api.network.Callback;
 import li.cil.oc.api.network.Context;
 import li.cil.oc.api.network.SimpleComponent;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -41,12 +40,12 @@ import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Optional;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import cpw.mods.fml.common.Optional;
 
 /**
  * The tile entity for the projector block.
@@ -261,49 +260,62 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         // XXX: May want to use a less expansive render AABB
         return INFINITE_EXTENT_AABB;
     }
-    
-    //Computer compat
 
-	@Override
-	public String getComponentName() {
-		return "pbProjector";
-	}
-	
-	@Callback
-	@Optional.Method(modid = "OpenComputers")
-	public Object[] setURL(Context context, Arguments args) {
-		String uri = args.checkString(0);
-		if (uri != null) {
-			float width = mediaPlayer.getWidth();
-			float height = mediaPlayer.getHeight();
-			float triggerRange = range.getTriggerRange();
-			float fadeRange = range.getFadeRange();
-			this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
-		}
-		return null;
-	}
-	
-	@Callback
-	@Optional.Method(modid="OpenComputers")
-	public Object[] setResolution(Context context, Arguments args) {
-		String uri = mediaPlayer.getUri();
-		float width = args.checkInteger(0);
-		float height = args.checkInteger(1);
-		float triggerRange = range.getTriggerRange();
-		float fadeRange = range.getFadeRange();
-		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
-		return null;
-	}
-	
-	@Callback
-	@Optional.Method(modid="OpenComputers")
-	public Object[] setRanges(Context context, Arguments args) {
-		String uri = mediaPlayer.getUri();
-		float width = mediaPlayer.getWidth();
-		float height = mediaPlayer.getHeight();
-		float triggerRange = args.checkInteger(0);
-		float fadeRange = args.checkInteger(1);
-		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
-		return null;
-	}
+    // OpenComputers compat
+
+    @Override
+    public String getComponentName() {
+        return "pbProjector";
+    }
+
+    @Callback
+    @Optional.Method(modid = "OpenComputers")
+    public Object[] getURL(Context context, Arguments args) {
+        String uri = this.mediaPlayer.getUri();
+        return new Object[] { uri };
+    }
+
+    @Callback
+    @Optional.Method(modid = "OpenComputers")
+    public Object[] setURL(Context context, Arguments args) {
+        String uri = args.checkString(0);
+        if (uri != null) {
+            this.mediaPlayer.setUri(uri);
+
+            NBTTagCompound tag = new NBTTagCompound();
+            this.mediaPlayer.writeNetworkedNBT(tag);
+            this.mediaPlayer.fireNetworkedNbt(tag);
+        }
+        return null;
+    }
+
+    @Callback
+    @Optional.Method(modid = "OpenComputers")
+    public Object[] setResolution(Context context, Arguments args) {
+        float width = (float) args.checkDouble(0);
+        float height = (float) args.checkDouble(1);
+        if (width > 0.0F && height > 0.0F) {
+            this.mediaPlayer.setWidth(width);
+            this.mediaPlayer.setHeight(height);
+
+            NBTTagCompound tag = new NBTTagCompound();
+            this.mediaPlayer.writeNetworkedNBT(tag);
+            this.mediaPlayer.fireNetworkedNbt(tag);
+        }
+        return null;
+    }
+
+    @Callback
+    @Optional.Method(modid = "OpenComputers")
+    public Object[] setRanges(Context context, Arguments args) {
+        float triggerRange = (float) args.checkDouble(0);
+        float fadeRange = (float) args.checkDouble(1);
+        range.setTriggerRange(triggerRange);
+        range.setFadeRange(fadeRange);
+
+        NBTTagCompound tag = new NBTTagCompound();
+        this.range.writeNetworkedNBT(tag);
+        this.range.fireNetworkedNbt(tag);
+        return null;
+    }
 }

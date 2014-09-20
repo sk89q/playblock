@@ -5,5 +5,3 @@
 /.gradle
 /.settings
 /bin
-/gradle
-gradlew*

@@ -22,7 +22,7 @@ group = "com"
 archivesBaseName = "PlayBlock-MC1.7.10"
 
 minecraft {
-    version = "1.7.10-10.13.0.1188"
+    version = "1.7.10-10.13.0.1208"
     runDir = "eclipse"
 }
 
