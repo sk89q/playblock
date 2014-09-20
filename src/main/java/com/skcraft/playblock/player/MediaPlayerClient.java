@@ -98,6 +98,9 @@ public class MediaPlayerClient extends MediaPlayer {
     private void playNewMedia() {
         if (renderer == null) { // Create a new renderer if we don't have one
             setupRenderer();
+            if (renderer == null) { // Stop if there is still no renderer
+                return;
+            }
         } else if (renderer.getWidth() != getWidth() || renderer.getHeight() != getHeight()) {
             // Width or height change? Re-make the renderer
             release();

@@ -164,7 +164,7 @@ public class MediaManager {
      */
     protected MediaRenderer newRenderer(final int width, final int height) {
         if (!isSupported()) {
-            throw new RuntimeException("VLC library is not available!");
+            return null;
         }
 
         int textureIndex = textureCache.createTexture(width, height);
@@ -184,7 +184,7 @@ public class MediaManager {
      */
     public void release(final MediaRenderer instance) {
         if (!isSupported()) {
-            throw new RuntimeException("VLC library is not available!");
+            return;
         }
 
         if (instance.isReleased()) {
