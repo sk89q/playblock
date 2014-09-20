@@ -261,6 +261,8 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         // XXX: May want to use a less expansive render AABB
         return INFINITE_EXTENT_AABB;
     }
+    
+    //Computer compat
 
 	@Override
 	public String getComponentName() {
@@ -272,7 +274,11 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
 	public Object[] setURL(Context context, Arguments args) {
 		String uri = args.checkString(0);
 		if (uri != null) {
-			mediaPlayer.setUri(uri);
+			float width = mediaPlayer.getWidth();
+			float height = mediaPlayer.getHeight();
+			float triggerRange = range.getTriggerRange();
+			float fadeRange = range.getFadeRange();
+			this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
 		}
 		return null;
 	}
@@ -280,10 +286,24 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
 	@Callback
 	@Optional.Method(modid="OpenComputers")
 	public Object[] setResolution(Context context, Arguments args) {
+		String uri = mediaPlayer.getUri();
 		float width = args.checkInteger(0);
 		float height = args.checkInteger(1);
-		mediaPlayer.setWidth(width);
-		mediaPlayer.setHeight(height);
+		float triggerRange = range.getTriggerRange();
+		float fadeRange = range.getFadeRange();
+		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
+		return null;
+	}
+	
+	@Callback
+	@Optional.Method(modid="OpenComputers")
+	public Object[] setRanges(Context context, Arguments args) {
+		String uri = mediaPlayer.getUri();
+		float width = mediaPlayer.getWidth();
+		float height = mediaPlayer.getHeight();
+		float triggerRange = args.checkInteger(0);
+		float fadeRange = args.checkInteger(1);
+		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
 		return null;
 	}
 }
