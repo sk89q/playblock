@@ -7,6 +7,11 @@ import io.netty.buffer.Unpooled;
 import java.io.IOException;
 import java.util.List;
 
+import li.cil.oc.api.network.Arguments;
+import li.cil.oc.api.network.Callback;
+import li.cil.oc.api.network.Context;
+import li.cil.oc.api.network.SimpleComponent;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -41,11 +46,13 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.network.internal.FMLProxyPacket;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import cpw.mods.fml.common.Optional;
 
 /**
  * The tile entity for the projector block.
  */
-public class TileEntityProjector extends TileEntity implements BehaviorListener, PayloadReceiver, ExposedQueue {
+@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
+public class TileEntityProjector extends TileEntity implements BehaviorListener, PayloadReceiver, ExposedQueue, SimpleComponent {
 
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
@@ -254,5 +261,49 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         // XXX: May want to use a less expansive render AABB
         return INFINITE_EXTENT_AABB;
     }
+    
+    //Computer compat
 
+	@Override
+	public String getComponentName() {
+		return "pbProjector";
+	}
+	
+	@Callback
+	@Optional.Method(modid = "OpenComputers")
+	public Object[] setURL(Context context, Arguments args) {
+		String uri = args.checkString(0);
+		if (uri != null) {
+			float width = mediaPlayer.getWidth();
+			float height = mediaPlayer.getHeight();
+			float triggerRange = range.getTriggerRange();
+			float fadeRange = range.getFadeRange();
+			this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
+		}
+		return null;
+	}
+	
+	@Callback
+	@Optional.Method(modid="OpenComputers")
+	public Object[] setResolution(Context context, Arguments args) {
+		String uri = mediaPlayer.getUri();
+		float width = args.checkInteger(0);
+		float height = args.checkInteger(1);
+		float triggerRange = range.getTriggerRange();
+		float fadeRange = range.getFadeRange();
+		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
+		return null;
+	}
+	
+	@Callback
+	@Optional.Method(modid="OpenComputers")
+	public Object[] setRanges(Context context, Arguments args) {
+		String uri = mediaPlayer.getUri();
+		float width = mediaPlayer.getWidth();
+		float height = mediaPlayer.getHeight();
+		float triggerRange = args.checkInteger(0);
+		float fadeRange = args.checkInteger(1);
+		this.getOptions().sendUpdate(uri, width, height, triggerRange, fadeRange);
+		return null;
+	}
 }
