@@ -23,6 +23,7 @@ public class BlockProjector extends Block {
     public BlockProjector() {
         super(Material.iron);
         setHardness(0.5F);
+        setLightLevel(1.0F);
         setStepSound(Block.soundTypeGlass);
         setBlockName(INTERNAL_NAME);
         setBlockTextureName("playblock:projector");
