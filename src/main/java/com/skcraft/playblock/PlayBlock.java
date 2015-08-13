@@ -16,11 +16,12 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = PlayBlock.MOD_ID, name = PlayBlock.MOD_NAME)
+@Mod(modid = PlayBlock.MOD_ID, name = PlayBlock.MOD_NAME, dependencies = PlayBlock.DEPENDENCIES)
 public class PlayBlock {
 
     public static final String MOD_ID = "playblock";
     public static final String MOD_NAME = "PlayBlock";
+    public static final String DEPENDENCIES = "after:OpenComputers@[1.5.0,)";
     public static final String CHANNEL_ID = "PlayBlock";
 
     public static Logger log;
