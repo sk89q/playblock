@@ -1,22 +1,19 @@
 package com.skcraft.playblock.client;
 
-import java.awt.Desktop;
-import java.net.URI;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.skcraft.playblock.PlayBlock;
 import com.skcraft.playblock.player.MediaManager;
 import com.skcraft.playblock.util.GuiSlider;
 import com.skcraft.playblock.util.StringUtils;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.awt.*;
+import java.net.URI;
 
 /**
  * The options GUI.

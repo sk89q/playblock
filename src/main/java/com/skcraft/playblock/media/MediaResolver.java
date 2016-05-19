@@ -1,14 +1,12 @@
 package com.skcraft.playblock.media;
 
+import com.skcraft.playblock.queue.QueueException;
+import com.skcraft.playblock.util.Validate;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
-import net.minecraft.server.MinecraftServer;
-
-import com.skcraft.playblock.queue.QueueException;
-import com.skcraft.playblock.util.Validate;
 
 /**
  * A media resolver identifies types and media and returns metadata about media
@@ -113,8 +111,7 @@ public class MediaResolver {
         }
 
         // Override with -DplayBlock.allowAnyUri=true or Singleplayer
-        MinecraftServer server = MinecraftServer.getServer();
-        if (ALLOW_ANY_URI || (server != null && server.isSinglePlayer())) {
+        if (ALLOW_ANY_URI) { // TODO: Check if single player
             return true;
         }
 

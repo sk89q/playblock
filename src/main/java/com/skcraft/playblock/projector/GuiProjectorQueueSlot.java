@@ -5,8 +5,8 @@ import net.minecraft.client.gui.Gui;
 
 import com.skcraft.playblock.queue.GuiQueue;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
 public class GuiProjectorQueueSlot extends Gui {
@@ -40,7 +40,7 @@ public class GuiProjectorQueueSlot extends Gui {
             drawRect(xPos, yPos, xPos + WIDTH, yPos + HEIGHT, -16777216);
         }
 
-        mc.fontRenderer.drawString(name, xPos + 3, yPos + (HEIGHT - mc.fontRenderer.FONT_HEIGHT) / 2, 14737632);
+        mc.fontRendererObj.drawString(name, xPos + 3, yPos + (HEIGHT - mc.fontRendererObj.FONT_HEIGHT) / 2, 14737632);
     }
 
     public void mouseClicked(int x, int y, int buttonClicked) {

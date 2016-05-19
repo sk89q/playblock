@@ -1,26 +1,5 @@
 package com.skcraft.playblock.projector;
 
-import io.netty.buffer.ByteBufInputStream;
-import io.netty.buffer.ByteBufOutputStream;
-import io.netty.buffer.Unpooled;
-
-import java.io.IOException;
-import java.util.List;
-
-import li.cil.oc.api.machine.Arguments;
-import li.cil.oc.api.machine.Callback;
-import li.cil.oc.api.machine.Context;
-import li.cil.oc.api.network.SimpleComponent;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-
-import org.apache.logging.log4j.Level;
-
 import com.sk89q.forge.BehaviorList;
 import com.sk89q.forge.BehaviorListener;
 import com.sk89q.forge.BehaviorPayload;
@@ -38,20 +17,33 @@ import com.skcraft.playblock.queue.QueueBehavior;
 import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.DoubleThresholdRange.RangeTest;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.ByteBufOutputStream;
+import io.netty.buffer.Unpooled;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.internal.FMLProxyPacket;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.apache.logging.log4j.Level;
 
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Optional;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.network.internal.FMLProxyPacket;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.io.IOException;
+import java.util.List;
 
 /**
  * The tile entity for the projector block.
  */
-@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")
-public class TileEntityProjector extends TileEntity implements BehaviorListener, PayloadReceiver, ExposedQueue, SimpleComponent {
+public class TileEntityProjector extends TileEntity implements BehaviorListener, PayloadReceiver, ExposedQueue, ITickable {
 
     public static final String INTERNAL_NAME = "PlayBlockProjector";
 
@@ -170,13 +162,13 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
         // Client -> Server
         NBTTagCompound tag = new NBTTagCompound();
         behaviors.writeNetworkedNBT(tag);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, tag);
+        return new SPacketUpdateTileEntity(pos, 0, tag);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity packet) {
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         // Only called on the client
-        NBTTagCompound tag = packet.func_148857_g();
+        NBTTagCompound tag = packet.getNbtCompound();
         behaviors.readNetworkedNBT(tag);
     }
 
@@ -188,8 +180,8 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
                 ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());
                 out.writeByte(PlayBlockPayload.Type.TILE_ENTITY_NBT.ordinal());
                 ByteBufUtils.writeTag(out.buffer(), tag);
-                FMLProxyPacket packet = new FMLProxyPacket(out.buffer(), PlayBlock.CHANNEL_ID);
-                SharedRuntime.networkWrapper.sendToAllAround(packet, new NetworkRegistry.TargetPoint(worldObj.provider.dimensionId, xCoord, yCoord, zCoord, 250));
+                FMLProxyPacket packet = new FMLProxyPacket(new PacketBuffer(out.buffer()), PlayBlock.CHANNEL_ID);
+                SharedRuntime.networkWrapper.sendToAllAround(packet, new NetworkRegistry.TargetPoint(worldObj.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 250));
                 out.close();
             } catch (IOException e) {
                 PlayBlock.log(Level.WARN, "Failed to send tile info to players!");
@@ -239,14 +231,9 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
     }
 
     @Override
-    public boolean canUpdate() {
-        return true;
-    }
-
-    @Override
-    public void updateEntity() {
+    public void update() {
         if (this.worldObj.isRemote) {
-            if (rangeTest.inRange(xCoord, yCoord, zCoord)) {
+            if (rangeTest.inRange(pos)) {
                 ((MediaPlayerClient) mediaPlayer).enable();
             } else {
                 ((MediaPlayerClient) mediaPlayer).disable();
@@ -259,63 +246,5 @@ public class TileEntityProjector extends TileEntity implements BehaviorListener,
     public AxisAlignedBB getRenderBoundingBox() {
         // XXX: May want to use a less expansive render AABB
         return INFINITE_EXTENT_AABB;
-    }
-
-    // OpenComputers compat
-
-    @Override
-    public String getComponentName() {
-        return "pbProjector";
-    }
-
-    @Callback
-    @Optional.Method(modid = "OpenComputers")
-    public Object[] getURL(Context context, Arguments args) {
-        String uri = this.mediaPlayer.getUri();
-        return new Object[] { uri };
-    }
-
-    @Callback
-    @Optional.Method(modid = "OpenComputers")
-    public Object[] setURL(Context context, Arguments args) {
-        String uri = args.checkString(0);
-        if (uri != null) {
-            this.mediaPlayer.setUri(uri);
-
-            NBTTagCompound tag = new NBTTagCompound();
-            this.mediaPlayer.writeNetworkedNBT(tag);
-            this.mediaPlayer.fireNetworkedNbt(tag);
-        }
-        return null;
-    }
-
-    @Callback
-    @Optional.Method(modid = "OpenComputers")
-    public Object[] setResolution(Context context, Arguments args) {
-        float width = (float) args.checkDouble(0);
-        float height = (float) args.checkDouble(1);
-        if (width > 0.0F && height > 0.0F) {
-            this.mediaPlayer.setWidth(width);
-            this.mediaPlayer.setHeight(height);
-
-            NBTTagCompound tag = new NBTTagCompound();
-            this.mediaPlayer.writeNetworkedNBT(tag);
-            this.mediaPlayer.fireNetworkedNbt(tag);
-        }
-        return null;
-    }
-
-    @Callback
-    @Optional.Method(modid = "OpenComputers")
-    public Object[] setRanges(Context context, Arguments args) {
-        float triggerRange = (float) args.checkDouble(0);
-        float fadeRange = (float) args.checkDouble(1);
-        range.setTriggerRange(triggerRange);
-        range.setFadeRange(fadeRange);
-
-        NBTTagCompound tag = new NBTTagCompound();
-        this.range.writeNetworkedNBT(tag);
-        this.range.fireNetworkedNbt(tag);
-        return null;
     }
 }

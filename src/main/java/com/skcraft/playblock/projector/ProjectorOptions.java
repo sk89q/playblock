@@ -1,13 +1,5 @@
 package com.skcraft.playblock.projector;
 
-import io.netty.buffer.ByteBufInputStream;
-
-import java.io.IOException;
-
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-
 import com.sk89q.forge.AbstractBehavior;
 import com.sk89q.forge.BehaviorPayload;
 import com.skcraft.playblock.network.BehaviorType;
@@ -15,6 +7,12 @@ import com.skcraft.playblock.network.ProjectorUpdate;
 import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.util.AccessList;
 import com.skcraft.playblock.util.DoubleThresholdRange;
+import io.netty.buffer.ByteBufInputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.text.TextComponentString;
+
+import java.io.IOException;
 
 public class ProjectorOptions extends AbstractBehavior {
 
@@ -60,7 +58,7 @@ public class ProjectorOptions extends AbstractBehavior {
                 range.writeNetworkedNBT(tag);
                 mediaPlayer.fireNetworkedNbt(tag);
             } else {
-                player.addChatMessage(new ChatComponentText("Sorry, you don't have permission " + "to modify that projector."));
+                player.addChatMessage(new TextComponentString("Sorry, you don't have permission " + "to modify that projector."));
             }
         }
     }

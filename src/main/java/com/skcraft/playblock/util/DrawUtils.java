@@ -1,7 +1,8 @@
 package com.skcraft.playblock.util;
 
 import net.minecraft.client.renderer.Tessellator;
-
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -45,17 +46,20 @@ public final class DrawUtils {
         float r = (color >> 16 & 255) / 255.0F;
         float g = (color >> 8 & 255) / 255.0F;
         float b = (color & 255) / 255.0F;
-        Tessellator tessellator = Tessellator.instance;
+
+        Tessellator tessellator = Tessellator.getInstance();
+        VertexBuffer vb = Tessellator.getInstance().getBuffer();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(r, g, b, alpha);
-        tessellator.startDrawingQuads();
-        tessellator.addVertex(x0, y1, 0.0D);
-        tessellator.addVertex(x1, y1, 0.0D);
-        tessellator.addVertex(x1, y0, 0.0D);
-        tessellator.addVertex(x0, y0, 0.0D);
-        tessellator.draw();
+
+        vb.begin(7, DefaultVertexFormats.POSITION);
+        vb.pos(x0, y1, 0).endVertex();
+        vb.pos(x1, y1, 0).endVertex();
+        vb.pos(x1, y0, 0).endVertex();;
+        vb.pos(x0, y0, 0).endVertex();
+        Tessellator.getInstance().draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);
     }

@@ -1,15 +1,5 @@
 package com.skcraft.playblock.queue;
 
-import io.netty.buffer.ByteBufInputStream;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.entity.player.EntityPlayer;
-
-import org.apache.logging.log4j.Level;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -24,6 +14,13 @@ import com.skcraft.playblock.network.Enqueue;
 import com.skcraft.playblock.network.EnqueueResponse;
 import com.skcraft.playblock.network.EnqueueResponse.Response;
 import com.skcraft.playblock.player.MediaPlayerHost;
+import io.netty.buffer.ByteBufInputStream;
+import net.minecraft.entity.player.EntityPlayer;
+import org.apache.logging.log4j.Level;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Accepts requests to add media clips to the queue, as well as for managing the
@@ -123,7 +120,7 @@ public class QueueBehavior extends AbstractBehavior {
                 if (t instanceof InvalidLengthException) {
                     sendEnqueueResponse(enqueue, player, Response.ERROR_UNKNOWN_LENGTH, media);
                 } else {
-                    PlayBlock.log(Level.INFO, "Failed to enqueue " + enqueue.getUri() + " from " + player.getCommandSenderName(), t);
+                    PlayBlock.log(Level.INFO, "Failed to enqueue " + enqueue.getUri() + " from " + player.getDisplayNameString(), t);
                     sendEnqueueResponse(enqueue, player, Response.ERROR_INTERNAL, media);
                 }
             }

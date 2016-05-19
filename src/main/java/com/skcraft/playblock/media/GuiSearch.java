@@ -1,19 +1,17 @@
 package com.skcraft.playblock.media;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.skcraft.playblock.util.GuiScrollbar;
+import com.skcraft.playblock.util.StringUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-import com.skcraft.playblock.util.GuiScrollbar;
-import com.skcraft.playblock.util.StringUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiSearch extends GuiScreen {
 
@@ -43,7 +41,7 @@ public class GuiSearch extends GuiScreen {
 
         buttonList.add(searchButton = new GuiButton(0, left + 179, top + 14, 43, 20, StringUtils.translate("gui.search")));
 
-        queryField = new GuiTextField(fontRendererObj, left + 38, top + 19, 150, fontRendererObj.FONT_HEIGHT + 5);
+        queryField = new GuiTextField(1, fontRendererObj, left + 38, top + 19, 150, fontRendererObj.FONT_HEIGHT + 5);
         queryField.setVisible(true);
         queryField.setMaxStringLength(100);
         queryField.setEnableBackgroundDrawing(true);
@@ -90,13 +88,13 @@ public class GuiSearch extends GuiScreen {
     }
 
     @Override
-    public void handleMouseInput() {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         scrollbar.handleMouseInput(searchResults.size(), SHOWN_RESULTS);
     }
 
     @Override
-    protected void keyTyped(char key, int keycode) {
+    protected void keyTyped(char key, int keycode) throws IOException {
         super.keyTyped(key, keycode);
         if (queryField.isFocused()) {
             queryField.textboxKeyTyped(key, keycode);
@@ -107,7 +105,7 @@ public class GuiSearch extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int buttonClicked) {
+    protected void mouseClicked(int x, int y, int buttonClicked) throws IOException {
         super.mouseClicked(x, y, buttonClicked);
 
         int unseenSlots = searchResults.size() - SHOWN_RESULTS;

@@ -1,9 +1,9 @@
 package com.skcraft.playblock.media;
 
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
+
+import java.util.List;
 
 public class SearchResult extends Gui {
 
@@ -20,7 +20,7 @@ public class SearchResult extends Gui {
         this.parentScreen = parent;
         this.media = media;
         this.mc = mc;
-        this.formattedTitle = mc.fontRenderer.listFormattedStringToWidth(media.getTitle(), WIDTH - 2);
+        this.formattedTitle = mc.fontRendererObj.listFormattedStringToWidth(media.getTitle(), WIDTH - 2);
     }
 
     public void drawResult(int position, int guiLeft, int guiTop) {
@@ -33,17 +33,17 @@ public class SearchResult extends Gui {
 
         // TODO Display the thumbnail
 
-        mc.fontRenderer.drawString(formattedTitle.get(0), xPos + 2, yPos + (HEIGHT - mc.fontRenderer.FONT_HEIGHT) / 2 - 11, 14737632);
+        mc.fontRendererObj.drawString(formattedTitle.get(0), xPos + 2, yPos + (HEIGHT - mc.fontRendererObj.FONT_HEIGHT) / 2 - 11, 14737632);
 
         if (formattedTitle.size() > 1) {
             String line = formattedTitle.get(1);
-            if (mc.fontRenderer.getStringWidth(line) > WIDTH - 6 || formattedTitle.size() > 2) {
-                line = mc.fontRenderer.trimStringToWidth(line, WIDTH - 6).concat("...");
+            if (mc.fontRendererObj.getStringWidth(line) > WIDTH - 6 || formattedTitle.size() > 2) {
+                line = mc.fontRendererObj.trimStringToWidth(line, WIDTH - 6).concat("...");
             }
-            mc.fontRenderer.drawString(line, xPos + 2, yPos + (HEIGHT - mc.fontRenderer.FONT_HEIGHT) / 2 - 1, 14737632);
+            mc.fontRendererObj.drawString(line, xPos + 2, yPos + (HEIGHT - mc.fontRendererObj.FONT_HEIGHT) / 2 - 1, 14737632);
         }
 
-        mc.fontRenderer.drawString("by " + media.getCreator(), xPos + 2, yPos + (HEIGHT - mc.fontRenderer.FONT_HEIGHT) / 2 + (formattedTitle.size() > 1 ? 8 : -2), 0xff6E6E6E);
+        mc.fontRendererObj.drawString("by " + media.getCreator(), xPos + 2, yPos + (HEIGHT - mc.fontRendererObj.FONT_HEIGHT) / 2 + (formattedTitle.size() > 1 ? 8 : -2), 0xff6E6E6E);
     }
 
     public void mouseClicked(int x, int y, int buttonClicked) {

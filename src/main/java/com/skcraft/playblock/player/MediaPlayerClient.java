@@ -95,7 +95,7 @@ public class MediaPlayerClient extends MediaPlayer {
      * height have changed.
      * </p>
      */
-    private void playNewMedia() {
+    public void playNewMedia() {
         if (renderer == null) { // Create a new renderer if we don't have one
             setupRenderer();
             if (renderer == null) { // Stop if there is still no renderer

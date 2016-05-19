@@ -1,9 +1,10 @@
 package com.skcraft.playblock;
 
+import com.skcraft.playblock.client.ClientRuntime;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class PlayBlockCreativeTab extends CreativeTabs {
 
@@ -16,7 +17,7 @@ public class PlayBlockCreativeTab extends CreativeTabs {
     @Override
     @SideOnly(Side.CLIENT)
     public Item getTabIconItem() {
-        return SharedRuntime.itemRemote;
+        return ClientRuntime.itemRemote;
     }
 
 }

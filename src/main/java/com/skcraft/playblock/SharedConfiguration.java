@@ -9,7 +9,7 @@ import java.util.Properties;
 
 import org.apache.logging.log4j.Level;
 
-import cpw.mods.fml.common.Loader;
+import net.minecraftforge.fml.common.Loader;
 
 public class SharedConfiguration {
 

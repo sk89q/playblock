@@ -1,21 +1,20 @@
 package com.skcraft.playblock.player;
 
-import java.nio.ByteBuffer;
-
+import com.skcraft.playblock.util.DrawUtils;
+import com.sun.jna.Memory;
 import org.lwjgl.opengl.GL11;
-
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 import uk.co.caprica.vlcj.player.direct.BufferFormat;
+import uk.co.caprica.vlcj.player.direct.BufferFormatCallback;
 import uk.co.caprica.vlcj.player.direct.DirectMediaPlayer;
 import uk.co.caprica.vlcj.player.direct.RenderCallback;
 
-import com.skcraft.playblock.util.DrawUtils;
-import com.sun.jna.Memory;
+import java.nio.ByteBuffer;
 
 /**
  * Renders a video from a player onto a surface.
  */
-public final class MediaRenderer implements RenderCallback {
+public final class MediaRenderer implements RenderCallback, BufferFormatCallback {
 
     private final MediaManager mediaManager;
     private final long creationTime;
@@ -62,7 +61,7 @@ public final class MediaRenderer implements RenderCallback {
             @Override
             public void run() {
                 // Create the VLC media player instance
-                DirectMediaPlayer player = factory.newDirectMediaPlayer("RGBA", width, height, width * 4, instance);
+                DirectMediaPlayer player = factory.newDirectMediaPlayer(instance, instance);
                 player.setPlaySubItems(true);
                 player.setRepeat(true);
                 player.addMediaPlayerEventListener(listener = new PlayerEventListener(instance));
@@ -302,4 +301,8 @@ public final class MediaRenderer implements RenderCallback {
         buffer = nativeBuffers[0].getByteBuffer(0, width * height * 4);
     }
 
+    @Override
+    public BufferFormat getBufferFormat(int sourceWidth, int sourceHeight) {
+        return new BufferFormat("RGBA", width, height, new int[] { width * 4 }, new int[] { sourceWidth });
+    }
 }

@@ -1,16 +1,5 @@
 package com.skcraft.playblock.queue;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
-
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -19,9 +8,18 @@ import com.skcraft.playblock.network.EnqueueResponse;
 import com.skcraft.playblock.projector.GuiProjectorQueueSlot;
 import com.skcraft.playblock.util.GuiScrollbar;
 import com.skcraft.playblock.util.StringUtils;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The GUI for the media queue.
@@ -64,7 +62,7 @@ public class GuiQueue extends GuiScreen {
         buttonList.add(clearButton = new GuiButton(3, left + 4, top + 100, 42, 20, StringUtils.translate("gui.clear")));
         removeButton.enabled = false;
 
-        uriField = new GuiTextField(fontRendererObj, left + 35, top + 17, 157, fontRendererObj.FONT_HEIGHT + 5);
+        uriField = new GuiTextField(4, fontRendererObj, left + 35, top + 17, 157, fontRendererObj.FONT_HEIGHT + 5);
         uriField.setVisible(true);
         uriField.setMaxStringLength(100);
         uriField.setEnableBackgroundDrawing(true);
@@ -129,7 +127,7 @@ public class GuiQueue extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char key, int par2) {
+    protected void keyTyped(char key, int par2) throws IOException {
         super.keyTyped(key, par2);
         if (uriField.isFocused()) {
             uriField.textboxKeyTyped(key, par2);
@@ -144,7 +142,7 @@ public class GuiQueue extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int buttonClicked) {
+    protected void mouseClicked(int x, int y, int buttonClicked) throws IOException {
         super.mouseClicked(x, y, buttonClicked);
 
         int unseenSlots = slots.size() - 7;
@@ -161,7 +159,7 @@ public class GuiQueue extends GuiScreen {
     }
 
     @Override
-    public void handleMouseInput() {
+    public void handleMouseInput() throws IOException {
         super.handleMouseInput();
         scrollbar.handleMouseInput(slots.size(), 7);
     }

@@ -1,7 +1,5 @@
 package com.skcraft.playblock.client;
 
-import net.minecraft.entity.player.EntityPlayer;
-
 import com.skcraft.playblock.SharedConfiguration;
 import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
@@ -10,12 +8,12 @@ import com.skcraft.playblock.projector.RenderProjector;
 import com.skcraft.playblock.projector.TileEntityProjector;
 import com.skcraft.playblock.queue.ExposedQueue;
 import com.skcraft.playblock.queue.GuiQueue;
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.registry.ClientRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStoppingEvent;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.client.FMLClientHandler;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStoppingEvent;
 
 /**
  * Client-side initialization.

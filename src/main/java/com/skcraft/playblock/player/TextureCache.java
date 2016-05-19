@@ -1,9 +1,9 @@
 package com.skcraft.playblock.player;
 
-import java.nio.ByteBuffer;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import java.nio.ByteBuffer;
 
 /**
  * A simple texture cache to re-use generated textures that is optimized to have

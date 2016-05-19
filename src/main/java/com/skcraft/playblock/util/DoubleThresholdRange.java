@@ -1,10 +1,10 @@
 package com.skcraft.playblock.util;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.nbt.NBTTagCompound;
-
 import com.sk89q.forge.AbstractBehavior;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
 
 /**
  * Manages subscribing clients to a resource based on their distance away.
@@ -181,10 +181,10 @@ public class DoubleThresholdRange extends AbstractBehavior {
         private RangeTest() {
         }
 
-        public boolean inRange(double x, double y, double z) {
-            EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
+        public boolean inRange(BlockPos pos) {
+            EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
             if (player.posX != lastX || player.posY != lastY || player.posZ != lastZ) {
-                double distance = player.getDistanceSq(x, y, z);
+                double distance = player.getDistanceSq(pos);
                 if (!withinRange && inTriggerRangeSq(distance)) {
                     withinRange = true;
                     return true;

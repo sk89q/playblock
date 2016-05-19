@@ -1,19 +1,15 @@
 package com.skcraft.playblock.projector;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.opengl.GL11;
-
 import com.skcraft.playblock.player.MediaManager;
 import com.skcraft.playblock.player.MediaPlayerClient;
 import com.skcraft.playblock.player.MediaRenderer;
 import com.skcraft.playblock.player.RendererState;
 import com.skcraft.playblock.util.DrawUtils;
 import com.skcraft.playblock.util.MathUtils;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 /**
  * Renders the screen for the projector blocks.
@@ -43,7 +39,7 @@ public class RenderProjector extends TileEntitySpecialRenderer {
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float direction) {
+    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
 
         TileEntityProjector projector = ((TileEntityProjector) tileEntity);
         MediaPlayerClient mediaPlayer = (MediaPlayerClient) projector.getMediaPlayer();
@@ -319,10 +315,6 @@ public class RenderProjector extends TileEntitySpecialRenderer {
             }
         }
         GL11.glPopMatrix();
-    }
-
-    private FontRenderer getFontRenderer() {
-        return Minecraft.getMinecraft().fontRenderer;
     }
 
 }

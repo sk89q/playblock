@@ -1,11 +1,11 @@
 package com.sk89q.forge;
 
+import com.skcraft.playblock.projector.TileEntityProjector;
 import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.ByteBufOutputStream;
+import net.minecraft.util.math.BlockPos;
 
 import java.io.IOException;
-
-import com.skcraft.playblock.projector.TileEntityProjector;
 
 /**
  * A payload that is targeted specifically to a tile entity.
@@ -22,9 +22,10 @@ public class TileEntityPayload implements Payload {
     }
 
     public TileEntityPayload(TileEntityProjector tile, Payload payload) {
-        x = tile.xCoord;
-        y = tile.yCoord;
-        z = tile.zCoord;
+        BlockPos pos = tile.getPos();
+        x = pos.getX();
+        y = pos.getY();
+        z = pos.getZ();
         this.payload = payload;
     }
 

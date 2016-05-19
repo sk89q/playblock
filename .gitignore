@@ -6,3 +6,7 @@
 /.settings
 /bin
 /run
+/.idea
+*.iml
+/classes
+/download

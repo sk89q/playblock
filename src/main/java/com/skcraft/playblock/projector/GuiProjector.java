@@ -13,8 +13,10 @@ import com.skcraft.playblock.player.MediaPlayer;
 import com.skcraft.playblock.util.DoubleThresholdRange;
 import com.skcraft.playblock.util.StringUtils;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.io.IOException;
 
 /**
  * The GUI for the projector.
@@ -61,19 +63,19 @@ public class GuiProjector extends GuiScreen {
 
         this.buttonList.add(clearUriButton = new GuiButton(1, left + 220, top + 14, 17, 20, "X"));
 
-        uriField = new GuiTextField(this.fontRendererObj, left + 60, top + 17, 157, this.fontRendererObj.FONT_HEIGHT + 5);
+        uriField = new GuiTextField(0, this.fontRendererObj, left + 60, top + 17, 157, this.fontRendererObj.FONT_HEIGHT + 5);
         initTextField(uriField, 100, uri);
 
-        heightField = new GuiTextField(this.fontRendererObj, left + 130, top + 37, 50, this.fontRendererObj.FONT_HEIGHT + 5);
+        heightField = new GuiTextField(1, this.fontRendererObj, left + 130, top + 37, 50, this.fontRendererObj.FONT_HEIGHT + 5);
         initTextField(heightField, 10, Float.toString(projectorHeight));
 
-        widthField = new GuiTextField(this.fontRendererObj, left + 60, top + 37, 50, this.fontRendererObj.FONT_HEIGHT + 5);
+        widthField = new GuiTextField(2, this.fontRendererObj, left + 60, top + 37, 50, this.fontRendererObj.FONT_HEIGHT + 5);
         initTextField(widthField, 10, Float.toString(projectorWidth));
 
-        triggerRangeField = new GuiTextField(this.fontRendererObj, left + 60, top + 57, 50, this.fontRendererObj.FONT_HEIGHT + 5);
+        triggerRangeField = new GuiTextField(3, this.fontRendererObj, left + 60, top + 57, 50, this.fontRendererObj.FONT_HEIGHT + 5);
         initTextField(triggerRangeField, 10, Float.toString(triggerRange));
 
-        fadeRangeField = new GuiTextField(this.fontRendererObj, left + 60, top + 77, 50, this.fontRendererObj.FONT_HEIGHT + 5);
+        fadeRangeField = new GuiTextField(4, this.fontRendererObj, left + 60, top + 77, 50, this.fontRendererObj.FONT_HEIGHT + 5);
         initTextField(fadeRangeField, 10, Float.toString(fadeRange));
     }
 
@@ -144,7 +146,7 @@ public class GuiProjector extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int x, int y, int buttonClicked) {
+    protected void mouseClicked(int x, int y, int buttonClicked) throws IOException {
         super.mouseClicked(x, y, buttonClicked);
         uriField.mouseClicked(x, y, buttonClicked);
         heightField.mouseClicked(x, y, buttonClicked);
@@ -154,7 +156,7 @@ public class GuiProjector extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char key, int par2) {
+    protected void keyTyped(char key, int par2) throws IOException {
         super.keyTyped(key, par2);
 
         if (uriField.isFocused()) {
