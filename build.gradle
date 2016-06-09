@@ -12,7 +12,7 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.3.2"
+version = "2.0-alpha"
 ext.forgeVersion = "12.16.1.1891"
 group = "com.skcraft"
 

@@ -5,10 +5,12 @@ import com.skcraft.playblock.SharedRuntime;
 import com.skcraft.playblock.player.MediaManager;
 import com.skcraft.playblock.projector.GuiProjector;
 import com.skcraft.playblock.projector.RenderProjector;
+import com.skcraft.playblock.projector.RenderSignProjector;
 import com.skcraft.playblock.projector.TileEntityProjector;
 import com.skcraft.playblock.queue.ExposedQueue;
 import com.skcraft.playblock.queue.GuiQueue;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -48,6 +50,7 @@ public class ClientRuntime extends SharedRuntime {
         manager = new MediaManager();
 
         ClientRegistry.bindTileEntitySpecialRenderer(TileEntityProjector.class, new RenderProjector(manager));
+        ClientRegistry.bindTileEntitySpecialRenderer(TileEntitySign.class, new RenderSignProjector(manager));
 
         FMLCommonHandler.instance().bus().register(new ClientTickHandler());
         FMLCommonHandler.instance().bus().register(new KeyHandler());

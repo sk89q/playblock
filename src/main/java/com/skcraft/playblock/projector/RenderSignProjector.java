@@ -6,15 +6,13 @@ import com.skcraft.playblock.player.MediaRenderer;
 import com.skcraft.playblock.player.RendererState;
 import com.skcraft.playblock.util.DrawUtils;
 import com.skcraft.playblock.util.MathUtils;
-import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntitySignRenderer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
-/**
- * Renders the screen for the projector blocks.
- */
-public class RenderProjector extends TileEntitySpecialRenderer {
+public class RenderSignProjector extends TileEntitySignRenderer {
 
     private static final float TEXT_SCALE = 0.045f;
     private static final int LINE_SPACING = 2;
@@ -28,53 +26,55 @@ public class RenderProjector extends TileEntitySpecialRenderer {
 
     private final MediaManager mediaManager;
 
-    /**
-     * Construct a new instance.
-     * 
-     * @param mediaManager
-     *            the media manager.
-     */
-    public RenderProjector(MediaManager mediaManager) {
+    public RenderSignProjector(MediaManager mediaManager) {
         this.mediaManager = mediaManager;
     }
 
     @Override
-    public void renderTileEntityAt(TileEntity tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
+    public void renderTileEntityAt(TileEntitySign tileEntity, double x, double y, double z, float partialTicks, int destroyStage) {
+        super.renderTileEntityAt(tileEntity, x, y, z, partialTicks, destroyStage);
 
-        TileEntityProjector projector = ((TileEntityProjector) tileEntity);
-        MediaPlayerClient mediaPlayer = (MediaPlayerClient) projector.getMediaPlayer();
+        if (tileEntity.lineBeingEdited == -1 && tileEntity.signText[0].getUnformattedText().equals("[PlayBlock]")) {
+            MediaPlayerClient mediaPlayer = mediaManager.getSharedClient();
+            mediaPlayer.enable();
 
-        float width = mediaPlayer.getWidth();
-        float height = mediaPlayer.getHeight();
-        int metadata = tileEntity.getBlockMetadata();
-        float rot;
+            float width = mediaPlayer.getWidth();
+            float height = mediaPlayer.getHeight();
+            int metadata = tileEntity.getBlockMetadata();
+            float rot;
 
-        // Calculate the rotation
-        switch (metadata) {
-        case 0:
-            rot = 180;
-            break;
-        case 2:
-            rot = 0;
-            break;
-        default:
-            rot = metadata * 90;
+            // Calculate the rotation
+            switch (metadata) {
+                case 2:
+                    rot = 0;
+                    break;
+                case 3:
+                    rot = 180;
+                    break;
+                case 4:
+                    rot = 90;
+                    break;
+                case 5:
+                default:
+                    rot = -90;
+            }
+
+            GL11.glPushMatrix();
+            { // TODO: Consider using FBOs?
+                GL11.glTranslatef((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
+                GL11.glRotatef(rot, 0, 1, 0);
+                GL11.glTranslatef((float) (width / 2.0), (float) (height / 2.0), -0.51f);
+                GL11.glScalef(-1, -1, 1);
+                GL11.glDisable(GL11.GL_LIGHTING);
+                drawScreen(tileEntity, width, height);
+                GL11.glRotatef(180, 0, 1, 0);
+                // TODO: draw an actual texture
+                DrawUtils.drawRect(0, 0, -width, height, 0xff333333);
+                GL11.glEnable(GL11.GL_LIGHTING);
+            }
+            GL11.glPopMatrix();
         }
 
-        GL11.glPushMatrix();
-        { // TODO: Consider using FBOs?
-            GL11.glTranslatef((float) x + 0.5f, (float) y + 0.5f, (float) z + 0.5f);
-            GL11.glRotatef(rot, 0, 1, 0);
-            GL11.glTranslatef((float) (width / 2.0), (float) (height / 2.0), -0.51f);
-            GL11.glScalef(-1, -1, 1);
-            GL11.glDisable(GL11.GL_LIGHTING);
-            drawScreen(projector, width, height);
-            GL11.glRotatef(180, 0, 1, 0);
-            // TODO: draw an actual texture
-            DrawUtils.drawRect(0, 0, -width, height, 0xff333333);
-            GL11.glEnable(GL11.GL_LIGHTING);
-        }
-        GL11.glPopMatrix();
     }
 
     /**
@@ -87,15 +87,11 @@ public class RenderProjector extends TileEntitySpecialRenderer {
      * @param height
      *            the height
      */
-    private void drawScreen(TileEntityProjector projector, float width, float height) {
+    private void drawScreen(TileEntity projector, float width, float height) {
+        MediaPlayerClient mediaPlayer = mediaManager.getSharedClient();
         if (!mediaManager.isSupported()) {
-            if (projector.inRange()) {
-                drawPlayBlockStatus(width, height);
-            } else {
-                DrawUtils.drawRect(0, 0, width, height, 0xff000000);
-            }
+            drawPlayBlockStatus(width, height); // TODO: Check in range?
         } else {
-            MediaPlayerClient mediaPlayer = ((MediaPlayerClient) projector.getMediaPlayer());
             MediaRenderer renderer = mediaPlayer.getRenderer();
 
             if (renderer != null) {
@@ -178,7 +174,7 @@ public class RenderProjector extends TileEntitySpecialRenderer {
         }
 
         float alpha = (float) (MathUtils.easeInQuad(t, 0, 1, LOGO_DURATION * 0.4) - // Entrance
-        MathUtils.easeInOutCubic(t - LOGO_DURATION * 0.6, 0, 1, LOGO_DURATION * 0.4)); // Exit
+                MathUtils.easeInOutCubic(t - LOGO_DURATION * 0.6, 0, 1, LOGO_DURATION * 0.4)); // Exit
 
         GL11.glPushMatrix();
         {
@@ -316,5 +312,4 @@ public class RenderProjector extends TileEntitySpecialRenderer {
         }
         GL11.glPopMatrix();
     }
-
 }

@@ -1,25 +1,25 @@
 package com.skcraft.playblock.installer.tasks;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-
 import com.sk89q.task.Task;
 import com.sk89q.task.TaskException;
 import com.skcraft.playblock.util.EnvUtils;
 import com.skcraft.playblock.util.EnvUtils.Arch;
 import com.skcraft.playblock.util.PlayBlockPaths;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 /**
  * Install support files.
  */
 public class Install extends Task {
 
-    private static final String URL_WIN64 = "http://update.sk89q.com/playblock/supportlibs-win64.zip";
-    private static final String URL_WIN32 = "http://update.sk89q.com/playblock/supportlibs-win32.zip";
-    private static final String URL_MAC64 = "http://update.sk89q.com/playblock/supportlibs-macosx64.zip";
-    private static final String URL_MAC32 = "http://update.sk89q.com/playblock/supportlibs-macosx32.zip";
+    private static final String URL_WIN64 = "http://update.sk89q.com/playblock/libs/2/win64.zip";
+    private static final String URL_WIN32 = "http://update.sk89q.com/playblock/libs/2/win32.zip";
+    private static final String URL_MAC64 = "http://update.sk89q.com/playblock/libs/2/macosx64.zip";
+    private static final String URL_MAC32 = "http://update.sk89q.com/playblock/libs/2/macosx32.zip";
 
     private final Arch arch;
 

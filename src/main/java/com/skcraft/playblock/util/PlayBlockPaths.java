@@ -1,15 +1,13 @@
 package com.skcraft.playblock.util;
 
-import static com.skcraft.playblock.util.EnvUtils.getProgramFiles;
-import static com.skcraft.playblock.util.EnvUtils.getProgramFiles32;
-import static com.skcraft.playblock.util.EnvUtils.join;
+import com.skcraft.playblock.util.EnvUtils.*;
 
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.skcraft.playblock.util.EnvUtils.Arch;
+import static com.skcraft.playblock.util.EnvUtils.*;
 
 /**
  * Helps manage the various paths required for PlayBlock.
@@ -69,9 +67,9 @@ public final class PlayBlockPaths {
      * @return the directory
      */
     public static File getPlayBlockDir() {
-        // We use Minecraft's directory to make sure this has a high probability
+        // We use a local directory to make sure this has a high probability
         // of working without any special privileges
-        return new File(getMinecraftDir(), "playblock");
+        return new File(".", "playblock");
     }
 
     /**

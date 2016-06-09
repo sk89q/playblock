@@ -1,8 +1,5 @@
 package com.skcraft.playblock.util;
 
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -28,7 +25,7 @@ public final class DrawUtils {
      *            the color
      */
     public static void drawRect(float x0, float y0, float x1, float y1, int color) {
-        float offset;
+        /*float offset;
 
         if (x0 < x1) {
             offset = x0;
@@ -47,13 +44,11 @@ public final class DrawUtils {
         float g = (color >> 8 & 255) / 255.0F;
         float b = (color & 255) / 255.0F;
 
-        Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer vb = Tessellator.getInstance().getBuffer();
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(r, g, b, alpha);
-
         vb.begin(7, DefaultVertexFormats.POSITION);
         vb.pos(x0, y1, 0).endVertex();
         vb.pos(x1, y1, 0).endVertex();
@@ -61,7 +56,7 @@ public final class DrawUtils {
         vb.pos(x0, y0, 0).endVertex();
         Tessellator.getInstance().draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
-        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_BLEND);*/
     }
 
     /**

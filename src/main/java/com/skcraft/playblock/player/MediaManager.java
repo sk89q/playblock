@@ -1,6 +1,13 @@
 package com.skcraft.playblock.player;
 
-import static com.skcraft.playblock.util.EnvUtils.getPlatform;
+import com.skcraft.playblock.PlayBlock;
+import com.skcraft.playblock.util.EnvUtils;
+import com.skcraft.playblock.util.EnvUtils.Arch;
+import com.skcraft.playblock.util.EnvUtils.Platform;
+import com.skcraft.playblock.util.PlayBlockPaths;
+import com.sun.jna.NativeLibrary;
+import org.apache.logging.log4j.Level;
+import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -8,16 +15,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.apache.logging.log4j.Level;
-
-import uk.co.caprica.vlcj.player.MediaPlayerFactory;
-
-import com.skcraft.playblock.PlayBlock;
-import com.skcraft.playblock.util.EnvUtils;
-import com.skcraft.playblock.util.EnvUtils.Arch;
-import com.skcraft.playblock.util.EnvUtils.Platform;
-import com.skcraft.playblock.util.PlayBlockPaths;
-import com.sun.jna.NativeLibrary;
+import static com.skcraft.playblock.util.EnvUtils.getPlatform;
 
 /**
  * Manages media player instances.
@@ -32,6 +30,7 @@ public class MediaManager {
     private MediaRenderer activeRenderer;
     private float volume = 1;
     private EmbeddedInstaller installer;
+    private MediaPlayerClient sharedClient;
 
     // Simple texture cache
 
@@ -80,6 +79,14 @@ public class MediaManager {
         }
 
         return installer;
+    }
+
+    public MediaPlayerClient getSharedClient() {
+        if (sharedClient == null) {
+            sharedClient = new MediaPlayerClient();
+        }
+
+        return sharedClient;
     }
 
     /**
@@ -227,6 +234,8 @@ public class MediaManager {
         if (activeRenderer != null) {
             release(activeRenderer);
         }
+
+        sharedClient = null;
     }
 
     /**

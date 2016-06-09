@@ -1,8 +1,10 @@
 package com.skcraft.playblock;
 
+import com.google.common.base.Strings;
 import com.sk89q.forge.PayloadReceiver;
 import com.sk89q.forge.TileEntityPayload;
 import com.skcraft.playblock.network.PlayBlockPayload;
+import com.skcraft.playblock.player.MediaPlayerClient;
 import com.skcraft.playblock.projector.TileEntityProjector;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufInputStream;
@@ -47,11 +49,19 @@ public class PacketHandler {
 
             // Figure out what we are containing
             switch (container.getType()) {
-            case TILE_ENTITY:
-                handleTilePayload(world, entityPlayer, in);
-                break;
-            case TILE_ENTITY_NBT:
-                handleNetworkedNBT(world, evt.getPacket().payload());
+                case TILE_ENTITY:
+                    handleTilePayload(world, entityPlayer, in);
+                    break;
+                case TILE_ENTITY_NBT:
+                    handleNetworkedNBT(world, evt.getPacket().payload());
+                    break;
+                case SHARED_PLAY:
+                    MediaPlayerClient sharedClient = PlayBlock.getClientRuntime().getMediaManager().getSharedClient();
+                    sharedClient.setQueueMode(false);
+                    sharedClient.setWidth(16);
+                    sharedClient.setHeight(9);
+                    sharedClient.setPlaying(Strings.emptyToNull(in.readUTF()), -1);
+                    break;
             }
         } catch (IOException e) {
             PlayBlock.log(Level.WARN, "Failed to read packet data from " + entityPlayer.getDisplayName(), e);
@@ -80,11 +90,11 @@ public class PacketHandler {
 
             // Figure out what we are containing
             switch (container.getType()) {
-            case TILE_ENTITY:
-                handleTilePayload(world, entityPlayer, in);
-                break;
-            case TILE_ENTITY_NBT:
-                handleNetworkedNBT(world, evt.getPacket().payload());
+                case TILE_ENTITY:
+                    handleTilePayload(world, entityPlayer, in);
+                    break;
+                case TILE_ENTITY_NBT:
+                    handleNetworkedNBT(world, evt.getPacket().payload());
             }
         } catch (IOException e) {
             PlayBlock.log(Level.WARN, "Failed to read packet data from " + entityPlayer.getDisplayName(), e);
@@ -133,9 +143,8 @@ public class PacketHandler {
 
     /**
      * Send a payload to the server.
-     * 
-     * @param payload
-     *            the payload
+     *
+     * @param payload the payload
      */
     public static void sendToServer(PlayBlockPayload payload) {
         ByteBufOutputStream out = new ByteBufOutputStream(Unpooled.buffer());

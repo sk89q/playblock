@@ -20,6 +20,7 @@ public class MediaPlayerClient extends MediaPlayer {
     private final MediaManager mediaManager;
 
     private PlayingMedia playing;
+    private boolean mediaChangePending = false;
     private MediaRenderer renderer;
 
     /**
@@ -48,12 +49,13 @@ public class MediaPlayerClient extends MediaPlayer {
      *            otherwise -1 to indicate that the video should not be time
      *            shifted
      */
-    private void setPlaying(String uri, long position) {
+    public void setPlaying(String uri, long position) {
         if (uri != null && MediaResolver.canPlayUri(uri)) {
             playing = PlayingMedia.fromRelative(new Media(uri), position);
         } else {
             playing = null;
         }
+        mediaChangePending = true;
     }
 
     /**
@@ -96,6 +98,8 @@ public class MediaPlayerClient extends MediaPlayer {
      * </p>
      */
     public void playNewMedia() {
+        mediaChangePending = false;
+
         if (renderer == null) { // Create a new renderer if we don't have one
             setupRenderer();
             if (renderer == null) { // Stop if there is still no renderer
@@ -126,6 +130,10 @@ public class MediaPlayerClient extends MediaPlayer {
         if (renderer == null) { // We have nothing active
             if (mediaManager.hasNoRenderer()) { // Is there a free renderer?
                 playNewMedia(); // Yay!
+            }
+        } else {
+            if (mediaChangePending) {
+                playNewMedia();
             }
         }
     }
