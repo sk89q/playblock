@@ -1,0 +1,23 @@
+itemGroup.tabPlayBlock=PlayBlock
+
+tile.playblock.projector.name=Bloco Projetor
+item.playblock.remote.name=Controle do Projetor
+
+playblock.options=PlayBlock Opções
+playblock.options.url=URL
+playblock.options.screenSize=Tamanho
+playblock.options.turnOn=Turn On
+playblock.options.turnOff=Turn Off
+playblock.options.blocksAway=blocos de distância
+playblock.options.website=Website...
+playblock.options.volume=Volume
+
+playblock.gui.installLibraries=Instalando...
+playblock.gui.done=Pronto
+playblock.gui.add=Adicionar
+playblock.gui.remove=Remover
+playblock.gui.clear=Limpar
+playblock.gui.search=Pesquisar
+
+playblock.remote.linkedTo=Conectado a
+playblock.remote.instruction=Clique com o botão direito em um projetor para conectar.
